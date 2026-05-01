@@ -49,16 +49,13 @@ let D = {}; // all loaded service data
 document.addEventListener('DOMContentLoaded', async () => {
   await loadData();
   hideSplash();
-  window.addEventListener('hashchange', route);
-  route();
+  /* Event delegation: any click on #view with data-pid navigates to that persona */
+  document.getElementById('view').addEventListener('click', e => {
+    const card = e.target.closest('[data-pid]');
+    if (card) renderDetail(card.dataset.pid);
+  });
+  renderList();
 });
-
-function route() {
-  const hash = location.hash.slice(1);
-  const p = PERSONAS.find(p => p.id === hash);
-  if (p) renderDetail(p.id);
-  else renderList();
-}
 
 /* ════════════════════════════════════════════════════
    DATA LOADING
@@ -106,7 +103,7 @@ function renderList() {
     const orders = personaOrders(p.id).length;
     const garmin = (D.garmin?.daily_stats || []).filter(d => d.user_id === p.id).length;
     const whoop  = (D.whoop?.cycles || []).filter(c => c.persona_id === p.id).length;
-    return '<div class="persona-card" onclick="location.hash=\'' + p.id + '\'">' +
+    return '<div class="persona-card" data-pid="' + p.id + '">' +
       '<div class="persona-card-top">' +
         '<div class="avatar">' + p.initials + '</div>' +
         '<div>' +
@@ -146,7 +143,7 @@ function renderDetail(pid) {
   if (!p) { renderList(); return; }
 
   view(
-    '<div class="detail-back" onclick="location.hash=\'\'">← All Personas</div>' +
+    '<div class="detail-back" onclick="renderList()">← All Personas</div>' +
     '<div class="detail-hero">' +
       '<div class="hero-avatar">' + p.initials + '</div>' +
       '<div>' +
