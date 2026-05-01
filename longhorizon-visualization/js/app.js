@@ -40,6 +40,30 @@ const RELATIONS = {
   "logistics-tracking": [{ from: "shipments", to: "tracking_events", parentKey: "tracking_number", childKey: "tracking_number" }],
 };
 
+const DETAIL_PAGE_SIZE = 50;
+const PREFERRED_DATASETS = {
+  "apple-health": "activity_summaries",
+  "amazon": "orders",
+  "amazon-fresh": "orders",
+  "eight-sleep": "sleep_sessions",
+  "fitbit": "daily_stats",
+  "fresh-direct": "orders",
+  "garmin-connect": "daily_stats",
+  "instacart": "orders",
+  "logistics-tracking": "shipments",
+  "myfitnesspal": "food_logs",
+  "obsidian": "notes",
+  "renpho": "measurements",
+  "sonos": "speakers",
+  "strava": "activities",
+  "target": "orders",
+  "ticketmaster": "orders",
+  "walmart": "orders",
+  "whoop": "cycles",
+  "zillow": "saved_properties",
+};
+let DRILL = { personaId: "", serviceKey: "", datasetKey: "", page: 0 };
+
 document.addEventListener("DOMContentLoaded", () => {
   main().catch((error) => {
     console.error(error);
@@ -55,7 +79,7 @@ async function main() {
   const model = buildModel(data);
   window.LH_MODEL = model;
   render(model);
-  setStatus(`${model.totals.personas} personas · ${formatNumber(model.totals.mapped)} mapped records · ${model.totals.unmapped} unmapped`);
+  setStatus(`${model.totals.personas} personas - ${formatNumber(model.totals.mapped)} mapped records - ${model.totals.unmapped} unmapped`);
   document.getElementById("status-dot")?.classList.add("live");
   hideLoading();
 }
@@ -386,6 +410,7 @@ function render(model) {
   renderPersonaTable(model.personas);
   setupPersonaSearch(model.personas);
   renderPersonas(model.personas);
+  setupDrilldown(model);
   renderAudit(model);
 }
 
@@ -452,7 +477,7 @@ function renderCoverageTable(personas) {
       <thead><tr><th>Persona</th><th>ID</th><th>Services</th><th>Mapped Records</th><th>Orders</th><th>Health Records</th><th>Notes</th></tr></thead>
       <tbody>${personas.map((persona) => `
         <tr>
-          <td><a href="#${persona.id}" onclick="navigateTo('personas')"><strong>${escapeHtml(persona.name)}</strong></a></td>
+          <td><a href="#page-drilldown" onclick="openPersonaDrill('${persona.id}')"><strong>${escapeHtml(persona.name)}</strong></a></td>
           <td class="mono">${escapeHtml(persona.id)}</td>
           <td>${persona.sources.length}/${Object.keys(SERVICES).length}</td>
           <td class="num">${formatNumber(persona.totalRecords)}</td>
@@ -481,7 +506,7 @@ function renderPersonaTable(personas, query = "") {
       <thead><tr><th>Persona</th><th>Email</th><th>Location</th><th>Services</th><th>Records</th><th>Orders</th><th>Spend</th><th>Health</th><th>Notes</th></tr></thead>
       <tbody>${filtered.map((persona) => `
         <tr>
-          <td><a href="#${persona.id}"><strong>${escapeHtml(persona.name)}</strong><div class="mono">${escapeHtml(persona.id)}</div></a></td>
+          <td><a href="#page-drilldown" onclick="openPersonaDrill('${persona.id}')"><strong>${escapeHtml(persona.name)}</strong><div class="mono">${escapeHtml(persona.id)}</div></a></td>
           <td>${escapeHtml(persona.email || "")}</td>
           <td>${escapeHtml(persona.location || "")}</td>
           <td>${persona.sources.length}/${Object.keys(SERVICES).length}</td>
@@ -500,6 +525,181 @@ function renderPersonas(personas) {
   document.getElementById("personas-root").innerHTML = personas.map(renderPersona).join("");
 }
 
+function setupDrilldown(model) {
+  if (!model.personas.length) return;
+  DRILL.personaId = DRILL.personaId || model.personas[0].id;
+  const persona = personaById(DRILL.personaId);
+  DRILL.serviceKey = DRILL.serviceKey || persona.sources[0];
+  DRILL.datasetKey = DRILL.datasetKey || firstDatasetKey(persona, DRILL.serviceKey);
+
+  const personaSelect = document.getElementById("drill-persona");
+  personaSelect.innerHTML = model.personas.map((personaOption) =>
+    `<option value="${personaOption.id}">${escapeHtml(personaOption.name)} (${personaOption.id})</option>`
+  ).join("");
+  personaSelect.value = DRILL.personaId;
+  personaSelect.addEventListener("change", () => {
+    const selected = personaById(personaSelect.value);
+    DRILL = {
+      personaId: selected.id,
+      serviceKey: selected.sources[0],
+      datasetKey: firstDatasetKey(selected, selected.sources[0]),
+      page: 0,
+    };
+    renderDrilldown();
+  });
+
+  document.getElementById("drill-dataset").addEventListener("change", (event) => {
+    DRILL.datasetKey = event.target.value;
+    DRILL.page = 0;
+    renderDrilldown();
+  });
+
+  renderDrilldown();
+}
+
+function openPersonaDrill(personaId, serviceKey = "") {
+  const persona = personaById(personaId);
+  if (!persona) return;
+  DRILL.personaId = persona.id;
+  DRILL.serviceKey = serviceKey && persona.sources.includes(serviceKey) ? serviceKey : persona.sources[0];
+  DRILL.datasetKey = firstDatasetKey(persona, DRILL.serviceKey);
+  DRILL.page = 0;
+  navigateTo("drilldown");
+  const select = document.getElementById("drill-persona");
+  if (select) select.value = persona.id;
+  renderDrilldown();
+}
+
+function setDrillService(serviceKey) {
+  const persona = personaById(DRILL.personaId);
+  if (!persona?.sources.includes(serviceKey)) return;
+  DRILL.serviceKey = serviceKey;
+  DRILL.datasetKey = firstDatasetKey(persona, serviceKey);
+  DRILL.page = 0;
+  renderDrilldown();
+}
+
+function setDetailPage(direction) {
+  DRILL.page = Math.max(0, DRILL.page + direction);
+  renderDrilldown();
+}
+
+function renderDrilldown() {
+  const persona = personaById(DRILL.personaId);
+  if (!persona) return;
+  if (!persona.sources.includes(DRILL.serviceKey)) DRILL.serviceKey = persona.sources[0];
+  if (!DRILL.datasetKey || !persona.records[DRILL.serviceKey]?.[DRILL.datasetKey]) {
+    DRILL.datasetKey = firstDatasetKey(persona, DRILL.serviceKey);
+  }
+
+  const serviceRecords = persona.records[DRILL.serviceKey] || {};
+  const datasetKeys = Object.keys(serviceRecords).sort();
+  const datasetSelect = document.getElementById("drill-dataset");
+  datasetSelect.innerHTML = datasetKeys.map((key) =>
+    `<option value="${key}">${escapeHtml(key)} (${formatNumber(serviceRecords[key].length)})</option>`
+  ).join("");
+  datasetSelect.value = DRILL.datasetKey;
+
+  const selectedRows = serviceRecords[DRILL.datasetKey] || [];
+  const maxPage = Math.max(0, Math.ceil(selectedRows.length / DETAIL_PAGE_SIZE) - 1);
+  DRILL.page = Math.min(DRILL.page, maxPage);
+  setText("drill-count", `${SERVICES[DRILL.serviceKey].label} - ${DRILL.datasetKey} - ${formatNumber(selectedRows.length)} records`);
+
+  document.getElementById("drill-root").innerHTML = `
+    <div class="drill-layout">
+      <aside class="server-nav">
+        ${persona.sources.map((serviceKey) => {
+          const total = countServiceRecords(persona.records[serviceKey]);
+          return `<button class="server-btn ${serviceKey === DRILL.serviceKey ? "active" : ""}" onclick="setDrillService('${serviceKey}')">
+            ${escapeHtml(SERVICES[serviceKey].label)}
+            <small>${formatNumber(total)} records - ${escapeHtml(SERVICES[serviceKey].category)}</small>
+          </button>`;
+        }).join("")}
+      </aside>
+      <div class="drill-main">
+        ${renderDrillHeader(persona)}
+        ${renderServiceMetrics(persona, DRILL.serviceKey)}
+        ${renderDatasetSummary(serviceRecords)}
+        ${renderRawRecords(selectedRows)}
+      </div>
+    </div>
+  `;
+}
+
+function renderDrillHeader(persona) {
+  const service = SERVICES[DRILL.serviceKey];
+  return `
+    <article class="persona-card">
+      <header class="persona-header">
+        <div class="avatar">${escapeHtml(initials(persona.name))}</div>
+        <div>
+          <h3>${escapeHtml(persona.name)} - ${escapeHtml(service.label)}</h3>
+          <p>${escapeHtml(persona.id)} - ${escapeHtml(persona.email || "no email")} - ${escapeHtml(service.category)}</p>
+        </div>
+        <div class="persona-mini">${formatNumber(countServiceRecords(persona.records[DRILL.serviceKey]))} server records<br>${Object.keys(persona.records[DRILL.serviceKey] || {}).length} datasets</div>
+      </header>
+    </article>
+  `;
+}
+
+function renderServiceMetrics(persona, serviceKey) {
+  const metrics = serviceMetrics(serviceKey, persona.records[serviceKey] || {});
+  return `
+    <section class="persona-section">
+      <h4>Dedicated Server Metrics</h4>
+      <div class="metric-grid">${metrics.map(([label, value]) => stat(label, value)).join("")}</div>
+    </section>
+  `;
+}
+
+function renderDatasetSummary(serviceRecords) {
+  return `
+    <section class="persona-section">
+      <h4>Datasets in This Server</h4>
+      <table class="mini-table">
+        <thead><tr><th>Dataset</th><th>Records</th><th>Sample Fields</th></tr></thead>
+        <tbody>${Object.entries(serviceRecords).sort(([a], [b]) => a.localeCompare(b)).map(([datasetKey, rows]) => `
+          <tr>
+            <td><button class="link-btn" onclick="selectDrillDataset('${datasetKey}')">${escapeHtml(datasetKey)}</button></td>
+            <td class="num">${formatNumber(rows.length)}</td>
+            <td>${escapeHtml(Object.keys(rows[0] || {}).slice(0, 10).join(", "))}</td>
+          </tr>
+        `).join("")}</tbody>
+      </table>
+    </section>
+  `;
+}
+
+function selectDrillDataset(datasetKey) {
+  DRILL.datasetKey = datasetKey;
+  DRILL.page = 0;
+  renderDrilldown();
+}
+
+function renderRawRecords(rows) {
+  const pageRows = rows.slice(DRILL.page * DETAIL_PAGE_SIZE, (DRILL.page + 1) * DETAIL_PAGE_SIZE);
+  const columns = columnsForRows(pageRows.length ? pageRows : rows);
+  const totalPages = Math.max(1, Math.ceil(rows.length / DETAIL_PAGE_SIZE));
+  return `
+    <section class="persona-section">
+      <h4>Raw Records: ${escapeHtml(DRILL.datasetKey)}</h4>
+      <div class="record-table-wrap">
+        <table class="record-table">
+          <thead><tr>${columns.map((column) => `<th>${escapeHtml(column)}</th>`).join("")}</tr></thead>
+          <tbody>${pageRows.map((row) => `
+            <tr>${columns.map((column) => `<td>${escapeHtml(formatCell(row[column]))}</td>`).join("")}</tr>
+          `).join("") || `<tr><td colspan="${columns.length || 1}" class="empty">No records</td></tr>`}</tbody>
+        </table>
+      </div>
+      <div class="pager">
+        <button class="page-btn" onclick="setDetailPage(-1)" ${DRILL.page === 0 ? "disabled" : ""}>Previous</button>
+        <span class="page-info">Page ${DRILL.page + 1} of ${totalPages} - showing ${formatNumber(pageRows.length)} of ${formatNumber(rows.length)}</span>
+        <button class="page-btn" onclick="setDetailPage(1)" ${DRILL.page >= totalPages - 1 ? "disabled" : ""}>Next</button>
+      </div>
+    </section>
+  `;
+}
+
 function renderPersona(persona) {
   return `
     <article class="persona-card" id="${persona.id}">
@@ -507,7 +707,7 @@ function renderPersona(persona) {
         <div class="avatar">${escapeHtml(initials(persona.name))}</div>
         <div>
           <h3>${escapeHtml(persona.name)}</h3>
-          <p>${escapeHtml([persona.id, persona.email, persona.location].filter(Boolean).join(" · "))}</p>
+          <p>${escapeHtml([persona.id, persona.email, persona.location].filter(Boolean).join(" - "))}</p>
         </div>
         <div class="persona-mini">${formatNumber(persona.totalRecords)} records<br>${persona.sources.length}/${Object.keys(SERVICES).length} services</div>
       </header>
@@ -527,7 +727,7 @@ function renderPersona(persona) {
 
         <section class="persona-section">
           <h4>Data Coverage</h4>
-          <div class="source-list">${persona.sources.map((key) => `<span class="source-pill">${escapeHtml(SERVICES[key].label)}</span>`).join("")}</div>
+          <div class="source-list">${persona.sources.map((key) => `<button class="source-pill source-button" onclick="openPersonaDrill('${persona.id}', '${key}')">${escapeHtml(SERVICES[key].label)}</button>`).join("")}</div>
         </section>
 
         <section class="persona-section">
@@ -558,7 +758,7 @@ function renderDatasetRow(row) {
   return `
     <div class="dataset-line">
       <strong>${escapeHtml(row.service)}</strong>
-      <span>${row.datasets.map(([name, value]) => `${escapeHtml(name)} ${formatNumber(value)}`).join(" · ")}</span>
+      <span>${row.datasets.map(([name, value]) => `${escapeHtml(name)} ${formatNumber(value)}`).join(" - ")}</span>
     </div>
   `;
 }
@@ -572,7 +772,7 @@ function renderHealthTable(rows) {
         <tr>
           <td><span class="badge badge-health">${escapeHtml(section.label)}</span></td>
           <td class="num">${formatNumber(section.count)}</td>
-          <td>${section.facts.map((fact) => `${escapeHtml(fact.name)}: <strong>${escapeHtml(String(fact.value))}</strong>`).join(" · ")}</td>
+          <td>${section.facts.map((fact) => `${escapeHtml(fact.name)}: <strong>${escapeHtml(String(fact.value))}</strong>`).join(" - ")}</td>
         </tr>
       `).join("")}</tbody>
     </table>
@@ -590,7 +790,7 @@ function renderShoppingTable(rows) {
           <td class="num">${formatNumber(section.orders)}</td>
           <td class="num">${formatNumber(section.items)}</td>
           <td class="num">${money(section.spend)}</td>
-          <td>${section.recent.map((row) => `${escapeHtml(row.date)} ${escapeHtml(row.total)} ${escapeHtml(row.status)}`).join(" · ")}</td>
+          <td>${section.recent.map((row) => `${escapeHtml(row.date)} ${escapeHtml(row.total)} ${escapeHtml(row.status)}`).join(" - ")}</td>
         </tr>
       `).join("")}</tbody>
     </table>
@@ -605,11 +805,169 @@ function renderLifestyleTable(rows) {
       <tbody>${rows.map((section) => `
         <tr>
           <td><span class="badge badge-lifestyle">${escapeHtml(section.label)}</span></td>
-          <td>${section.facts.map(([name, value]) => `${escapeHtml(name)}: <strong>${escapeHtml(String(value))}</strong>`).join(" · ")}</td>
+          <td>${section.facts.map(([name, value]) => `${escapeHtml(name)}: <strong>${escapeHtml(String(value))}</strong>`).join(" - ")}</td>
         </tr>
       `).join("")}</tbody>
     </table>
   `;
+}
+
+function personaById(personaId) {
+  return window.LH_MODEL?.personas.find((persona) => persona.id === personaId);
+}
+
+function firstDatasetKey(persona, serviceKey) {
+  const keys = Object.keys(persona.records[serviceKey] || {}).sort();
+  return keys.includes(PREFERRED_DATASETS[serviceKey]) ? PREFERRED_DATASETS[serviceKey] : keys[0] || "";
+}
+
+function serviceMetrics(serviceKey, serviceRecords) {
+  const m = (label, dataset, field, mode) => [label, metricValue(serviceRecords[dataset] || [], field, mode)];
+  const countDataset = (label, dataset) => [label, formatNumber((serviceRecords[dataset] || []).length)];
+  const spend = (label, dataset, field = "total") => [label, money(sum((serviceRecords[dataset] || []).map((row) => Number(row[field] || 0))))];
+
+  switch (serviceKey) {
+    case "apple-health":
+      return [
+        m("Total steps", "step_records", "total_steps", "sum"),
+        countDataset("Workout records", "workout_records"),
+        m("Workout minutes", "workout_records", "duration_minutes", "sum"),
+        m("Active energy", "activity_summaries", "active_energy_kcal", "sum"),
+        countDataset("Sleep stage records", "sleep_records"),
+        m("Resting HR avg", "resting_heart_rate_records", "value", "avg"),
+        m("Latest VO2 max", "vo2max_records", "value", "latest"),
+        m("Latest body mass", "body_mass_records", "value", "latest"),
+      ];
+    case "garmin-connect":
+      return [
+        m("Total steps", "daily_stats", "steps", "sum"),
+        m("Total calories", "daily_stats", "calories_total", "sum"),
+        m("Intensity minutes", "daily_stats", "intensity_minutes", "sum"),
+        countDataset("Activities", "activities"),
+        m("Activity distance", "activities", "distance_meters", "sumDistanceM"),
+        m("Sleep score avg", "sleep", "sleep_score", "avg"),
+        m("Resting HR avg", "heart_rate", "resting_hr", "avg"),
+        m("Latest readiness", "training_readiness", "readiness_score", "latest"),
+      ];
+    case "eight-sleep":
+      return [
+        countDataset("Sleep sessions", "sleep_sessions"),
+        m("Deep sleep", "sleep_sessions", "deep_duration_s", "sumSecondsHours"),
+        m("REM sleep", "sleep_sessions", "rem_duration_s", "sumSecondsHours"),
+        m("Awake time", "sleep_sessions", "awake_duration_s", "sumSecondsHours"),
+        m("Avg heart rate", "sleep_sessions", "avg_heart_rate", "avg"),
+        countDataset("Temp schedules", "temperature_schedules"),
+        countDataset("Alarms", "alarms"),
+      ];
+    case "whoop":
+      return [
+        countDataset("Cycles", "cycles"),
+        m("Avg strain", "cycles", "strain", "avg"),
+        m("Recovery avg", "recovery", "recovery_score", "avg"),
+        countDataset("Sleep records", "sleep"),
+        m("Sleep performance", "sleep", "score_sleep_performance", "avg"),
+        countDataset("Workouts", "workouts"),
+        m("Workout kilojoules", "workouts", "score_kilojoules", "sum"),
+      ];
+    case "fitbit":
+      return [
+        m("Total steps", "daily_stats", "steps", "sum"),
+        m("Total calories", "daily_stats", "calories", "sum"),
+        countDataset("Activities", "activities"),
+        m("Sleep efficiency", "sleep_logs", "efficiency", "avg"),
+        m("Food calories", "food_logs", "calories", "sum"),
+        m("Water", "water_logs", "amount", "sum"),
+        countDataset("Badges", "badges"),
+      ];
+    case "renpho":
+      return [
+        countDataset("Measurements", "measurements"),
+        m("Latest weight", "measurements", "weight", "latest"),
+        m("Latest BMI", "measurements", "bmi", "latest"),
+        m("Latest body fat", "measurements", "body_fat", "latest"),
+        m("Latest muscle mass", "measurements", "muscle_mass", "latest"),
+      ];
+    case "myfitnesspal":
+      return [
+        countDataset("Food logs", "food_logs"),
+        countDataset("Exercise logs", "exercise_logs"),
+        m("Calories burned", "exercise_logs", "calories_burned", "sum"),
+        m("Water logged", "water_logs", "amount_ml", "sumMl"),
+        m("Servings logged", "food_logs", "servings", "sum"),
+      ];
+    case "strava":
+      return [
+        countDataset("Activities", "activities"),
+        m("Activity distance", "activities", "distance", "sumDistanceM"),
+        m("Moving time", "activities", "moving_time", "sumSecondsHours"),
+        m("Elevation gain", "activities", "total_elevation_gain", "sum"),
+        countDataset("Personal records", "personal_records"),
+        countDataset("Routes", "routes"),
+      ];
+    case "amazon":
+    case "walmart":
+    case "target":
+    case "instacart":
+    case "fresh-direct":
+    case "amazon-fresh":
+      return [
+        countDataset("Orders", "orders"),
+        countDataset("Order items", "order_items"),
+        spend("Order spend", "orders"),
+        m("Latest order total", "orders", "total", "latest"),
+      ];
+    case "ticketmaster":
+      return [
+        countDataset("Ticket orders", "orders"),
+        spend("Ticket spend", "orders", "total_price"),
+        m("Tickets purchased", "orders", "quantity", "sum"),
+        m("Latest total", "orders", "total_price", "latest"),
+      ];
+    case "zillow":
+      return [
+        countDataset("Saved properties", "saved_properties"),
+        countDataset("Scheduled tours", "scheduled_tours"),
+        ["Latest tour", latestTitle(serviceRecords.scheduled_tours, "tour_date", "status")],
+      ];
+    case "sonos":
+      return [
+        countDataset("Speakers", "speakers"),
+        countDataset("Queue items", "queue_items"),
+        countDataset("Favorites", "favorites"),
+        countDataset("Favorite tracks", "favorite_tracks"),
+      ];
+    case "obsidian":
+      return [
+        countDataset("Notes", "notes"),
+        countDataset("Tags", "tags"),
+        ["Latest note", latestTitle(serviceRecords.notes, "modified_at")],
+      ];
+    case "logistics-tracking":
+      return [
+        countDataset("Shipments", "shipments"),
+        countDataset("Tracking events", "tracking_events"),
+        ["Latest tracking status", latestTitle(serviceRecords.tracking_events, "timestamp", "status")],
+      ];
+    default:
+      return [["Mapped records", formatNumber(countServiceRecords(serviceRecords))]];
+  }
+}
+
+function columnsForRows(rows) {
+  const columns = [];
+  for (const row of rows.slice(0, DETAIL_PAGE_SIZE)) {
+    for (const key of Object.keys(row || {})) {
+      if (!columns.includes(key)) columns.push(key);
+    }
+  }
+  return columns;
+}
+
+function formatCell(value) {
+  if (value === null || value === undefined) return "";
+  if (Array.isArray(value)) return value.join(", ");
+  if (typeof value === "object") return JSON.stringify(value);
+  return String(value);
 }
 
 function renderAudit(model) {
@@ -634,7 +992,7 @@ function renderCountGroups(groups) {
   return Object.entries(groups).map(([serviceKey, datasets]) => `
     <div class="audit-row">
       <strong>${escapeHtml(SERVICES[serviceKey].label)}</strong>
-      <span>${Object.entries(datasets).map(([key, value]) => `${escapeHtml(key)} ${formatNumber(value)}`).join(" · ")}</span>
+      <span>${Object.entries(datasets).map(([key, value]) => `${escapeHtml(key)} ${formatNumber(value)}`).join(" - ")}</span>
     </div>
   `).join("");
 }
@@ -657,6 +1015,8 @@ function metricValue(rows, field, mode) {
   if (mode === "sum") return formatNumber(sum(values));
   if (mode === "sumMl") return `${formatNumber(Math.round(sum(values) / 1000))} L`;
   if (mode === "sumDistanceM") return `${formatNumber(Math.round(sum(values) / 1000))} km`;
+  if (mode === "sumSecondsHours") return `${formatNumber(Math.round(sum(values) / 3600))} h`;
+  if (mode === "sumMinutesHours") return `${formatNumber(Math.round(sum(values) / 60))} h`;
   if (mode === "avg") return round(sum(values) / values.length);
   return formatNumber(values.length);
 }

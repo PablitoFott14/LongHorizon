@@ -20,6 +20,7 @@
       <nav class="tabs" aria-label="Primary">
         <button class="tab active" data-tab="overview">Overview</button>
         <button class="tab" data-tab="personas">Personas</button>
+        <button class="tab" data-tab="drilldown">Drilldown</button>
         <button class="tab" data-tab="audit">Mapping Audit</button>
       </nav>
 
@@ -64,6 +65,19 @@
       </div>
       <div class="table-wrap" id="personas-table"></div>
       <div class="detail-stack" id="personas-root"></div>
+    </section>
+
+    <section class="page" id="page-drilldown">
+      <div class="page-title">
+        <h2>Persona Server Drilldown</h2>
+        <p>Explore one persona at a time, then inspect every linked server, dataset, metric, and raw record page.</p>
+      </div>
+      <div class="explorer-bar wrap">
+        <select id="drill-persona" class="ex-filter"></select>
+        <select id="drill-dataset" class="ex-filter"></select>
+        <span class="ex-count" id="drill-count"></span>
+      </div>
+      <div id="drill-root"></div>
     </section>
 
     <section class="page" id="page-audit">
