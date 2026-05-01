@@ -256,20 +256,38 @@ function getCardSummary(pid, key) {
       ], sparkValues: rec.slice(-14).map(r=>r.recovery_score||0) };
     }
     case 'apple-health': {
-      const ah = D['apple-health']||{};
-      const steps  = (ah.step_records||[]).filter(r=>r.user_id===pid).length;
-      const rhr    = (ah.resting_heart_rate_records||[]).filter(r=>r.user_id===pid).length;
-      const hrv    = (ah.hrv_records||[]).filter(r=>r.user_id===pid).length;
-      const bm     = (ah.body_mass_records||[]).filter(r=>r.user_id===pid).length;
-      const vo2    = (ah.vo2max_records||[]).filter(r=>r.user_id===pid).length;
-      if (!steps && !rhr && !hrv && !bm && !vo2) return null;
-      return { metrics:[
-        {l:'Step records',  v:steps},
-        {l:'RHR records',   v:rhr},
-        {l:'HRV records',   v:hrv},
-        {l:'Body mass recs',v:bm},
-        {l:'VO₂ Max recs',  v:vo2},
-      ]};
+      const ah    = D['apple-health']||{};
+      /* step_records: date (YYYY-MM-DD), total_steps */
+      const steps = (ah.step_records||[]).filter(r=>r.user_id===pid)
+        .sort((a,b)=>a.date.localeCompare(b.date));
+      /* resting_heart_rate_records: date (datetime), value */
+      const rhr   = (ah.resting_heart_rate_records||[]).filter(r=>r.user_id===pid)
+        .sort((a,b)=>a.date.localeCompare(b.date));
+      /* hrv_records: date (datetime), value */
+      const hrv   = (ah.hrv_records||[]).filter(r=>r.user_id===pid);
+      /* activity_summaries: date (YYYY-MM-DD), active_energy_kcal */
+      const act   = (ah.activity_summaries||[]).filter(r=>r.user_id===pid);
+      const wkts  = (ah.workout_records||[]).filter(r=>r.user_id===pid);
+      const bm    = (ah.body_mass_records||[]).filter(r=>r.user_id===pid);
+
+      if (!steps.length && !rhr.length && !hrv.length && !act.length && !wkts.length && !bm.length) return null;
+
+      const avgSteps     = steps.length ? Math.round(steps.reduce((s,r)=>s+(r.total_steps||0),0)/steps.length) : null;
+      const latestRHR    = rhr.length ? rhr[rhr.length-1].value : null;
+      const avgHRV       = hrv.length ? (hrv.reduce((s,r)=>s+(r.value||0),0)/hrv.length).toFixed(1) : null;
+      const avgActiveKcal= act.length ? Math.round(act.reduce((s,r)=>s+(r.active_energy_kcal||0),0)/act.length) : null;
+
+      const metrics = [];
+      if (avgSteps!=null)      metrics.push({l:'Avg daily steps',    v:avgSteps.toLocaleString()});
+      if (latestRHR!=null)     metrics.push({l:'Latest RHR',         v:latestRHR+' bpm'});
+      if (avgHRV!=null)        metrics.push({l:'Avg HRV',            v:avgHRV+' ms'});
+      if (avgActiveKcal!=null) metrics.push({l:'Avg active energy',  v:avgActiveKcal+' kcal'});
+      if (wkts.length)         metrics.push({l:'Workouts',           v:wkts.length});
+      if (!metrics.length) return null;
+
+      /* Sparkline: last 14 days of daily steps */
+      const sparkValues = steps.slice(-14).map(r=>r.total_steps||0);
+      return { metrics, sparkValues };
     }
     case 'fitbit': {
       const rows = (D.fitbit?.daily_stats||[]).filter(d=>d.user_id===pid)
@@ -434,7 +452,11 @@ function hasData(pid, key) {
   switch(key) {
     case 'garmin':        return (D.garmin?.daily_stats||[]).some(d=>d.user_id===pid);
     case 'whoop':         return (D.whoop?.recovery||[]).some(r=>r.persona_id===pid);
-    case 'apple-health':  { const ah=D['apple-health']||{}; return (ah.step_records||ah.resting_heart_rate_records||ah.hrv_records||ah.body_mass_records||[]).some(r=>r.user_id===pid); }
+    case 'apple-health': {
+      const ah=D['apple-health']||{};
+      return ['step_records','resting_heart_rate_records','hrv_records','sleep_records',
+              'workout_records','body_mass_records','activity_summaries'].some(t=>(ah[t]||[]).some(r=>r.user_id===pid));
+    }
     case 'fitbit':        return (D.fitbit?.daily_stats||[]).some(d=>d.user_id===pid);
     case 'eight-sleep':   return (D['eight-sleep']?.sleep_sessions||[]).some(s=>s.persona_id===pid);
     case 'strava':        return (D.strava?.activities||[]).some(a=>a.user_id===pid);
@@ -538,24 +560,135 @@ function modalWhoop(pid) {
 }
 
 function modalAppleHealth(pid) {
-  const ah = D['apple-health']||{};
-  let out = '';
-  const sub = (label, arr, cols, rowFn) => {
-    const recs = arr.filter(r=>r.user_id===pid).sort((a,b)=>(b.start_date||'').localeCompare(a.start_date||''));
-    if (!recs.length) return '';
-    return '<div class="sub-heading">'+label+' ('+recs.length+')</div>'+tableWrap(cols, recs.map(rowFn).join(''));
-  };
-  out += sub('Step Records',         ah.step_records||[],
-    ['Date','Steps','Unit'], r=>'<tr><td>'+(r.start_date||'').slice(0,10)+'</td><td class="num">'+fmt(r.value)+'</td><td>'+(r.unit||'count')+'</td></tr>');
-  out += sub('Resting Heart Rate',   ah.resting_heart_rate_records||[],
-    ['Date','Value','Unit'], r=>'<tr><td>'+(r.start_date||'').slice(0,10)+'</td><td class="num">'+nvl(r.value)+'</td><td>'+(r.unit||'bpm')+'</td></tr>');
-  out += sub('HRV',                  ah.hrv_records||[],
-    ['Date','Value','Unit'], r=>'<tr><td>'+(r.start_date||'').slice(0,10)+'</td><td class="num">'+nvl(r.value)+'</td><td>'+(r.unit||'ms')+'</td></tr>');
-  out += sub('Body Mass',            ah.body_mass_records||[],
-    ['Date','Value','Unit'], r=>'<tr><td>'+(r.start_date||'').slice(0,10)+'</td><td class="num">'+nvl(r.value)+'</td><td>'+(r.unit||'kg')+'</td></tr>');
-  out += sub('VO₂ Max',              ah.vo2max_records||[],
-    ['Date','Value','Unit'], r=>'<tr><td>'+(r.start_date||'').slice(0,10)+'</td><td class="num">'+nvl(r.value)+'</td><td>'+(r.unit||'mL/kg/min')+'</td></tr>');
-  return out || empty();
+  const ah   = D['apple-health']||{};
+  const prof = (ah.user_profiles||[]).find(u=>u.user_id===pid);
+  let out    = '';
+
+  if (prof) {
+    out += fields([
+      ['Height',prof.height_cm?prof.height_cm+' cm':null],
+      ['Weight',prof.weight_kg?prof.weight_kg+' kg':null],
+      ['Date of Birth',prof.date_of_birth],['Sex',prof.sex],
+    ]);
+  }
+
+  /* Daily Steps — step_records: date (YYYY-MM-DD), total_steps */
+  const steps = (ah.step_records||[]).filter(r=>r.user_id===pid)
+    .sort((a,b)=>b.date.localeCompare(a.date));
+  if (steps.length) {
+    const sv = steps.slice(0,30).reverse().map(r=>r.total_steps||0);
+    out += '<div class="sub-heading">Daily Steps ('+steps.length+' days)</div>';
+    if (sv.length>=2) out += '<div style="padding:6px 12px 2px">'+sparkline(sv,'#ff375f')+'</div>';
+    out += tableWrap(['Date','Total Steps'],
+      steps.map(r=>'<tr><td>'+r.date+'</td><td class="num">'+fmt(r.total_steps)+'</td></tr>').join(''));
+  }
+
+  /* Activity Summaries — date (YYYY-MM-DD), active_energy_kcal, exercise_minutes, stand_hours, distance_km, flights_climbed */
+  const act = (ah.activity_summaries||[]).filter(r=>r.user_id===pid)
+    .sort((a,b)=>b.date.localeCompare(a.date));
+  if (act.length) {
+    const sv = act.slice(0,30).reverse().map(r=>r.active_energy_kcal||0);
+    out += '<div class="sub-heading" style="margin-top:14px">Activity Summaries ('+act.length+' days)</div>';
+    if (sv.length>=2) out += '<div style="padding:6px 12px 2px">'+sparkline(sv,'#ff9900')+'</div>';
+    out += tableWrap(['Date','Active Energy (kcal)','Basal (kcal)','Exercise Min','Stand Hours','Distance (km)','Flights'],
+      act.map(r=>'<tr><td>'+r.date+'</td>' +
+        '<td class="num">'+nvl(r.active_energy_kcal)+'</td>' +
+        '<td class="num">'+nvl(r.basal_energy_kcal)+'</td>' +
+        '<td class="num">'+nvl(r.exercise_minutes)+'</td>' +
+        '<td class="num">'+nvl(r.stand_hours)+'</td>' +
+        '<td class="num">'+(r.distance_km!=null?r.distance_km.toFixed(2):'—')+'</td>' +
+        '<td class="num">'+nvl(r.flights_climbed)+'</td></tr>').join(''));
+  }
+
+  /* Resting Heart Rate — date (datetime), value (bpm) */
+  const rhr = (ah.resting_heart_rate_records||[]).filter(r=>r.user_id===pid)
+    .sort((a,b)=>b.date.localeCompare(a.date));
+  if (rhr.length) {
+    const sv = rhr.slice(0,30).reverse().map(r=>r.value||0);
+    out += '<div class="sub-heading" style="margin-top:14px">Resting Heart Rate ('+rhr.length+' records)</div>';
+    if (sv.length>=2) out += '<div style="padding:6px 12px 2px">'+sparkline(sv,'#f87171')+'</div>';
+    out += tableWrap(['Date','RHR (bpm)'],
+      rhr.map(r=>'<tr><td>'+r.date.slice(0,10)+'</td><td class="num">'+r.value+'</td></tr>').join(''));
+  }
+
+  /* HRV — date (datetime), value (ms) */
+  const hrv = (ah.hrv_records||[]).filter(r=>r.user_id===pid)
+    .sort((a,b)=>b.date.localeCompare(a.date));
+  if (hrv.length) {
+    const sv = hrv.slice(0,30).reverse().map(r=>r.value||0);
+    out += '<div class="sub-heading" style="margin-top:14px">HRV ('+hrv.length+' records)</div>';
+    if (sv.length>=2) out += '<div style="padding:6px 12px 2px">'+sparkline(sv,'#818cf8')+'</div>';
+    out += tableWrap(['Date','HRV (ms)'],
+      hrv.map(r=>'<tr><td>'+r.date.slice(0,10)+'</td><td class="num">'+r.value.toFixed(1)+'</td></tr>').join(''));
+  }
+
+  /* Heart Rate — aggregated by day (raw records too dense to show individually) */
+  const hrRecs = (ah.heart_rate_records||[]).filter(r=>r.user_id===pid);
+  if (hrRecs.length) {
+    const byDay = {};
+    hrRecs.forEach(r=>{ const d=r.date.slice(0,10); if(!byDay[d])byDay[d]=[]; byDay[d].push(r.value); });
+    const days  = Object.keys(byDay).sort().reverse();
+    const avgByDay = days.map(d=>{ const v=byDay[d]; return Math.round(v.reduce((s,x)=>s+x,0)/v.length); });
+    out += '<div class="sub-heading" style="margin-top:14px">Heart Rate — Daily Aggregated ('+days.length+' days · '+hrRecs.length.toLocaleString()+' samples)</div>';
+    if (avgByDay.slice(0,30).length>=2) out += '<div style="padding:6px 12px 2px">'+sparkline(avgByDay.slice(0,30).reverse(),'#f87171')+'</div>';
+    out += tableWrap(['Date','Samples','Min (bpm)','Avg (bpm)','Max (bpm)'],
+      days.map(d=>{
+        const vals=byDay[d], mn=Math.min(...vals), mx=Math.max(...vals);
+        const avg=Math.round(vals.reduce((s,v)=>s+v,0)/vals.length);
+        return '<tr><td>'+d+'</td><td class="num">'+vals.length+'</td>' +
+          '<td class="num">'+mn+'</td><td class="num">'+avg+'</td><td class="num">'+mx+'</td></tr>';
+      }).join(''));
+  }
+
+  /* Sleep — aggregated per night from segments (start, end, stage) */
+  const sleepRecs = (ah.sleep_records||[]).filter(r=>r.user_id===pid);
+  if (sleepRecs.length) {
+    const nights = {};
+    sleepRecs.forEach(r=>{
+      const d = r.start.slice(0,10);
+      if (!nights[d]) nights[d]={};
+      const mins = (new Date(r.end)-new Date(r.start))/60000;
+      nights[d][r.stage] = (nights[d][r.stage]||0)+mins;
+    });
+    const sortedNights = Object.keys(nights).sort().reverse();
+    out += '<div class="sub-heading" style="margin-top:14px">Sleep ('+sortedNights.length+' nights · '+sleepRecs.length+' segments)</div>';
+    out += tableWrap(['Date','Deep (min)','REM (min)','Other (min)','Total (min)'],
+      sortedNights.map(d=>{
+        const n=nights[d];
+        const deep =Math.round(n.asleepDeep||0);
+        const rem  =Math.round(n.asleepREM||0);
+        const other=Math.round(Object.entries(n).filter(([k])=>k!=='asleepDeep'&&k!=='asleepREM').reduce((s,[,v])=>s+v,0));
+        const tot  =deep+rem+other;
+        return '<tr><td>'+d+'</td><td class="num">'+deep+'</td><td class="num">'+rem+'</td>' +
+          '<td class="num">'+other+'</td><td class="num"><strong>'+tot+'</strong></td></tr>';
+      }).join(''));
+  }
+
+  /* Workouts — start (datetime), activity_type, duration_minutes, total_energy_kcal, total_distance_km */
+  const wkts = (ah.workout_records||[]).filter(r=>r.user_id===pid)
+    .sort((a,b)=>b.start.localeCompare(a.start));
+  if (wkts.length) {
+    out += '<div class="sub-heading" style="margin-top:14px">Workouts ('+wkts.length+' sessions)</div>';
+    out += tableWrap(['Date','Type','Duration (min)','Energy (kcal)','Distance (km)'],
+      wkts.map(r=>'<tr><td>'+r.start.slice(0,10)+'</td>' +
+        '<td><span class="badge badge-teal">'+esc(r.activity_type||'—')+'</span></td>' +
+        '<td class="num">'+(r.duration_minutes!=null?r.duration_minutes.toFixed(1):'—')+'</td>' +
+        '<td class="num">'+(r.total_energy_kcal!=null?r.total_energy_kcal.toFixed(1):'—')+'</td>' +
+        '<td class="num">'+(r.total_distance_km!=null?r.total_distance_km.toFixed(2):'—')+'</td></tr>').join(''));
+  }
+
+  /* Body Mass — date (datetime), value (kg) */
+  const bm = (ah.body_mass_records||[]).filter(r=>r.user_id===pid)
+    .sort((a,b)=>b.date.localeCompare(a.date));
+  if (bm.length) {
+    const sv = bm.slice(0,20).reverse().map(r=>r.value||0);
+    out += '<div class="sub-heading" style="margin-top:14px">Body Mass ('+bm.length+' records)</div>';
+    if (sv.length>=2) out += '<div style="padding:6px 12px 2px">'+sparkline(sv,'#34d399')+'</div>';
+    out += tableWrap(['Date','Weight (kg)'],
+      bm.map(r=>'<tr><td>'+r.date.slice(0,10)+'</td><td class="num">'+r.value+'</td></tr>').join(''));
+  }
+
+  return out || empty('No Apple Health data for this persona.');
 }
 
 function modalFitbit(pid) {
