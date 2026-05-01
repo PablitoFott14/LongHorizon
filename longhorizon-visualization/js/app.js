@@ -46,14 +46,24 @@ let D = {}; // all loaded service data
 /* ════════════════════════════════════════════════════
    BOOTSTRAP
 ════════════════════════════════════════════════════ */
+/* Global navigation — called directly from onclick attributes */
+window.lhNav = function(pid) {
+  if (!pid) { renderList(); return; }
+  try {
+    renderDetail(pid);
+  } catch (err) {
+    document.getElementById('view').innerHTML =
+      '<div style="padding:24px;color:#f87171;font-size:13px">' +
+      '<b>Error rendering persona:</b> ' + err.message +
+      '<pre style="margin-top:10px;font-size:11px;color:#94a3b8">' + (err.stack||'') + '</pre>' +
+      '<button onclick="renderList()" style="margin-top:12px;padding:8px 16px;cursor:pointer">← Back</button>' +
+      '</div>';
+  }
+};
+
 document.addEventListener('DOMContentLoaded', async () => {
   await loadData();
   hideSplash();
-  /* Event delegation: any click on #view with data-pid navigates to that persona */
-  document.getElementById('view').addEventListener('click', e => {
-    const card = e.target.closest('[data-pid]');
-    if (card) renderDetail(card.dataset.pid);
-  });
   renderList();
 });
 
@@ -103,7 +113,7 @@ function renderList() {
     const orders = personaOrders(p.id).length;
     const garmin = (D.garmin?.daily_stats || []).filter(d => d.user_id === p.id).length;
     const whoop  = (D.whoop?.cycles || []).filter(c => c.persona_id === p.id).length;
-    return '<div class="persona-card" data-pid="' + p.id + '">' +
+    return '<div class="persona-card" onclick="lhNav(\'' + p.id + '\')" style="cursor:pointer">' +
       '<div class="persona-card-top">' +
         '<div class="avatar">' + p.initials + '</div>' +
         '<div>' +
@@ -143,7 +153,7 @@ function renderDetail(pid) {
   if (!p) { renderList(); return; }
 
   view(
-    '<div class="detail-back" onclick="renderList()">← All Personas</div>' +
+    '<div class="detail-back" onclick="lhNav(null)">← All Personas</div>' +
     '<div class="detail-hero">' +
       '<div class="hero-avatar">' + p.initials + '</div>' +
       '<div>' +
