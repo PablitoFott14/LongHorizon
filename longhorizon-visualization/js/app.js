@@ -43,16 +43,21 @@ const RELATIONS = {
 document.addEventListener("DOMContentLoaded", () => {
   main().catch((error) => {
     console.error(error);
-    setText("load-state", `Failed: ${error.message}`);
+    setStatus(`Failed: ${error.message}`);
     document.getElementById("personas-root").innerHTML = `<p class="empty">Failed to load JSON data.</p>`;
+    hideLoading();
   });
 });
 
 async function main() {
+  setupTabs();
   const data = await loadServices();
   const model = buildModel(data);
+  window.LH_MODEL = model;
   render(model);
-  setText("load-state", "Loaded from source JSON");
+  setStatus(`${model.totals.personas} personas · ${formatNumber(model.totals.mapped)} mapped records · ${model.totals.unmapped} unmapped`);
+  document.getElementById("status-dot")?.classList.add("live");
+  hideLoading();
 }
 
 async function loadServices() {
@@ -109,7 +114,10 @@ function buildModel(data) {
       shared: sumNestedCounts(shared),
       orders: sum(personaList.map((p) => p.summary.orderCount)),
       spend: sum(personaList.map((p) => p.summary.spend)),
+      healthRecords: sum(personaList.map((p) => p.summary.healthRecords)),
     },
+    categoryTotals: categoryTotals(personaList),
+    serviceTotals: serviceTotals(personaList),
   };
 }
 
@@ -374,22 +382,118 @@ function lifestyleSection(records) {
 }
 
 function render(model) {
-  setText("metric-personas", formatNumber(model.totals.personas));
-  setText("metric-records", formatNumber(model.totals.mapped));
-  setText("metric-orders", formatNumber(model.totals.orders));
-  setText("metric-unmapped", formatNumber(model.totals.unmapped));
-  renderPersonaNav(model.personas);
+  renderOverview(model);
+  renderPersonaTable(model.personas);
+  setupPersonaSearch(model.personas);
   renderPersonas(model.personas);
   renderAudit(model);
 }
 
-function renderPersonaNav(personas) {
-  document.getElementById("persona-nav").innerHTML = personas.map((persona) => `
-    <a href="#${persona.id}">
-      <span>${escapeHtml(persona.name)}</span>
-      <small>${persona.id} · ${persona.sources.length}/${Object.keys(SERVICES).length} services</small>
-    </a>
+function setupTabs() {
+  document.querySelectorAll(".tab").forEach((button) => {
+    button.addEventListener("click", () => navigateTo(button.dataset.tab));
+  });
+}
+
+function navigateTo(tab) {
+  document.querySelectorAll(".tab").forEach((button) => {
+    button.classList.toggle("active", button.dataset.tab === tab);
+  });
+  document.querySelectorAll(".page").forEach((page) => {
+    page.classList.toggle("active", page.id === `page-${tab}`);
+  });
+}
+
+function renderOverview(model) {
+  const cards = [
+    { label: "Personas", value: formatNumber(model.totals.personas), sub: `${model.totals.services} services loaded`, color: "#818cf8", icon: "P" },
+    { label: "Mapped Records", value: formatNumber(model.totals.mapped), sub: "Persona-owned rows", color: "#34d399", icon: "R" },
+    { label: "Orders", value: formatNumber(model.totals.orders), sub: money(model.totals.spend), color: "#fbbf24", icon: "$" },
+    { label: "Health Records", value: formatNumber(model.totals.healthRecords), sub: "Activity, sleep, body, nutrition", color: "#22d3ee", icon: "H" },
+    { label: "Shared Catalog Rows", value: formatNumber(model.totals.shared), sub: "Products, events, properties, foods", color: "#a78bfa", icon: "C" },
+    { label: "Unmapped Records", value: formatNumber(model.totals.unmapped), sub: "Should be zero", color: model.totals.unmapped ? "#f87171" : "#34d399", icon: "!" },
+  ];
+
+  document.getElementById("kpi-row").innerHTML = cards.map((card) => `
+    <div class="kpi-card" style="--accent:${card.color}">
+      <div class="kpi-icon">${escapeHtml(card.icon)}</div>
+      <div>
+        <div class="kpi-value">${escapeHtml(card.value)}</div>
+        <div class="kpi-label">${escapeHtml(card.label)}</div>
+        <div class="kpi-sub">${escapeHtml(card.sub)}</div>
+      </div>
+    </div>
   `).join("");
+
+  renderBars("category-bars", Object.entries(model.categoryTotals)
+    .map(([key, value]) => [titleCase(key), value])
+    .sort((a, b) => b[1] - a[1]));
+  renderBars("service-bars", Object.entries(model.serviceTotals)
+    .map(([key, value]) => [SERVICES[key].label, value])
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 12));
+  renderCoverageTable(model.personas);
+}
+
+function renderBars(id, rows) {
+  const max = Math.max(...rows.map(([, value]) => value), 1);
+  document.getElementById(id).innerHTML = rows.map(([label, value], index) => `
+    <div class="bar-row">
+      <strong>${escapeHtml(label)}</strong>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.max(2, (value / max) * 100)}%;background:${barColor(index)}"></div></div>
+      <span class="bar-value">${formatNumber(value)}</span>
+    </div>
+  `).join("");
+}
+
+function renderCoverageTable(personas) {
+  document.getElementById("coverage-table").innerHTML = `
+    <table class="data-table">
+      <thead><tr><th>Persona</th><th>ID</th><th>Services</th><th>Mapped Records</th><th>Orders</th><th>Health Records</th><th>Notes</th></tr></thead>
+      <tbody>${personas.map((persona) => `
+        <tr>
+          <td><a href="#${persona.id}" onclick="navigateTo('personas')"><strong>${escapeHtml(persona.name)}</strong></a></td>
+          <td class="mono">${escapeHtml(persona.id)}</td>
+          <td>${persona.sources.length}/${Object.keys(SERVICES).length}</td>
+          <td class="num">${formatNumber(persona.totalRecords)}</td>
+          <td class="num">${formatNumber(persona.summary.orderCount)}</td>
+          <td class="num">${formatNumber(persona.summary.healthRecords)}</td>
+          <td class="num">${formatNumber(persona.summary.notes)}</td>
+        </tr>
+      `).join("")}</tbody>
+    </table>
+  `;
+}
+
+function setupPersonaSearch(personas) {
+  const input = document.getElementById("persona-search");
+  input.addEventListener("input", () => renderPersonaTable(personas, input.value));
+}
+
+function renderPersonaTable(personas, query = "") {
+  const q = query.trim().toLowerCase();
+  const filtered = personas.filter((persona) =>
+    [persona.name, persona.email, persona.id, persona.location].some((value) => String(value || "").toLowerCase().includes(q))
+  );
+  setText("persona-count", `${filtered.length} of ${personas.length} personas`);
+  document.getElementById("personas-table").innerHTML = `
+    <table class="data-table">
+      <thead><tr><th>Persona</th><th>Email</th><th>Location</th><th>Services</th><th>Records</th><th>Orders</th><th>Spend</th><th>Health</th><th>Notes</th></tr></thead>
+      <tbody>${filtered.map((persona) => `
+        <tr>
+          <td><a href="#${persona.id}"><strong>${escapeHtml(persona.name)}</strong><div class="mono">${escapeHtml(persona.id)}</div></a></td>
+          <td>${escapeHtml(persona.email || "")}</td>
+          <td>${escapeHtml(persona.location || "")}</td>
+          <td>${persona.sources.length}/${Object.keys(SERVICES).length}</td>
+          <td class="num">${formatNumber(persona.totalRecords)}</td>
+          <td class="num">${formatNumber(persona.summary.orderCount)}</td>
+          <td class="num">${money(persona.summary.spend)}</td>
+          <td class="num">${formatNumber(persona.summary.healthRecords)}</td>
+          <td class="num">${formatNumber(persona.summary.notes)}</td>
+        </tr>
+      `).join("")}</tbody>
+    </table>
+  `;
 }
 
 function renderPersonas(personas) {
@@ -402,80 +506,109 @@ function renderPersona(persona) {
       <header class="persona-header">
         <div class="avatar">${escapeHtml(initials(persona.name))}</div>
         <div>
-          <h2>${escapeHtml(persona.name)}</h2>
+          <h3>${escapeHtml(persona.name)}</h3>
           <p>${escapeHtml([persona.id, persona.email, persona.location].filter(Boolean).join(" · "))}</p>
         </div>
+        <div class="persona-mini">${formatNumber(persona.totalRecords)} records<br>${persona.sources.length}/${Object.keys(SERVICES).length} services</div>
       </header>
 
-      <div class="quick-stats">
+      <div class="chain">
+        <section class="persona-section full-span">
+          <h4>Persona Summary</h4>
+          <div class="metric-grid">
         ${stat("Mapped records", formatNumber(persona.totalRecords))}
         ${stat("Services", `${persona.sources.length}/${Object.keys(SERVICES).length}`)}
         ${stat("Orders", formatNumber(persona.summary.orderCount))}
         ${stat("Spend", money(persona.summary.spend))}
         ${stat("Health records", formatNumber(persona.summary.healthRecords))}
         ${stat("Notes", formatNumber(persona.summary.notes))}
+          </div>
+        </section>
+
+        <section class="persona-section">
+          <h4>Data Coverage</h4>
+          <div class="source-list">${persona.sources.map((key) => `<span class="source-pill">${escapeHtml(SERVICES[key].label)}</span>`).join("")}</div>
+        </section>
+
+        <section class="persona-section">
+          <h4>Source Record Counts</h4>
+          <div class="dataset-list">${persona.sections.datasets.map(renderDatasetRow).join("")}</div>
+        </section>
+
+        <section class="persona-section full-span">
+          <h4>Health and Activity</h4>
+          ${renderHealthTable(persona.sections.health)}
+        </section>
+
+        <section class="persona-section full-span">
+          <h4>Purchases</h4>
+          ${renderShoppingTable(persona.sections.shopping)}
+        </section>
+
+        <section class="persona-section full-span">
+          <h4>Lifestyle, Housing, Events, Notes, Media</h4>
+          ${renderLifestyleTable(persona.sections.lifestyle)}
+        </section>
       </div>
-
-      <section class="persona-block">
-        <h3>Data Coverage</h3>
-        <div class="dataset-table">${persona.sections.datasets.map(renderDatasetRow).join("")}</div>
-      </section>
-
-      <section class="persona-block">
-        <h3>Health and Activity</h3>
-        <div class="section-grid">${persona.sections.health.map(renderMetricPanel).join("") || emptyPanel("No health records")}</div>
-      </section>
-
-      <section class="persona-block">
-        <h3>Purchases</h3>
-        <div class="section-grid">${persona.sections.shopping.map(renderShoppingPanel).join("") || emptyPanel("No purchases")}</div>
-      </section>
-
-      <section class="persona-block">
-        <h3>Lifestyle and Reference Apps</h3>
-        <div class="section-grid">${persona.sections.lifestyle.map(renderFactPanel).join("") || emptyPanel("No lifestyle records")}</div>
-      </section>
     </article>
   `;
 }
 
 function renderDatasetRow(row) {
   return `
-    <div class="dataset-row">
+    <div class="dataset-line">
       <strong>${escapeHtml(row.service)}</strong>
       <span>${row.datasets.map(([name, value]) => `${escapeHtml(name)} ${formatNumber(value)}`).join(" · ")}</span>
     </div>
   `;
 }
 
-function renderMetricPanel(section) {
+function renderHealthTable(rows) {
+  if (!rows.length) return `<p class="empty">No health records.</p>`;
   return `
-    <div class="mini-panel">
-      <h4>${escapeHtml(section.label)}</h4>
-      <p>${formatNumber(section.count)} mapped records</p>
-      <dl>${section.facts.map((fact) => `<div><dt>${escapeHtml(fact.name)}</dt><dd>${escapeHtml(String(fact.value))}</dd></div>`).join("")}</dl>
-    </div>
+    <table class="mini-table">
+      <thead><tr><th>Service</th><th>Mapped Records</th><th>Metrics</th></tr></thead>
+      <tbody>${rows.map((section) => `
+        <tr>
+          <td><span class="badge badge-health">${escapeHtml(section.label)}</span></td>
+          <td class="num">${formatNumber(section.count)}</td>
+          <td>${section.facts.map((fact) => `${escapeHtml(fact.name)}: <strong>${escapeHtml(String(fact.value))}</strong>`).join(" · ")}</td>
+        </tr>
+      `).join("")}</tbody>
+    </table>
   `;
 }
 
-function renderShoppingPanel(section) {
+function renderShoppingTable(rows) {
+  if (!rows.length) return `<p class="empty">No purchase records.</p>`;
   return `
-    <div class="mini-panel">
-      <h4>${escapeHtml(section.label)}</h4>
-      <p>${formatNumber(section.orders)} orders · ${formatNumber(section.items)} items · ${money(section.spend)}</p>
-      <ul class="compact-list">${section.recent.map((row) => `
-        <li><span>${escapeHtml(row.date)}</span><strong>${escapeHtml(row.total)}</strong><em>${escapeHtml(row.status)}</em></li>
-      `).join("")}</ul>
-    </div>
+    <table class="mini-table">
+      <thead><tr><th>Service</th><th>Orders</th><th>Items</th><th>Spend</th><th>Recent Orders</th></tr></thead>
+      <tbody>${rows.map((section) => `
+        <tr>
+          <td><span class="badge badge-shopping">${escapeHtml(section.label)}</span></td>
+          <td class="num">${formatNumber(section.orders)}</td>
+          <td class="num">${formatNumber(section.items)}</td>
+          <td class="num">${money(section.spend)}</td>
+          <td>${section.recent.map((row) => `${escapeHtml(row.date)} ${escapeHtml(row.total)} ${escapeHtml(row.status)}`).join(" · ")}</td>
+        </tr>
+      `).join("")}</tbody>
+    </table>
   `;
 }
 
-function renderFactPanel(section) {
+function renderLifestyleTable(rows) {
+  if (!rows.length) return `<p class="empty">No lifestyle records.</p>`;
   return `
-    <div class="mini-panel">
-      <h4>${escapeHtml(section.label)}</h4>
-      <dl>${section.facts.map(([name, value]) => `<div><dt>${escapeHtml(name)}</dt><dd>${escapeHtml(String(value))}</dd></div>`).join("")}</dl>
-    </div>
+    <table class="mini-table">
+      <thead><tr><th>Service</th><th>Details</th></tr></thead>
+      <tbody>${rows.map((section) => `
+        <tr>
+          <td><span class="badge badge-lifestyle">${escapeHtml(section.label)}</span></td>
+          <td>${section.facts.map(([name, value]) => `${escapeHtml(name)}: <strong>${escapeHtml(String(value))}</strong>`).join(" · ")}</td>
+        </tr>
+      `).join("")}</tbody>
+    </table>
   `;
 }
 
@@ -581,11 +714,7 @@ function sumNestedCounts(groups) {
 }
 
 function stat(label, value) {
-  return `<div><strong>${escapeHtml(String(value))}</strong><span>${escapeHtml(label)}</span></div>`;
-}
-
-function emptyPanel(text) {
-  return `<div class="mini-panel"><p>${escapeHtml(text)}</p></div>`;
+  return `<div class="metric-tile"><strong>${escapeHtml(String(value))}</strong><span>${escapeHtml(label)}</span></div>`;
 }
 
 function initials(name) {
@@ -624,6 +753,45 @@ function shortDate(value) {
 function setText(id, value) {
   const element = document.getElementById(id);
   if (element) element.textContent = value;
+}
+
+function setStatus(value) {
+  setText("status-text", value);
+}
+
+function hideLoading() {
+  const overlay = document.getElementById("loading-overlay");
+  if (!overlay) return;
+  overlay.classList.add("hidden");
+  setTimeout(() => overlay.remove(), 300);
+}
+
+function categoryTotals(personas) {
+  const totals = { health: 0, shopping: 0, lifestyle: 0 };
+  for (const persona of personas) {
+    for (const [serviceKey, datasets] of Object.entries(persona.datasetCounts)) {
+      totals[SERVICES[serviceKey].category] += sum(Object.values(datasets));
+    }
+  }
+  return totals;
+}
+
+function serviceTotals(personas) {
+  const totals = {};
+  for (const persona of personas) {
+    for (const [serviceKey, datasets] of Object.entries(persona.datasetCounts)) {
+      totals[serviceKey] = (totals[serviceKey] || 0) + sum(Object.values(datasets));
+    }
+  }
+  return totals;
+}
+
+function barColor(index) {
+  return ["#818cf8", "#34d399", "#fbbf24", "#a78bfa", "#22d3ee", "#f87171"][index % 6];
+}
+
+function titleCase(value) {
+  return String(value).replace(/(^|-)([a-z])/g, (match) => match.toUpperCase()).replaceAll("-", " ");
 }
 
 function escapeHtml(value) {

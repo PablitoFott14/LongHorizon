@@ -3,60 +3,81 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LongHorizon Data Visualizer</title>
+  <title>LongHorizon - Data Visualization</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <header class="topbar">
-    <div class="topbar-inner">
-      <a class="brand" href="./">LongHorizon</a>
-      <nav class="topnav" aria-label="Primary">
-        <a href="#personas">Personas</a>
-        <a href="#audit">Mapping Audit</a>
+  <header class="header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-logo">LH</div>
+        <div class="brand-name">
+          <span>LongHorizon</span>
+          <small>OpenClaw Persona Universe</small>
+        </div>
+      </div>
+
+      <nav class="tabs" aria-label="Primary">
+        <button class="tab active" data-tab="overview">Overview</button>
+        <button class="tab" data-tab="personas">Personas</button>
+        <button class="tab" data-tab="audit">Mapping Audit</button>
       </nav>
+
+      <div class="hdr-right">
+        <span class="pulse-dot" id="status-dot"></span>
+        <span class="status-text" id="status-text">Loading...</span>
+      </div>
     </div>
   </header>
 
-  <main class="shell">
-    <section class="hero">
-      <div>
-        <p class="eyebrow">OpenClaw universe</p>
-        <h1>Persona Data Visualizer</h1>
-        <p>Every section is built directly from the JSON files. Persona ownership is assigned only by explicit persona IDs or strict service-local joins.</p>
+  <main class="main">
+    <section class="page active" id="page-overview">
+      <div class="page-title">
+        <h2>Overview</h2>
+        <p>Source-backed summary of personas, mapped records, service coverage, and data ownership.</p>
       </div>
-      <div id="load-state" class="load-state">Loading JSON...</div>
-    </section>
-
-    <section class="summary" aria-label="Universe summary">
-      <div class="metric"><strong id="metric-personas">0</strong><span>Personas</span></div>
-      <div class="metric"><strong id="metric-records">0</strong><span>Mapped Records</span></div>
-      <div class="metric"><strong id="metric-orders">0</strong><span>Orders</span></div>
-      <div class="metric"><strong id="metric-unmapped">0</strong><span>Unmapped Records</span></div>
-    </section>
-
-    <div class="content-layout">
-      <aside class="side-panel" aria-label="Persona navigation">
-        <h2>Personas</h2>
-        <div id="persona-nav" class="persona-nav"></div>
-      </aside>
-
-      <section id="personas" class="personas-section">
-        <div class="section-head">
-          <h2>Complete Persona Views</h2>
-          <p>Each persona uses the same structure: coverage, health/activity, purchases, and lifestyle/reference apps.</p>
+      <div class="kpi-row" id="kpi-row"></div>
+      <div class="grid-2">
+        <div class="card">
+          <h4>Mapped Records by Category</h4>
+          <div id="category-bars" class="bar-list"></div>
         </div>
-        <div id="personas-root" class="persona-list"></div>
-      </section>
-    </div>
+        <div class="card">
+          <h4>Service Record Volume</h4>
+          <div id="service-bars" class="bar-list"></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <h4>Persona Coverage</h4>
+        <div id="coverage-table"></div>
+      </div>
+    </section>
 
-    <section id="audit" class="audit-section">
-      <div class="section-head">
+    <section class="page" id="page-personas">
+      <div class="page-title">
+        <h2>Personas</h2>
+        <p>Each row links to a complete persona detail block with consistent health, purchase, lifestyle, and source-record sections.</p>
+      </div>
+      <div class="explorer-bar">
+        <input id="persona-search" class="ex-search" type="text" placeholder="Search persona name, email, or ID..." />
+        <span class="ex-count" id="persona-count"></span>
+      </div>
+      <div class="table-wrap" id="personas-table"></div>
+      <div class="detail-stack" id="personas-root"></div>
+    </section>
+
+    <section class="page" id="page-audit">
+      <div class="page-title">
         <h2>Mapping Audit</h2>
-        <p>Shared catalogs are separated from records that should belong to a persona but have no verified ownership link.</p>
+        <p>Explicit rules used to keep persona ownership strict, plus shared catalog counts and unmapped records.</p>
       </div>
       <div id="audit-root" class="audit-grid"></div>
     </section>
   </main>
+
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loader-box"><div class="spinner"></div><p>Loading LongHorizon Universe...</p></div>
+  </div>
 
   <script src="js/app.js"></script>
 </body>
