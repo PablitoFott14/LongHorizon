@@ -98,7 +98,38 @@ window.toggleItems = function(id) {
 };
 
 /* ════ BOOTSTRAP ════ */
+function initChartTooltip() {
+  if (document.getElementById('chart-tooltip')) return;
+  const tip = document.createElement('div');
+  tip.id = 'chart-tooltip';
+  tip.className = 'chart-tooltip hidden';
+  document.body.appendChild(tip);
+
+  function move(e) {
+    tip.style.left = Math.min(e.clientX + 14, window.innerWidth - tip.offsetWidth - 12) + 'px';
+    tip.style.top = Math.min(e.clientY + 14, window.innerHeight - tip.offsetHeight - 12) + 'px';
+  }
+  document.addEventListener('mouseover', e => {
+    const mark = e.target.closest?.('[data-tip]');
+    if (!mark) return;
+    tip.textContent = mark.getAttribute('data-tip') || '';
+    tip.classList.remove('hidden');
+    mark.classList.add('is-hovered');
+    move(e);
+  });
+  document.addEventListener('mousemove', e => {
+    if (!tip.classList.contains('hidden')) move(e);
+  });
+  document.addEventListener('mouseout', e => {
+    const mark = e.target.closest?.('[data-tip]');
+    if (!mark) return;
+    mark.classList.remove('is-hovered');
+    tip.classList.add('hidden');
+  });
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
+  initChartTooltip();
   await loadData();
   hideSplash();
   renderList();
@@ -209,10 +240,9 @@ function buildServiceCard(pid, key) {
     '</div>'
   ).join('');
 
-  const chart = sum.chart ? trendChart(sum.chart, 'card') :
-    (sum.sparkValues && sum.sparkValues.length >= 2
+  const chart = sum.sparkValues && sum.sparkValues.length >= 2
       ? '<div class="svc-spark">'+sparkline(sum.sparkValues, sm.color)+'</div>'
-      : '');
+      : '';
 
   return '<div class="svc-card" onclick="openServiceModal(\''+pid+'\',\''+key+'\')">' +
     '<div class="svc-card-hdr">' +
@@ -546,6 +576,464 @@ function trendChart(chart, size) {
   '</div>';
 }
 
+function modalVisuals(pid, key) {
+  const charts = [];
+  switch (key) {
+    case 'garmin': {
+      const daily = byDate((D.garmin?.daily_stats||[]).filter(r=>r.user_id===pid), 'date');
+      const hr = byDate((D.garmin?.heart_rate||[]).filter(r=>r.user_id===pid), 'date');
+      const hrv = byDate((D.garmin?.hrv||[]).filter(r=>r.user_id===pid), 'date');
+      const sleep = byDate((D.garmin?.sleep||[]).filter(r=>r.user_id===pid), 'date');
+      charts.push(
+        lineViz('Steps by day', 'Date', 'Steps', takeLast(daily, 30).map(r=>pt(r.date, r.steps)), '#22c55e', true),
+        lineViz('Calories by day', 'Date', 'kcal', takeLast(daily, 30).map(r=>pt(r.date, r.calories_total)), '#f59e0b', true),
+        lineViz('Resting heart rate by day', 'Date', 'bpm', takeLast(hr, 30).map(r=>pt(r.date, r.resting_hr)), '#f87171', false),
+        lineViz('HRV last night by day', 'Date', 'ms', takeLast(hrv, 30).map(r=>pt(r.date, r.hrv_last_night)), '#818cf8', false),
+        lineViz('Sleep score by night', 'Date', 'Score', takeLast(sleep, 30).map(r=>pt(r.date, r.sleep_score)), '#38bdf8', false),
+        stackedBarViz('Sleep stages by night', 'Date', 'Hours', takeLast(sleep, 14).map(r=>({
+          x:r.date,
+          values:{
+            Deep:(r.deep_sleep_minutes||0)/60,
+            Light:(r.light_sleep_minutes||0)/60,
+            REM:(r.rem_sleep_minutes||0)/60,
+            Awake:(r.awake_minutes||0)/60,
+          }
+        })), [
+          {key:'Deep', color:'#312e81'},
+          {key:'Light', color:'#60a5fa'},
+          {key:'REM', color:'#a78bfa'},
+          {key:'Awake', color:'#f97316'},
+        ])
+      );
+      break;
+    }
+    case 'whoop': {
+      const rec = byDate((D.whoop?.recovery||[]).filter(r=>r.persona_id===pid), 'timestamp');
+      const cycles = byDate((D.whoop?.cycles||[]).filter(r=>r.persona_id===pid), 'start_time');
+      const sleep = byDate((D.whoop?.sleep||[]).filter(r=>r.persona_id===pid && !r.nap), 'start_time');
+      charts.push(
+        lineViz('Recovery score by day', 'Date', 'Score %', takeLast(rec, 30).map(r=>pt(dateOnly(r.timestamp), r.recovery_score)), '#22c55e', false),
+        lineViz('HRV by day', 'Date', 'ms', takeLast(rec, 30).map(r=>pt(dateOnly(r.timestamp), r.hrv_rmssd)), '#818cf8', false),
+        lineViz('Resting heart rate by day', 'Date', 'bpm', takeLast(rec, 30).map(r=>pt(dateOnly(r.timestamp), r.resting_heart_rate)), '#f87171', false),
+        lineViz('Strain by cycle', 'Date', 'Strain', takeLast(cycles, 30).map(r=>pt(dateOnly(r.start_time), r.strain)), '#f59e0b', true),
+        stackedBarViz('Sleep stages by night', 'Date', 'Hours', takeLast(sleep, 14).map(r=>({
+          x:dateOnly(r.start_time),
+          values:{
+            Slow:(r.total_slow_wave_sleep_ms||0)/3600000,
+            Light:(r.total_light_sleep_ms||0)/3600000,
+            REM:(r.total_rem_sleep_ms||0)/3600000,
+            Awake:(r.total_awake_ms||0)/3600000,
+          }
+        })), [
+          {key:'Slow', color:'#312e81'},
+          {key:'Light', color:'#60a5fa'},
+          {key:'REM', color:'#a78bfa'},
+          {key:'Awake', color:'#f97316'},
+        ])
+      );
+      break;
+    }
+    case 'apple-health': {
+      const ah = D['apple-health']||{};
+      const steps = byDate((ah.step_records||[]).filter(r=>r.user_id===pid), 'date');
+      const act = byDate((ah.activity_summaries||[]).filter(r=>r.user_id===pid), 'date');
+      const rhr = byDate((ah.resting_heart_rate_records||[]).filter(r=>r.user_id===pid), 'date');
+      const hrv = byDate((ah.hrv_records||[]).filter(r=>r.user_id===pid), 'date');
+      const bm = byDate((ah.body_mass_records||[]).filter(r=>r.user_id===pid), 'date');
+      const sleep = appleSleepNights((ah.sleep_records||[]).filter(r=>r.user_id===pid));
+      charts.push(
+        lineViz('Steps by day', 'Date', 'Steps', takeLast(steps, 30).map(r=>pt(r.date, r.total_steps)), '#ff375f', true),
+        lineViz('Active energy by day', 'Date', 'kcal', takeLast(act, 30).map(r=>pt(r.date, r.active_energy_kcal)), '#f59e0b', true),
+        lineViz('Resting heart rate by day', 'Date', 'bpm', takeLast(rhr, 30).map(r=>pt(dateOnly(r.date), r.value)), '#f87171', false),
+        lineViz('HRV by day', 'Date', 'ms', takeLast(hrv, 30).map(r=>pt(dateOnly(r.date), r.value)), '#818cf8', false),
+        stackedBarViz('Sleep stages by night', 'Date', 'Hours', takeLast(sleep, 14).map(r=>({x:r.date, values:r.values})), [
+          {key:'Deep', color:'#312e81'},
+          {key:'Core', color:'#60a5fa'},
+          {key:'REM', color:'#a78bfa'},
+          {key:'Awake', color:'#f97316'},
+        ]),
+        lineViz('Body mass by date', 'Date', 'kg', takeLast(bm, 20).map(r=>pt(dateOnly(r.date), r.value)), '#34d399', false)
+      );
+      break;
+    }
+    case 'fitbit': {
+      const daily = byDate((D.fitbit?.daily_stats||[]).filter(r=>r.user_id===pid), 'date');
+      const hr = byDate((D.fitbit?.heart_rate_summaries||[]).filter(r=>r.user_id===pid), 'date');
+      const sleep = byDate((D.fitbit?.sleep_logs||[]).filter(r=>r.user_id===pid), 'date');
+      const body = byDate((D.fitbit?.body_measurements||[]).filter(r=>r.user_id===pid), 'date');
+      charts.push(
+        lineViz('Steps by day', 'Date', 'Steps', takeLast(daily, 30).map(r=>pt(r.date, r.steps)), '#00b0b9', true),
+        lineViz('Active zone minutes by day', 'Date', 'Minutes', takeLast(daily, 30).map(r=>pt(r.date, r.active_zone_minutes)), '#f59e0b', true),
+        lineViz('Resting heart rate by day', 'Date', 'bpm', takeLast(hr, 30).map(r=>pt(r.date, r.resting_heart_rate)), '#f87171', false),
+        stackedBarViz('Sleep stages by night', 'Date', 'Hours', takeLast(sleep, 14).map(r=>({
+          x:r.date,
+          values:{
+            Deep:(r.deep_minutes||0)/60,
+            Light:(r.light_minutes||0)/60,
+            REM:(r.rem_minutes||0)/60,
+            Wake:(r.wake_minutes||r.minutes_awake||0)/60,
+          }
+        })), [
+          {key:'Deep', color:'#312e81'},
+          {key:'Light', color:'#60a5fa'},
+          {key:'REM', color:'#a78bfa'},
+          {key:'Wake', color:'#f97316'},
+        ]),
+        lineViz('Weight by date', 'Date', 'kg', takeLast(body, 20).map(r=>pt(r.date, r.weight)), '#34d399', false)
+      );
+      break;
+    }
+    case 'eight-sleep': {
+      const sess = byDate((D['eight-sleep']?.sleep_sessions||[]).filter(r=>r.persona_id===pid), 'start_time');
+      charts.push(
+        lineViz('Sleep fitness score by night', 'Date', 'Score', takeLast(sess, 30).map(r=>pt(dateOnly(r.start_time||r.session_date), r.sleep_fitness_score??r.sleep_score)), '#818cf8', false),
+        lineViz('HRV by night', 'Date', 'ms', takeLast(sess, 30).map(r=>pt(dateOnly(r.start_time||r.session_date), r.hrv_ms??r.hrv)), '#38bdf8', false),
+        lineViz('Respiratory rate by night', 'Date', 'br/min', takeLast(sess, 30).map(r=>pt(dateOnly(r.start_time||r.session_date), r.respiratory_rate)), '#f59e0b', false),
+        stackedBarViz('Sleep stages by night', 'Date', 'Hours', takeLast(sess, 14).map(r=>({
+          x:dateOnly(r.start_time||r.session_date),
+          values:{
+            Deep:(r.deep_duration_s||0)/3600,
+            Light:(r.light_duration_s||0)/3600,
+            REM:(r.rem_duration_s||0)/3600,
+            Awake:(r.awake_duration_s||0)/3600,
+          }
+        })), [
+          {key:'Deep', color:'#312e81'},
+          {key:'Light', color:'#60a5fa'},
+          {key:'REM', color:'#a78bfa'},
+          {key:'Awake', color:'#f97316'},
+        ])
+      );
+      break;
+    }
+    case 'strava': {
+      const acts = byDate((D.strava?.activities||[]).filter(r=>r.user_id===pid), 'start_date');
+      charts.push(
+        barViz('Distance by recent activity', 'Activity date', 'km', takeLast(acts, 14).map(r=>pt(dateOnly(r.start_date), (r.distance||0)/1000, r.name)), '#fc4c02'),
+        lineViz('Average heart rate by activity', 'Activity date', 'bpm', takeLast(acts, 30).map(r=>pt(dateOnly(r.start_date), r.average_heartrate, r.name)), '#f87171', false),
+        barViz('Elevation gain by recent activity', 'Activity date', 'm', takeLast(acts, 14).map(r=>pt(dateOnly(r.start_date), r.total_elevation_gain, r.name)), '#22c55e')
+      );
+      break;
+    }
+    case 'myfitnesspal': {
+      const agg = mfpDaily(pid);
+      charts.push(
+        lineViz('Logged calories by day', 'Date', 'kcal', takeLast(agg, 30).map(r=>pt(r.date, r.calories)), '#4ca2cd', true),
+        stackedBarViz('Macros by day', 'Date', 'grams', takeLast(agg, 14).map(r=>({x:r.date, values:{Protein:r.protein, Carbs:r.carbs, Fat:r.fat}})), [
+          {key:'Protein', color:'#22c55e'},
+          {key:'Carbs', color:'#38bdf8'},
+          {key:'Fat', color:'#f59e0b'},
+        ]),
+        lineViz('Exercise calories burned by day', 'Date', 'kcal', takeLast(agg, 30).map(r=>pt(r.date, r.exerciseCalories)), '#f97316', true),
+        lineViz('Water logged by day', 'Date', 'ml', takeLast(agg, 30).map(r=>pt(r.date, r.waterMl)), '#38bdf8', true)
+      );
+      break;
+    }
+    case 'renpho': {
+      const rows = byDate((D.renpho?.measurements||[]).filter(r=>r.persona_id===pid), 'timestamp');
+      charts.push(
+        lineViz('Weight by date', 'Date', 'kg', takeLast(rows, 30).map(r=>pt(dateOnly(r.timestamp), r.weight)), '#34d399', false),
+        lineViz('Body fat by date', 'Date', '%', takeLast(rows, 30).map(r=>pt(dateOnly(r.timestamp), r.body_fat)), '#f87171', false),
+        lineViz('Muscle mass by date', 'Date', 'kg', takeLast(rows, 30).map(r=>pt(dateOnly(r.timestamp), r.muscle_mass)), '#22c55e', false),
+        lineViz('Water percentage by date', 'Date', '%', takeLast(rows, 30).map(r=>pt(dateOnly(r.timestamp), r.water_percentage)), '#38bdf8', false)
+      );
+      break;
+    }
+    case 'amazon': case 'walmart': case 'target':
+    case 'instacart': case 'fresh-direct': case 'amazon-fresh': {
+      charts.push(...shoppingVisuals(pid, key));
+      break;
+    }
+    case 'ticketmaster': {
+      const tm = D.ticketmaster||{};
+      const orders = byDate((tm.orders||[]).filter(o=>o.user_id===pid), 'purchased_at');
+      const eMap={}; (tm.events||[]).forEach(e=>{eMap[e.id]=e;});
+      charts.push(
+        barViz('Ticket order spend by purchase date', 'Purchase date', '$', takeLast(orders, 14).map(o=>pt(dateOnly(o.purchased_at), o.total_price||o.subtotal, o.confirmation_code)), '#ef4444'),
+        barViz('Tickets per order', 'Purchase date', 'Qty', takeLast(orders, 14).map(o=>pt(dateOnly(o.purchased_at), o.quantity, eMap[o.event_id]?.name)), '#f59e0b'),
+        barViz('Orders by event genre', 'Genre', 'Orders', countsToPoints(countBy(orders, o=>eMap[o.event_id]?.genre||'Unknown')), '#8b5cf6')
+      );
+      break;
+    }
+    case 'zillow': {
+      const zd = D.zillow||{};
+      const pMap={}; (zd.properties||[]).forEach(p=>{pMap[p.id]=p;});
+      const saved = (zd.saved_properties||[]).filter(s=>s.user_id===pid);
+      const props = saved.map(s=>Object.assign({saved_at:s.saved_at}, pMap[s.property_id]||{})).filter(p=>p.id);
+      charts.push(
+        barViz('Saved property prices', 'Property', '$', props.slice(0, 12).map(p=>pt(shortAddress(p.address), p.price, p.address)), '#38bdf8'),
+        barViz('Saved properties by type', 'Home type', 'Count', countsToPoints(countBy(props, p=>p.home_type||'Unknown')), '#22c55e'),
+        barViz('Scheduled tours by status', 'Status', 'Tours', countsToPoints(countBy((zd.scheduled_tours||[]).filter(t=>t.user_id===pid), t=>t.status||'Unknown')), '#f59e0b')
+      );
+      break;
+    }
+    case 'sonos': {
+      const sn = D.sonos||{};
+      const spks = (sn.speakers||[]).filter(s=>s.user_id===pid);
+      const favs = (sn.favorites||[]).filter(f=>f.user_id===pid);
+      charts.push(
+        barViz('Speaker volume by room', 'Room', 'Volume %', spks.map(s=>pt(s.room||s.speaker_id, s.volume, s.model)), '#14b8a6'),
+        barViz('Favorites by type', 'Type', 'Favorites', countsToPoints(countBy(favs, f=>f.type||'Unknown')), '#8b5cf6'),
+        barViz('Speakers by playback state', 'State', 'Speakers', countsToPoints(countBy(spks, s=>s.playback_state||'Unknown')), '#38bdf8')
+      );
+      break;
+    }
+    case 'obsidian': {
+      const ob = D.obsidian||{};
+      const notes = (ob.notes||[]).filter(n=>n.user_id===pid);
+      const tags = (ob.tags||[]).filter(t=>t.user_id===pid);
+      charts.push(
+        barViz('Notes by folder', 'Folder', 'Notes', countsToPoints(countBy(notes, n=>n.folder||'Root')), '#8b5cf6'),
+        barViz('Largest notes by size', 'Note', 'Bytes', notes.slice().sort((a,b)=>(b.size_bytes||0)-(a.size_bytes||0)).slice(0,12).map(n=>pt(n.title||n.path, n.size_bytes, n.path)), '#38bdf8'),
+        barViz('Top tags', 'Tag', 'Uses', countsToPoints(countBy(tags, t=>t.tag||'Unknown')).slice(0,12), '#22c55e')
+      );
+      break;
+    }
+    case 'logistics': {
+      const lg = D.logistics||{};
+      const ships = byDate((lg.shipments||[]).filter(s=>s.user_id===pid), 'created_at');
+      const evCount = {};
+      (lg.tracking_events||[]).forEach(e=>{ evCount[e.tracking_number]=(evCount[e.tracking_number]||0)+1; });
+      charts.push(
+        barViz('Shipments by status', 'Status', 'Shipments', countsToPoints(countBy(ships, s=>s.status||'Unknown')), '#14b8a6'),
+        barViz('Shipments by carrier', 'Carrier', 'Shipments', countsToPoints(countBy(ships, s=>s.carrier||'Unknown')), '#38bdf8'),
+        barViz('Tracking events per recent shipment', 'Created date', 'Events', takeLast(ships, 14).map(s=>pt(dateOnly(s.created_at), evCount[s.tracking_number]||0, s.tracking_number)), '#f59e0b')
+      );
+      break;
+    }
+  }
+  return chartPanel(charts);
+}
+
+function chartPanel(charts) {
+  const html = (charts||[]).filter(Boolean).join('');
+  return html ? '<div class="viz-section"><div class="sub-heading">Visual Summary</div><div class="viz-grid">'+html+'</div></div>' : '';
+}
+
+function lineViz(title, xLabel, yLabel, points, color, zeroBase) {
+  const clean = cleanPoints(points);
+  if (clean.length < 2) return '';
+  return svgViz('line', {title, xLabel, yLabel, series:[{label:yLabel, color, points:clean}], zeroBase:!!zeroBase});
+}
+
+function barViz(title, xLabel, yLabel, points, color) {
+  const clean = cleanPoints(points);
+  if (!clean.length) return '';
+  return svgViz('bar', {title, xLabel, yLabel, series:[{label:yLabel, color, points:clean}], zeroBase:true});
+}
+
+function stackedBarViz(title, xLabel, yLabel, rows, stacks) {
+  const cleanRows = (rows||[]).map(r => ({
+    x: r.x,
+    values: Object.fromEntries(Object.entries(r.values||{}).map(([k,v])=>[k, Number(v)||0]))
+  })).filter(r => Object.values(r.values).some(v=>v>0));
+  if (!cleanRows.length || !stacks?.length) return '';
+
+  const W=640, H=250, L=58, R=18, T=28, B=58;
+  const plotW=W-L-R, plotH=H-T-B;
+  const totals = cleanRows.map(r=>stacks.reduce((s,st)=>s+(r.values[st.key]||0),0));
+  const bounds = axisBounds(totals, true);
+  const yMin = bounds.min, yMax = bounds.max;
+  const ticks = yTicks(yMin, yMax, 4);
+  const barGap = 6;
+  const barW = Math.max(8, (plotW / cleanRows.length) - barGap);
+  let body = gridSvg(W,H,L,R,T,B,ticks,yMin,yMax,xLabel,yLabel,cleanRows.map(r=>r.x));
+
+  cleanRows.forEach((r,i) => {
+    const x = L + i * (plotW / cleanRows.length) + barGap/2;
+    let yCursor = T + plotH;
+    stacks.forEach(st => {
+      const val = r.values[st.key]||0;
+      if (!val) return;
+      const h = (val / yMax) * plotH;
+      yCursor -= h;
+      body += '<rect class="viz-mark" data-tip="'+esc(chartTip(title, xLabel, r.x, yLabel, val, st.key))+'" x="'+x.toFixed(1)+'" y="'+yCursor.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+Math.max(1,h).toFixed(1)+'" fill="'+st.color+'"></rect>';
+    });
+  });
+  const legend = stacks.map(st=>'<span style="--legend-color:'+st.color+'">'+esc(st.key)+'</span>').join('');
+  return '<div class="viz-card"><div class="viz-title">'+esc(title)+'</div><svg class="viz-svg" viewBox="0 0 '+W+' '+H+'">'+body+'</svg><div class="trend-chart-legend">'+legend+'</div></div>';
+}
+
+function svgViz(type, cfg) {
+  const W=640, H=240, L=58, R=18, T=28, B=58;
+  const plotW=W-L-R, plotH=H-T-B;
+  const points = cfg.series.flatMap(s=>s.points);
+  const bounds = axisBounds(points.map(p=>p.y), cfg.zeroBase);
+  const yMin = bounds.min, yMax = bounds.max;
+  const ticks = yTicks(yMin, yMax, 4);
+  const labels = cfg.series[0].points.map(p=>p.x);
+  let body = gridSvg(W,H,L,R,T,B,ticks,yMin,yMax,cfg.xLabel,cfg.yLabel,labels);
+  const yFor = v => T + ((yMax - v) / (yMax - yMin)) * plotH;
+
+  if (type === 'line') {
+    cfg.series.forEach(series => {
+      const xFor = i => L + (series.points.length === 1 ? plotW/2 : (i/(series.points.length-1))*plotW);
+      const d = series.points.map((p,i)=>xFor(i).toFixed(1)+','+yFor(p.y).toFixed(1)).join(' ');
+      body += '<polyline points="'+d+'" fill="none" stroke="'+series.color+'" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>';
+      body += series.points.map((p,i)=>'<circle class="viz-dot" cx="'+xFor(i).toFixed(1)+'" cy="'+yFor(p.y).toFixed(1)+'" r="3" fill="'+series.color+'"></circle>').join('');
+      body += series.points.map((p,i)=>'<circle class="viz-hit" data-tip="'+esc(chartTip(cfg.title, cfg.xLabel, p.x, cfg.yLabel, p.y, p.label || series.label))+'" cx="'+xFor(i).toFixed(1)+'" cy="'+yFor(p.y).toFixed(1)+'" r="8" fill="transparent"></circle>').join('');
+    });
+  } else {
+    const pts = cfg.series[0].points;
+    const step = plotW / pts.length;
+    const barW = Math.max(8, step - 8);
+    pts.forEach((p,i) => {
+      const x = L + i*step + (step-barW)/2;
+      const y = yFor(Math.max(0,p.y));
+      const h = Math.max(1, T + plotH - y);
+      const showLabel = pts.length <= 12;
+      body += '<rect class="viz-mark" data-tip="'+esc(chartTip(cfg.title, cfg.xLabel, p.x, cfg.yLabel, p.y, p.label))+'" x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="2" fill="'+cfg.series[0].color+'"></rect>';
+      if (showLabel) body += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+Math.max(T+10,y-5).toFixed(1)+'" text-anchor="middle" class="viz-value">'+esc(compactNumber(p.y))+'</text>';
+    });
+  }
+  return '<div class="viz-card"><div class="viz-title">'+esc(cfg.title)+'</div><svg class="viz-svg" viewBox="0 0 '+W+' '+H+'">'+body+'</svg></div>';
+}
+
+function gridSvg(W,H,L,R,T,B,ticks,yMin,yMax,xLabel,yLabel,xLabels) {
+  const plotW=W-L-R, plotH=H-T-B;
+  let s = '<rect x="0" y="0" width="'+W+'" height="'+H+'" fill="transparent"/>';
+  ticks.forEach(t => {
+    const y = T + ((yMax - t) / (yMax - yMin)) * plotH;
+    s += '<line x1="'+L+'" y1="'+y.toFixed(1)+'" x2="'+(W-R)+'" y2="'+y.toFixed(1)+'" class="viz-grid-line"/>';
+    s += '<text x="'+(L-8)+'" y="'+(y+4).toFixed(1)+'" text-anchor="end" class="viz-axis">'+esc(compactNumber(t))+'</text>';
+  });
+  s += '<line x1="'+L+'" y1="'+(T+plotH)+'" x2="'+(W-R)+'" y2="'+(T+plotH)+'" class="viz-axis-line"/>';
+  s += '<line x1="'+L+'" y1="'+T+'" x2="'+L+'" y2="'+(T+plotH)+'" class="viz-axis-line"/>';
+  const idxs = labelIndexes(xLabels.length);
+  idxs.forEach(i => {
+    const x = L + (xLabels.length <= 1 ? plotW/2 : (i/(xLabels.length-1))*plotW);
+    s += '<text x="'+x.toFixed(1)+'" y="'+(H-34)+'" text-anchor="middle" class="viz-axis">'+esc(shortLabel(xLabels[i]))+'</text>';
+  });
+  s += '<text x="'+(L+plotW/2)+'" y="'+(H-8)+'" text-anchor="middle" class="viz-axis-label">'+esc(xLabel)+'</text>';
+  s += '<text transform="translate(14 '+(T+plotH/2)+') rotate(-90)" text-anchor="middle" class="viz-axis-label">'+esc(yLabel)+'</text>';
+  return s;
+}
+
+function cleanPoints(points) {
+  return (points||[]).filter(p=>p && p.x!=null && p.y!=null && Number.isFinite(Number(p.y)))
+    .map(p=>({x:String(p.x), y:Number(p.y), label:p.label}));
+}
+function pt(x, y, label) { return {x, y, label}; }
+function byDate(rows, field) { return rows.slice().sort((a,b)=>String(a[field]||'').localeCompare(String(b[field]||''))); }
+function takeLast(rows, n) { return rows.slice(Math.max(0, rows.length-n)); }
+function dateOnly(v) { return String(v||'').slice(0,10); }
+function shortLabel(v) { const s=String(v||''); return s.length > 12 ? s.slice(5,10) || s.slice(0,12) : s; }
+function shortAddress(v) { const s=String(v||''); return s.split(',')[0].slice(0,22); }
+function labelIndexes(n) { if (n <= 0) return []; if (n === 1) return [0]; if (n <= 4) return Array.from({length:n},(_,i)=>i); return [0, Math.floor((n-1)/3), Math.floor((n-1)*2/3), n-1]; }
+function axisBounds(values, zeroBase) {
+  const nums = (values||[]).map(Number).filter(Number.isFinite);
+  if (!nums.length) return {min:0, max:1};
+  let min = Math.min(...nums), max = Math.max(...nums);
+  if (min === max) {
+    if (zeroBase) return {min:0, max:niceCeil(max || 1)};
+    const pad = Math.max(Math.abs(max) * 0.08, 1);
+    min -= pad; max += pad;
+  } else if (zeroBase) {
+    min = Math.min(0, min);
+    max = max + (max - min) * 0.08;
+  } else {
+    const pad = (max - min) * 0.12;
+    min -= pad; max += pad;
+  }
+  if (zeroBase) return {min:0, max:niceCeil(max)};
+  const step = niceStep((max - min) / 4);
+  let outMin = Math.floor(min / step) * step;
+  let outMax = Math.ceil(max / step) * step;
+  if (Math.min(...nums) >= 0 && outMin < 0) outMin = 0;
+  if (outMin === outMax) outMax = outMin + step;
+  return {min:outMin, max:outMax};
+}
+function niceCeil(v) {
+  if (!Number.isFinite(v) || v <= 0) return 1;
+  const step = niceStep(v / 4);
+  return Math.max(step, Math.ceil(v / step) * step);
+}
+function niceStep(v) {
+  if (!Number.isFinite(v) || v <= 0) return 1;
+  const pow = Math.pow(10, Math.floor(Math.log10(v)));
+  const frac = v / pow;
+  const nice = frac <= 1 ? 1 : frac <= 2 ? 2 : frac <= 5 ? 5 : 10;
+  return nice * pow;
+}
+function yTicks(min, max, count) { const out=[]; for(let i=0;i<=count;i++) out.push(min+(max-min)*(i/count)); return out; }
+function compactNumber(v) { const n=Number(v); if (!Number.isFinite(n)) return '0'; if (Math.abs(n)>=1000000) return (n/1000000).toFixed(1).replace(/\.0$/,'')+'M'; if (Math.abs(n)>=1000) return (n/1000).toFixed(1).replace(/\.0$/,'')+'K'; return Math.abs(n)%1 ? n.toFixed(1) : String(Math.round(n)); }
+function formatNumber(v) { const n=Number(v); return Number.isFinite(n) ? (Math.abs(n)%1 ? n.toFixed(2).replace(/0$/,'') : Math.round(n).toLocaleString()) : '0'; }
+function chartTip(title, xLabel, x, yLabel, y, detail) {
+  return title + '\n' +
+    xLabel + ': ' + x + '\n' +
+    yLabel + ': ' + formatNumber(y) +
+    (detail && String(detail) !== String(x) ? '\nEntry: ' + detail : '');
+}
+function countBy(rows, fn) { return rows.reduce((acc,row)=>{ const k=String(fn(row)||'Unknown'); acc[k]=(acc[k]||0)+1; return acc; }, {}); }
+function countsToPoints(obj) { return Object.entries(obj||{}).sort((a,b)=>b[1]-a[1]).map(([x,y])=>pt(x,y)); }
+
+function appleSleepNights(records) {
+  const nights = {};
+  records.forEach(r=>{
+    const d = dateOnly(r.start);
+    if (!nights[d]) nights[d] = {date:d, values:{Deep:0, Core:0, REM:0, Awake:0}};
+    const hrs = Math.max(0, (new Date(r.end)-new Date(r.start))/3600000);
+    const stage = String(r.stage||'').toLowerCase();
+    if (stage.includes('deep')) nights[d].values.Deep += hrs;
+    else if (stage.includes('rem')) nights[d].values.REM += hrs;
+    else if (stage.includes('awake') || stage.includes('wake')) nights[d].values.Awake += hrs;
+    else nights[d].values.Core += hrs;
+  });
+  return Object.values(nights).sort((a,b)=>a.date.localeCompare(b.date));
+}
+
+function mfpDaily(pid) {
+  const fMap = {}; (D.myfitnesspal?.foods||[]).forEach(f=>{fMap[f.food_id]=f;});
+  const eMap = {}; (D.myfitnesspal?.exercises||[]).forEach(e=>{eMap[e.exercise_id]=e;});
+  const by = {};
+  function day(d) { if(!by[d]) by[d]={date:d, calories:0, protein:0, carbs:0, fat:0, exerciseCalories:0, waterMl:0}; return by[d]; }
+  (D.myfitnesspal?.food_logs||[]).filter(l=>l.persona_id===pid||l.user_id===pid).forEach(l=>{
+    const d = l.log_date||l.date; if(!d) return;
+    const f = fMap[l.food_id]||{}, s = Number(l.servings??1);
+    const row = day(d);
+    row.calories += Number(f.calories??l.calories??0) * s;
+    row.protein += Number(f.protein_g??l.protein_g??0) * s;
+    row.carbs += Number(f.carbs_g??l.carbs_g??0) * s;
+    row.fat += Number(f.fat_g??l.fat_g??0) * s;
+  });
+  (D.myfitnesspal?.exercise_logs||[]).filter(l=>l.persona_id===pid||l.user_id===pid).forEach(l=>{
+    const d = l.log_date||l.date; if(!d) return;
+    day(d).exerciseCalories += Number(l.calories_burned??0);
+  });
+  (D.myfitnesspal?.water_logs||[]).filter(l=>l.persona_id===pid||l.user_id===pid).forEach(l=>{
+    const d = l.log_date||l.date; if(!d) return;
+    day(d).waterMl += Number(l.amount_ml??0);
+  });
+  return Object.values(by).sort((a,b)=>a.date.localeCompare(b.date));
+}
+
+function shoppingVisuals(pid, key) {
+  const sd = D[key]||{};
+  const orders = byDate((sd.orders||[]).filter(o=>o.user_id===pid), 'created_at');
+  if (!orders.length) return [];
+  const orderId = o => o.order_id??o.id;
+  const productById = {};
+  (sd.products||[]).forEach(p=>{ productById[p.asin??p.product_id??p.id]=p; });
+  const itemCount = {};
+  const catSpend = {};
+  (sd.order_items||[]).forEach(i=>{
+    const oid = i.order_id;
+    const order = orders.find(o=>orderId(o)===oid);
+    if (!order) return;
+    itemCount[oid] = (itemCount[oid]||0) + Number(i.quantity??1);
+    const p = productById[i.asin??i.product_id]||{};
+    const cat = p.category||p.department||'Unknown';
+    const spend = Number(i.price_at_purchase??i.unit_price??i.price??0) * Number(i.quantity??1);
+    catSpend[cat] = (catSpend[cat]||0) + spend;
+  });
+  return [
+    barViz('Order total by date', 'Order date', '$', takeLast(orders, 14).map(o=>pt(dateOnly(o.created_at), o.total??o.total_amount??o.subtotal, orderId(o))), SVCMETA[key].color),
+    barViz('Items per order', 'Order date', 'Items', takeLast(orders, 14).map(o=>pt(dateOnly(o.created_at), itemCount[orderId(o)]||0, orderId(o))), '#38bdf8'),
+    barViz('Order status counts', 'Status', 'Orders', countsToPoints(countBy(orders, o=>o.status??o.order_status??'Unknown')), '#22c55e'),
+    barViz('Spend by product category', 'Category', '$', countsToPoints(catSpend).slice(0,12), '#f59e0b')
+  ];
+}
+
 function buildModalContent(pid, key) {
   const sm = SVCMETA[key]||{};
   const sum = getCardSummary(pid, key);
@@ -556,10 +1044,6 @@ function buildModalContent(pid, key) {
         '<div class="modal-stat-lbl">'+m.l+'</div>' +
       '</div>'
     ).join('') +
-    (sum.chart ? trendChart(sum.chart, 'modal') :
-      (sum.sparkValues && sum.sparkValues.length >= 2
-        ? '<div style="flex:1;min-width:160px;display:flex;align-items:center;padding:0 4px">'+sparkline(sum.sparkValues, sm.color)+'</div>'
-        : '')) +
   '</div>' : '';
 
   let detail = '';
@@ -582,7 +1066,7 @@ function buildModalContent(pid, key) {
     case 'logistics':     detail = modalLogistics(pid);     break;
     default:              detail = empty();
   }
-  return summaryBar + detail;
+  return summaryBar + modalVisuals(pid, key) + detail;
 }
 
 /* ════ MODAL DATA BUILDERS ════ */
@@ -635,9 +1119,7 @@ function modalAppleHealth(pid) {
   const steps = (ah.step_records||[]).filter(r=>r.user_id===pid)
     .sort((a,b)=>b.date.localeCompare(a.date));
   if (steps.length) {
-    const sv = steps.slice(0,30).reverse().map(r=>r.total_steps||0);
     out += '<div class="sub-heading">Daily Steps ('+steps.length+' days)</div>';
-    if (sv.length>=2) out += '<div style="padding:6px 12px 2px">'+sparkline(sv,'#ff375f')+'</div>';
     out += tableWrap(['Date','Total Steps'],
       steps.map(r=>'<tr><td>'+r.date+'</td><td class="num">'+fmt(r.total_steps)+'</td></tr>').join(''));
   }
@@ -646,9 +1128,7 @@ function modalAppleHealth(pid) {
   const act = (ah.activity_summaries||[]).filter(r=>r.user_id===pid)
     .sort((a,b)=>b.date.localeCompare(a.date));
   if (act.length) {
-    const sv = act.slice(0,30).reverse().map(r=>r.active_energy_kcal||0);
     out += '<div class="sub-heading" style="margin-top:14px">Activity Summaries ('+act.length+' days)</div>';
-    if (sv.length>=2) out += '<div style="padding:6px 12px 2px">'+sparkline(sv,'#ff9900')+'</div>';
     out += tableWrap(['Date','Active Energy (kcal)','Basal (kcal)','Exercise Min','Stand Hours','Distance (km)','Flights'],
       act.map(r=>'<tr><td>'+r.date+'</td>' +
         '<td class="num">'+nvl(r.active_energy_kcal)+'</td>' +
@@ -663,9 +1143,7 @@ function modalAppleHealth(pid) {
   const rhr = (ah.resting_heart_rate_records||[]).filter(r=>r.user_id===pid)
     .sort((a,b)=>b.date.localeCompare(a.date));
   if (rhr.length) {
-    const sv = rhr.slice(0,30).reverse().map(r=>r.value||0);
     out += '<div class="sub-heading" style="margin-top:14px">Resting Heart Rate ('+rhr.length+' records)</div>';
-    if (sv.length>=2) out += '<div style="padding:6px 12px 2px">'+sparkline(sv,'#f87171')+'</div>';
     out += tableWrap(['Date','RHR (bpm)'],
       rhr.map(r=>'<tr><td>'+r.date.slice(0,10)+'</td><td class="num">'+r.value+'</td></tr>').join(''));
   }
@@ -674,9 +1152,7 @@ function modalAppleHealth(pid) {
   const hrv = (ah.hrv_records||[]).filter(r=>r.user_id===pid)
     .sort((a,b)=>b.date.localeCompare(a.date));
   if (hrv.length) {
-    const sv = hrv.slice(0,30).reverse().map(r=>r.value||0);
     out += '<div class="sub-heading" style="margin-top:14px">HRV ('+hrv.length+' records)</div>';
-    if (sv.length>=2) out += '<div style="padding:6px 12px 2px">'+sparkline(sv,'#818cf8')+'</div>';
     out += tableWrap(['Date','HRV (ms)'],
       hrv.map(r=>'<tr><td>'+r.date.slice(0,10)+'</td><td class="num">'+r.value.toFixed(1)+'</td></tr>').join(''));
   }
@@ -689,7 +1165,6 @@ function modalAppleHealth(pid) {
     const days  = Object.keys(byDay).sort().reverse();
     const avgByDay = days.map(d=>{ const v=byDay[d]; return Math.round(v.reduce((s,x)=>s+x,0)/v.length); });
     out += '<div class="sub-heading" style="margin-top:14px">Heart Rate — Daily Aggregated ('+days.length+' days · '+hrRecs.length.toLocaleString()+' samples)</div>';
-    if (avgByDay.slice(0,30).length>=2) out += '<div style="padding:6px 12px 2px">'+sparkline(avgByDay.slice(0,30).reverse(),'#f87171')+'</div>';
     out += tableWrap(['Date','Samples','Min (bpm)','Avg (bpm)','Max (bpm)'],
       days.map(d=>{
         const vals=byDay[d], mn=Math.min(...vals), mx=Math.max(...vals);
@@ -740,9 +1215,7 @@ function modalAppleHealth(pid) {
   const bm = (ah.body_mass_records||[]).filter(r=>r.user_id===pid)
     .sort((a,b)=>b.date.localeCompare(a.date));
   if (bm.length) {
-    const sv = bm.slice(0,20).reverse().map(r=>r.value||0);
     out += '<div class="sub-heading" style="margin-top:14px">Body Mass ('+bm.length+' records)</div>';
-    if (sv.length>=2) out += '<div style="padding:6px 12px 2px">'+sparkline(sv,'#34d399')+'</div>';
     out += tableWrap(['Date','Weight (kg)'],
       bm.map(r=>'<tr><td>'+r.date.slice(0,10)+'</td><td class="num">'+r.value+'</td></tr>').join(''));
   }

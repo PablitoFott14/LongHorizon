@@ -196,6 +196,80 @@ body { background: var(--bg); color: var(--text); font-family: var(--font); min-
 }
 
 /* ── MODAL ── */
+.viz-section { margin-bottom: 18px; }
+.viz-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 12px;
+  padding-top: 12px;
+}
+.viz-card {
+  min-width: 0;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--rsm);
+  padding: 10px 12px 8px;
+}
+.viz-title {
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.viz-svg {
+  display: block;
+  width: 100%;
+  height: 230px;
+}
+.viz-grid-line {
+  stroke: rgba(148,163,184,.16);
+  stroke-width: 1;
+}
+.viz-axis-line {
+  stroke: var(--border2);
+  stroke-width: 1;
+}
+.viz-axis,
+.viz-axis-label,
+.viz-value {
+  font-family: var(--mono);
+  fill: var(--text3);
+}
+.viz-axis { font-size: 11px; }
+.viz-axis-label {
+  font-size: 11px;
+  font-weight: 700;
+}
+.viz-value {
+  font-size: 10px;
+  font-weight: 700;
+  fill: var(--text2);
+}
+.viz-mark,
+.viz-hit { cursor: default; pointer-events: all; }
+.viz-mark:hover,
+.viz-mark.is-hovered {
+  filter: brightness(1.18);
+}
+.viz-dot { pointer-events: none; }
+.viz-hit:hover + .viz-dot { r: 4; }
+.chart-tooltip {
+  position: fixed;
+  z-index: 1000;
+  max-width: 280px;
+  padding: 8px 10px;
+  border: 1px solid var(--border2);
+  border-radius: var(--rsm);
+  background: rgba(15,23,42,.96);
+  color: var(--text);
+  font-size: 11px;
+  line-height: 1.45;
+  white-space: pre-line;
+  pointer-events: none;
+  box-shadow: 0 14px 40px rgba(0,0,0,.45);
+}
+.chart-tooltip.hidden { display: none; }
+
 .modal-overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,.72);
   backdrop-filter: blur(6px); z-index: 500;
