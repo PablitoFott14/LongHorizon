@@ -62,7 +62,7 @@ function buildEventsContent() {
 
   /* KPIs */
   const totalOrders = orders.length;
-  const totalSpend  = orders.reduce((s, o) => s + (o.total_amount || o.total || 0), 0);
+  const totalSpend  = orders.reduce((s, o) => s + getOrderTotal(o), 0);
   const uniqueEvents= [...new Set(orders.map(o => o.event_id).filter(Boolean))].length;
   const uniqueVenues= [...new Set(events.map(e => e.venue_id).filter(Boolean))].length;
 
@@ -80,14 +80,14 @@ function buildEventsContent() {
     const venue= evt ? venues.find(v => v.id === evt.venue_id) : null;
     const tt   = ticketTypes.find(t => t.id === o.ticket_type_id);
     return `<tr class="clickable" onclick="openEventModal('${o.order_id || o.id}')">
-      <td>${fmtDate(o.purchase_date || o.created_at)}</td>
+      <td>${fmtDate(getOrderDate(o))}</td>
       <td><button class="link-btn" onclick="event.stopPropagation();openUserModal('${o.user_id}')">${getUserName(o.user_id)}</button></td>
       <td style="font-weight:500;color:var(--text)">${evt?.name || evt?.title || '—'}</td>
       <td>${attr?.name || '—'}</td>
       <td>${venue?.name || '—'}</td>
       <td>${fmtDate(evt?.start_datetime || evt?.date)}</td>
       <td>${o.quantity ?? 1}× ${tt?.name || ''}</td>
-      <td class="amt-pos">$${(o.total_amount || o.total || 0).toFixed(2)}</td>
+      <td class="amt-pos">$${getOrderTotal(o).toFixed(2)}</td>
     </tr>`;
   }).join('');
 
@@ -148,8 +148,8 @@ function openEventModal(orderId) {
     { k: 'Ticket Type', v: tt?.name || '—' },
     { k: 'Quantity',    v: order.quantity },
     { k: 'Unit Price',  v: order.unit_price ? `$${order.unit_price}` : '—' },
-    { k: 'Total',       v: `$${(order.total_amount || order.total || 0).toFixed(2)}` },
-    { k: 'Purchase Date',v: fmtDate(order.purchase_date || order.created_at) },
+    { k: 'Total',       v: `$${getOrderTotal(order).toFixed(2)}` },
+    { k: 'Purchase Date',v: fmtDate(getOrderDate(order)) },
     { k: 'Status',      v: order.status || '—' },
   ], 'cb-lifestyle');
 
@@ -382,15 +382,16 @@ function buildMusicContent() {
 
   /* Speakers table */
   const spkRows = speakers.map(s => {
-    const memberGroups = groups.filter(g => groupMembers.some(m => m.speaker_id === s.id && m.group_id === g.id));
+    const speakerId = s.speaker_id || s.id;
+    const memberGroups = groups.filter(g => groupMembers.some(m => m.speaker_id === speakerId && m.group_id === g.id));
     return `<tr>
       <td><button class="link-btn" onclick="openUserModal('${s.user_id}')">${getUserName(s.user_id)}</button></td>
-      <td style="font-weight:500;color:var(--text)">${s.name || s.model || '—'}</td>
+      <td style="font-weight:500;color:var(--text)">${s.room || s.name || s.model || '—'}</td>
       <td>${s.model || s.device_model || '—'}</td>
       <td>${s.room || s.zone || '—'}</td>
       <td>${memberGroups.map(g => g.name).join(', ') || '—'}</td>
       <td>${s.volume != null ? s.volume + '%' : '—'}</td>
-      <td>${statusBadge(s.status || (s.is_playing ? 'active' : 'idle'))}</td>
+      <td>${statusBadge(s.playback_state || s.status || (s.is_playing ? 'active' : 'idle'))}</td>
     </tr>`;
   }).join('');
 
@@ -403,13 +404,18 @@ function buildMusicContent() {
   </tr>`).join('');
 
   /* Tracks table */
-  const trackRows = favTracks.slice(0, 20).map(t => `<tr>
-    <td><button class="link-btn" onclick="openUserModal('${t.user_id}')">${getUserName(t.user_id)}</button></td>
+  const favoriteUserMap = {};
+  favorites.forEach(f => { favoriteUserMap[f.favorite_id || f.id] = f.user_id; });
+  const trackRows = favTracks.slice(0, 20).map(t => {
+    const uid = t.user_id || favoriteUserMap[t.favorite_id];
+    return `<tr>
+    <td>${uid ? `<button class="link-btn" onclick="openUserModal('${uid}')">${getUserName(uid)}</button>` : '—'}</td>
     <td style="font-weight:500;color:var(--text)">${t.title || t.track_name || '—'}</td>
     <td>${t.artist || '—'}</td>
     <td>${t.album || '—'}</td>
     <td>${t.service || t.source || '—'}</td>
-  </tr>`).join('');
+  </tr>`;
+  }).join('');
 
   return kpis +
     `<div class="section-label">Speakers (${speakers.length})</div>
@@ -443,13 +449,22 @@ function buildNotesContent() {
     <div class="kpi-card" style="--accent:#a855f7"><div class="kpi-icon">🏷️</div><div><div class="kpi-value">${tags.length}</div><div class="kpi-label">Tags</div><div class="kpi-sub"></div></div></div>
   </div>`;
 
-  const rows = notes.map(n => `<tr class="clickable" onclick="openNoteModal('${n.note_id || n.id}')">
+  const tagsByNote = {};
+  tags.forEach(t => {
+    if (!tagsByNote[t.note_id]) tagsByNote[t.note_id] = [];
+    tagsByNote[t.note_id].push(t.tag);
+  });
+
+  const rows = notes.map(n => {
+    const noteTags = n.tags || tagsByNote[n.note_id || n.id] || [];
+    return `<tr class="clickable" onclick="openNoteModal('${n.note_id || n.id}')">
     <td><button class="link-btn" onclick="event.stopPropagation();openUserModal('${n.user_id || n.persona_id}')">${getUserName(n.user_id || n.persona_id)}</button></td>
     <td style="font-weight:500;color:var(--text);max-width:240px">${n.title || n.name || '—'}</td>
     <td style="font-size:11px;color:var(--text3);max-width:300px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${(n.content || n.body || '').slice(0,100)}</td>
-    <td>${(n.tags || []).map(t => `<span style="background:rgba(124,58,237,0.12);color:#a78bfa;border-radius:4px;padding:1px 6px;font-size:10px;margin-right:3px">${t}</span>`).join('')}</td>
+    <td>${noteTags.map(t => `<span style="background:rgba(124,58,237,0.12);color:#a78bfa;border-radius:4px;padding:1px 6px;font-size:10px;margin-right:3px">${t}</span>`).join('')}</td>
     <td>${fmtDate(n.created_at || n.modified_at)}</td>
-  </tr>`).join('');
+  </tr>`;
+  }).join('');
 
   return kpis + `<div class="section-label">Notes (${notes.length})</div>
   <div class="table-wrap" style="margin-top:8px"><table class="data-table">
@@ -461,11 +476,12 @@ function buildNotesContent() {
 function openNoteModal(noteId) {
   const note = (DATA.obsidian?.notes || []).find(n => (n.note_id || n.id) === noteId);
   if (!note) return;
+  const noteTags = note.tags || (DATA.obsidian?.tags || []).filter(t => t.note_id === (note.note_id || note.id)).map(t => t.tag);
 
   const html = chainBlock('NOTE', [
     { k: 'Title',   v: note.title || note.name },
     { k: 'User',    v: getUserName(note.user_id || note.persona_id) },
-    { k: 'Tags',    v: (note.tags || []).join(', ') || '—' },
+    { k: 'Tags',    v: noteTags.join(', ') || '—' },
     { k: 'Created', v: fmtDate(note.created_at) },
     { k: 'Modified',v: fmtDate(note.modified_at) },
   ], 'cb-lifestyle') +

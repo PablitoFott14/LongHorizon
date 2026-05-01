@@ -58,12 +58,10 @@ class NetworkGraph {
 
     this.allNodes = [...userNodes, ...serviceNodes];
 
-    /* Edges: user → service — use the users/user_profiles/athletes index, not all records */
+    /* Edges: user → service — use both user indexes and record-level persona links. */
     const svcUserSets = {};
     Object.entries(services).forEach(([key]) => {
-      const d = data[key] || {};
-      const users = d.users || d.user_profiles || d.athletes || [];
-      svcUserSets[key] = new Set(users.map(u => u.user_id || u.persona_id).filter(Boolean));
+      svcUserSets[key] = getServiceUserIds(key);
     });
 
     const links = [];

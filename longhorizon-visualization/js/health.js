@@ -110,8 +110,14 @@ function getFitbitRecords(userId, since) {
 
 function getEightSleepRecords(userId, since) {
   return (DATA['eight-sleep']?.sleep_sessions || [])
-    .filter(s => (!userId || s.user_id === userId) && (s.start_time || '').slice(0,10) >= since)
-    .map(s => ({ ...s, date: (s.start_time || '').slice(0, 10) }))
+    .filter(s => (!userId || s.persona_id === userId) && (s.start_time || s.session_date || '').slice(0,10) >= since)
+    .map(s => ({
+      ...s,
+      user_id: s.persona_id,
+      date: (s.start_time || s.session_date || '').slice(0, 10),
+      sleep_score: s.sleep_fitness_score,
+      hrv: s.hrv_ms,
+    }))
     .sort((a, b) => b.date.localeCompare(a.date));
 }
 
@@ -135,15 +141,39 @@ function getStravaRecords(userId, since) {
 }
 
 function getMFPRecords(userId, since) {
+  const foodMap = {};
+  (DATA.myfitnesspal?.foods || []).forEach(f => { foodMap[f.food_id] = f; });
+
   return (DATA.myfitnesspal?.food_logs || [])
-    .filter(l => (!userId || l.user_id === userId || l.persona_id === userId) && (l.date || '') >= since)
+    .filter(l => (!userId || l.user_id === userId || l.persona_id === userId) && (l.log_date || l.date || '') >= since)
+    .map(l => {
+      const food = foodMap[l.food_id] || {};
+      const servings = Number(l.servings ?? 1);
+      return {
+        ...l,
+        date: l.log_date || l.date,
+        name: food.name,
+        calories: food.calories != null ? Math.round(food.calories * servings) : l.calories,
+        protein_g: food.protein_g != null ? +(food.protein_g * servings).toFixed(1) : l.protein_g,
+        carbs_g: food.carbs_g != null ? +(food.carbs_g * servings).toFixed(1) : l.carbs_g,
+        fat_g: food.fat_g != null ? +(food.fat_g * servings).toFixed(1) : l.fat_g,
+        sodium_mg: food.sodium_mg != null ? Math.round(food.sodium_mg * servings) : l.sodium_mg,
+      };
+    })
     .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
 }
 
 function getRenphoRecords(userId, since) {
   return (DATA.renpho?.measurements || [])
-    .filter(m => (!userId || m.persona_id === userId) && (m.measured_at || m.date || '') >= since)
-    .map(m => ({ ...m, date: (m.measured_at || m.date || '').slice(0, 10), user_id: m.persona_id }))
+    .filter(m => (!userId || m.persona_id === userId) && (m.timestamp || m.measured_at || m.date || '').slice(0, 10) >= since)
+    .map(m => ({
+      ...m,
+      date: (m.timestamp || m.measured_at || m.date || '').slice(0, 10),
+      user_id: m.persona_id,
+      weight_kg: m.weight,
+      body_fat_percentage: m.body_fat,
+      muscle_mass_kg: m.muscle_mass,
+    }))
     .sort((a, b) => b.date.localeCompare(a.date));
 }
 
@@ -204,10 +234,10 @@ function getChartMetric(service) {
   switch (service) {
     case 'garmin':       return r => r.steps;
     case 'whoop':        return r => r.recovery_score;
-    case 'apple-health': return r => r.value ?? r.step_count ?? r.resting_heart_rate;
+    case 'apple-health': return r => r.value ?? r.total_steps ?? r.step_count ?? r.resting_heart_rate;
     case 'fitbit':       return r => r.steps ?? r.calories_total ?? r.calories;
-    case 'eight-sleep':  return r => r.sleep_score ?? r.hrv;
-    case 'strava':       return r => r.distance_meters ? +(r.distance_meters / 1000).toFixed(2) : null;
+    case 'eight-sleep':  return r => r.sleep_score ?? r.sleep_fitness_score ?? r.hrv ?? r.hrv_ms;
+    case 'strava':       return r => (r.distance_meters ?? r.distance) ? +((r.distance_meters ?? r.distance) / 1000).toFixed(2) : null;
     case 'myfitnesspal': return r => r.calories;
     case 'renpho':       return r => r.weight_kg;
     default:             return r => r.steps ?? r.value ?? null;
@@ -271,7 +301,7 @@ function buildAppleTable(rows) {
   const header = `<tr><th>Date</th><th>User</th><th>Type</th><th>Value</th><th>Unit</th></tr>`;
   const body = rows.map(r => {
     const typeLabel = r.source === 'rhr' ? 'Resting HR' : r.source === 'steps' ? 'Steps' : (r.type || r.source || '—');
-    const value = r.value?.toLocaleString() ?? r.step_count?.toLocaleString() ?? r.resting_heart_rate?.toLocaleString() ?? '—';
+    const value = r.value?.toLocaleString() ?? r.total_steps?.toLocaleString() ?? r.step_count?.toLocaleString() ?? r.resting_heart_rate?.toLocaleString() ?? '—';
     const unit  = r.unit || (r.source === 'rhr' ? 'bpm' : r.source === 'steps' ? 'steps' : '—');
     const uid   = r.user_id || r.source_user_id;
     return `<tr>
@@ -318,7 +348,7 @@ function buildStravaTable(rows) {
     <td>${a.date}</td>
     <td><button class="link-btn" onclick="openUserModal('${a.user_id}')">${getUserName(a.user_id)}</button></td>
     <td>${a.type || a.activity_type || '—'}</td>
-    <td>${a.distance_meters ? (a.distance_meters/1000).toFixed(2) + ' km' : a.distance ? (a.distance/1000).toFixed(2) + ' km' : '—'}</td>
+    <td>${(a.distance_meters ?? a.distance) ? ((a.distance_meters ?? a.distance)/1000).toFixed(2) + ' km' : '—'}</td>
     <td>${a.moving_time ? (a.moving_time/60).toFixed(0) + ' min' : a.elapsed_time ? (a.elapsed_time/60).toFixed(0) + ' min' : '—'}</td>
     <td>${a.average_heartrate || a.average_hr || '—'}</td>
     <td>${a.total_elevation_gain ? a.total_elevation_gain + ' m' : '—'}</td>

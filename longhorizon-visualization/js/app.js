@@ -155,17 +155,75 @@ function buildStatusSummary() {
   return `11 personas · 19 services · ${gStats.toLocaleString()} Garmin records · ${wCycles.toLocaleString()} Whoop cycles`;
 }
 
+function firstPresent(...values) {
+  return values.find(v => v !== undefined && v !== null && v !== '');
+}
+
+function getOrderId(o) {
+  return firstPresent(o?.order_id, o?.id, o?.confirmation_code);
+}
+
+function getOrderDate(o) {
+  return firstPresent(o?.created_at, o?.placed_at, o?.order_date, o?.purchased_at, o?.purchase_date, o?.delivery_date, '');
+}
+
+function getOrderTotal(o) {
+  return Number(firstPresent(o?.total, o?.total_amount, o?.total_price, o?.subtotal, 0)) || 0;
+}
+
+function getOrderStatus(o) {
+  return String(firstPresent(o?.status, o?.order_status, 'unknown')).toLowerCase();
+}
+
+function getOrderAddress(o) {
+  return firstPresent(o?.shipping_address, o?.delivery_address, o?.address, '');
+}
+
+function findOrder(serviceKey, orderId) {
+  return (DATA[serviceKey]?.orders || []).find(o => String(getOrderId(o)) === String(orderId));
+}
+
+function getKnownPersonaIds() {
+  return new Set(PERSONAS.map(p => p.id));
+}
+
+function getRecordPersonaId(rec) {
+  return firstPresent(rec?.user_id, rec?.persona_id);
+}
+
+function getServiceUserIds(key) {
+  const d = DATA[key] || {};
+  const ids = new Set();
+  const add = rec => {
+    const id = getRecordPersonaId(rec);
+    if (id) ids.add(id);
+  };
+
+  (d.users || d.user_profiles || d.athletes || []).forEach(add);
+  [
+    d.daily_stats, d.heart_rate, d.hrv, d.sleep, d.sleep_sessions, d.sleep_logs,
+    d.recovery, d.cycles, d.workouts, d.activities, d.measurements,
+    d.food_logs, d.exercise_logs, d.water_logs, d.step_records, d.heart_rate_records,
+    d.resting_heart_rate_records, d.workout_records, d.body_mass_records,
+    d.activity_summaries, d.orders, d.saved_properties, d.scheduled_tours,
+    d.shipments, d.speakers, d.favorites, d.notes, d.tags,
+  ].forEach(arr => (arr || []).forEach(add));
+
+  return ids;
+}
+
 function buildAllOrders() {
+  ALL_ORDERS = [];
   const addOrders = (svcKey, rawOrders) => {
     (rawOrders || []).forEach(o => {
       ALL_ORDERS.push({
         service:   svcKey,
-        order_id:  o.order_id,
+        order_id:  getOrderId(o),
         user_id:   o.user_id,
-        date:      o.created_at || o.placed_at || o.order_date || '',
-        total:     o.total ?? o.total_amount ?? o.subtotal ?? 0,
-        status:    (o.status || o.order_status || 'unknown').toLowerCase(),
-        address:   o.shipping_address || o.delivery_address || '',
+        date:      getOrderDate(o),
+        total:     getOrderTotal(o),
+        status:    getOrderStatus(o),
+        address:   getOrderAddress(o),
       });
     });
   };
@@ -378,15 +436,8 @@ function renderIntegrityPage() {
   const container = document.getElementById('integrity-results');
   if (!container) return;
 
-  /* Build coverage matrix */
   const svcKeys = Object.keys(SERVICES);
-  const getUsersFromSvc = (key) => {
-    const d = DATA[key] || {};
-    const users = d.users || d.user_profiles || d.athletes || [];
-    return new Set(users.map(u => u.user_id || u.persona_id || u.athlete_id));
-  };
-
-  const coverageMatrix = svcKeys.map(key => ({ key, users: getUsersFromSvc(key) }));
+  const coverageMatrix = svcKeys.map(key => ({ key, users: getServiceUserIds(key) }));
 
   /* Email consistency check */
   const emailCheck = PERSONAS.map(p => {
@@ -394,7 +445,7 @@ function renderIntegrityPage() {
     svcKeys.forEach(key => {
       const d = DATA[key] || {};
       const users = d.users || d.user_profiles || d.athletes || [];
-      const found = users.find(u => (u.user_id || u.persona_id) === p.id);
+      const found = users.find(u => getRecordPersonaId(u) === p.id);
       if (found && found.email && found.email !== p.email) {
         mismatch.push({ service: SERVICES[key]?.label || key, found: found.email });
       }
@@ -421,6 +472,9 @@ function renderIntegrityPage() {
     const covered = PERSONAS.every(p => coverageMatrix.find(m => m.key === key)?.users.has(p.id));
     return count + (covered ? 1 : 0);
   }, 0);
+  const validPersonaIds = getKnownPersonaIds();
+  const ordersOk = ALL_ORDERS.every(o => validPersonaIds.has(o.user_id) && o.order_id);
+  const logisticsOk = (DATA.logistics?.shipments || []).every(s => validPersonaIds.has(s.user_id));
 
   container.innerHTML = `
     <div class="integrity-grid" style="margin-bottom:16px">
@@ -430,7 +484,7 @@ function renderIntegrityPage() {
           <span class="integrity-badge-${coveredCount === 19 ? 'pass' : 'warn'}">${coveredCount}/19 full</span>
         </div>
         <div class="integrity-card-body">
-          All 11 personas appear in ${coveredCount} of 19 services.
+          All 11 personas appear in ${coveredCount} of 19 services based on user tables and record-level links.
           <div class="integrity-detail">${PERSONAS.length} personas × ${svcKeys.length} services</div>
         </div>
       </div>
@@ -446,17 +500,17 @@ function renderIntegrityPage() {
       <div class="integrity-card">
         <div class="integrity-card-hdr">
           <div class="integrity-card-title">🛒 Order FK Integrity</div>
-          <span class="integrity-badge-pass">PASS</span>
+          <span class="integrity-badge-${ordersOk ? 'pass' : 'fail'}">${ordersOk ? 'PASS' : 'FAIL'}</span>
         </div>
         <div class="integrity-card-body">
-          ${ALL_ORDERS.length.toLocaleString()} orders checked — all reference valid persona IDs.
+          ${ALL_ORDERS.length.toLocaleString()} orders checked against canonical persona IDs and source order IDs.
           <div class="integrity-detail">6 shopping services · ${ALL_ORDERS.length} records</div>
         </div>
       </div>
       <div class="integrity-card">
         <div class="integrity-card-hdr">
           <div class="integrity-card-title">📦 Logistics FK Integrity</div>
-          <span class="integrity-badge-pass">PASS</span>
+          <span class="integrity-badge-${logisticsOk ? 'pass' : 'fail'}">${logisticsOk ? 'PASS' : 'FAIL'}</span>
         </div>
         <div class="integrity-card-body">
           ${(DATA.logistics?.shipments || []).length} shipments — all linked to valid persona IDs.
