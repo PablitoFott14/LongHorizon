@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LongHorizon — OpenClaw Universe Visualizer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ══ HEADER ══ -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-logo">LH</div>
+        <div class="brand-name">
+          <span>LongHorizon</span>
+          <small>OpenClaw Universe Visualizer</small>
+        </div>
+      </div>
+
+      <div class="global-search-wrap">
+        <input id="global-search" class="global-search" type="text" placeholder="Search users, orders, events, properties…" autocomplete="off" />
+        <div id="search-dropdown" class="search-dropdown hidden"></div>
+      </div>
+
+      <nav class="tabs">
+        <button class="tab active" data-tab="overview">Overview</button>
+        <button class="tab" data-tab="users">Users</button>
+        <button class="tab" data-tab="health">Health</button>
+        <button class="tab" data-tab="shopping">Shopping</button>
+        <button class="tab" data-tab="lifestyle">Lifestyle</button>
+        <button class="tab" data-tab="integrity">Integrity</button>
+        <button class="tab" data-tab="network">Network</button>
+      </nav>
+
+      <div class="hdr-right">
+        <span class="pulse-dot" id="status-dot"></span>
+        <span class="status-text" id="status-text">Loading…</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══ MAIN ══ -->
+  <main class="main">
+
+    <!-- ── OVERVIEW ── -->
+    <section class="page active" id="page-overview">
+      <div class="page-title">
+        <h2>Overview</h2>
+        <p>Complete data universe — 11 personas across 19 integrated services (8 Health · 6 Shopping · 5 Lifestyle)</p>
+      </div>
+      <div class="kpi-row" id="kpi-row"></div>
+      <div id="service-grid" style="margin-top:14px"></div>
+      <div class="alerts-box" id="alerts-box" style="margin-top:14px"></div>
+      <div class="grid-2" style="margin-top:14px">
+        <div class="card">
+          <h4>Services by Category</h4>
+          <div class="chart-body">
+            <div class="chart-canvas-wrap"><canvas id="c-categories"></canvas></div>
+            <div id="c-categories-legend" class="chart-legend-col"></div>
+          </div>
+        </div>
+        <div class="card">
+          <h4>Top Services by Record Count</h4>
+          <div style="height:200px; position:relative"><canvas id="c-records"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── USERS ── -->
+    <section class="page" id="page-users">
+      <div class="page-title">
+        <h2>Users</h2>
+        <p>All 11 personas — click any row to trace the complete cross-service profile</p>
+      </div>
+      <div class="explorer-bar">
+        <input id="users-search" class="ex-search" type="text" placeholder="Search by name, email, or ID…" />
+        <select id="users-sort" class="ex-filter">
+          <option value="name">Sort: Name</option>
+          <option value="id">Sort: Persona ID</option>
+          <option value="orders">Sort: Orders</option>
+          <option value="health">Sort: Health Records</option>
+        </select>
+        <span class="ex-count" id="users-count"></span>
+      </div>
+      <div class="table-wrap" id="users-table-wrap"></div>
+    </section>
+
+    <!-- ── HEALTH ── -->
+    <section class="page" id="page-health">
+      <div class="page-title">
+        <h2>Health &amp; Fitness</h2>
+        <p>8 integrated health services — Garmin, Whoop, Apple Health, Fitbit, Eight Sleep, Strava, MyFitnessPal, Renpho</p>
+      </div>
+      <div class="explorer-bar wrap">
+        <select id="health-user" class="ex-filter">
+          <option value="">All Users</option>
+        </select>
+        <select id="health-service" class="ex-filter">
+          <option value="garmin">Garmin (Activity)</option>
+          <option value="whoop">Whoop (Recovery)</option>
+          <option value="apple-health">Apple Health (Steps)</option>
+          <option value="fitbit">Fitbit (Daily)</option>
+          <option value="eight-sleep">Eight Sleep (Sleep)</option>
+          <option value="strava">Strava (Activities)</option>
+          <option value="myfitnesspal">MyFitnessPal (Nutrition)</option>
+          <option value="renpho">Renpho (Body)</option>
+        </select>
+        <select id="health-days" class="ex-filter">
+          <option value="7">Last 7 days</option>
+          <option value="14">Last 14 days</option>
+          <option value="30" selected>Last 30 days</option>
+          <option value="60">Last 60 days</option>
+          <option value="90">Last 90 days</option>
+          <option value="0">All time</option>
+        </select>
+        <span class="ex-count" id="health-count"></span>
+      </div>
+      <div class="card" style="margin-bottom:14px">
+        <h4 id="health-chart-title">Daily Metrics Over Time</h4>
+        <div style="height:240px; position:relative"><canvas id="c-health-main"></canvas></div>
+      </div>
+      <div class="table-wrap" id="health-table-wrap"></div>
+      <div class="pagination" id="health-pag"></div>
+    </section>
+
+    <!-- ── SHOPPING ── -->
+    <section class="page" id="page-shopping">
+      <div class="page-title">
+        <h2>Shopping</h2>
+        <p>6 shopping services combined — Amazon, Walmart, Target, Instacart, FreshDirect, Amazon Fresh</p>
+      </div>
+      <div class="kpi-row" id="shopping-kpi-row" style="margin-bottom:14px"></div>
+      <div class="explorer-bar wrap">
+        <input id="shop-search" class="ex-search" type="text" placeholder="Search by order ID or address…" />
+        <select id="shop-service" class="ex-filter">
+          <option value="">All Services</option>
+          <option value="amazon">Amazon</option>
+          <option value="walmart">Walmart</option>
+          <option value="target">Target</option>
+          <option value="instacart">Instacart</option>
+          <option value="fresh-direct">FreshDirect</option>
+          <option value="amazon-fresh">Amazon Fresh</option>
+        </select>
+        <select id="shop-user" class="ex-filter">
+          <option value="">All Users</option>
+        </select>
+        <select id="shop-status" class="ex-filter">
+          <option value="">All Statuses</option>
+        </select>
+        <input id="shop-min" class="ex-filter narrow" type="number" placeholder="Min $" />
+        <input id="shop-max" class="ex-filter narrow" type="number" placeholder="Max $" />
+        <button class="btn-ghost" id="shop-clear-btn">Clear</button>
+        <span class="ex-count" id="shop-count"></span>
+      </div>
+      <div class="table-wrap" id="shop-table-wrap"></div>
+      <div class="pagination" id="shop-pag"></div>
+    </section>
+
+    <!-- ── LIFESTYLE ── -->
+    <section class="page" id="page-lifestyle">
+      <div class="page-title">
+        <h2>Lifestyle</h2>
+        <p>5 lifestyle services — Ticketmaster, Zillow, Logistics Tracking, Sonos, Obsidian</p>
+      </div>
+      <div class="sub-tabs" id="lifestyle-sub-tabs">
+        <button class="sub-tab active" data-subtab="events">🎫 Events</button>
+        <button class="sub-tab" data-subtab="properties">🏠 Properties</button>
+        <button class="sub-tab" data-subtab="packages">📦 Packages</button>
+        <button class="sub-tab" data-subtab="music">🔊 Music</button>
+        <button class="sub-tab" data-subtab="notes">📓 Notes</button>
+      </div>
+      <div id="lifestyle-content" style="margin-top:14px"></div>
+    </section>
+
+    <!-- ── INTEGRITY ── -->
+    <section class="page" id="page-integrity">
+      <div class="page-title">
+        <h2>Data Integrity</h2>
+        <p>Cross-service persona coverage matrix and consistency checks across all 19 services</p>
+      </div>
+      <div id="integrity-results"></div>
+    </section>
+
+    <!-- ── NETWORK ── -->
+    <section class="page" id="page-network">
+      <div class="page-title">
+        <h2>Service Network</h2>
+        <p>Force-directed graph — drag nodes, click to highlight connections, scroll to zoom</p>
+      </div>
+      <div class="network-controls">
+        <span class="ctrl-label">Show:</span>
+        <label class="toggle-pill"><input type="checkbox" id="cb-health" checked /><span>Health (8)</span></label>
+        <label class="toggle-pill"><input type="checkbox" id="cb-shopping" checked /><span>Shopping (6)</span></label>
+        <label class="toggle-pill"><input type="checkbox" id="cb-lifestyle" checked /><span>Lifestyle (5)</span></label>
+        <button class="btn-ghost" id="btn-reset-zoom">⟳ Reset</button>
+      </div>
+      <div class="network-wrap">
+        <svg id="network-svg"></svg>
+        <div id="tooltip" class="tooltip hidden"></div>
+        <div class="network-legend">
+          <div class="leg"><span class="leg-dot" style="background:#14b8a6"></span>User (11)</div>
+          <div class="leg"><span class="leg-dot" style="background:#22c55e"></span>Health (8)</div>
+          <div class="leg"><span class="leg-dot" style="background:#f59e0b"></span>Shopping (6)</div>
+          <div class="leg"><span class="leg-dot" style="background:#a855f7"></span>Lifestyle (5)</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ══ MODAL ══ -->
+  <div id="modal-overlay" class="modal-overlay hidden" onclick="handleModalClick(event)">
+    <div class="modal-box" id="modal-box">
+      <div class="modal-header">
+        <div class="modal-header-left">
+          <span class="modal-badge" id="modal-badge"></span>
+          <span class="modal-title" id="modal-title"></span>
+        </div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- ══ LOADING ══ -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loader-box">
+      <div class="spinner"></div>
+      <p id="load-msg">Loading LongHorizon Universe…</p>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+      </div>
+      <p id="load-sub" style="font-size:10px;color:#4b6278;margin-top:6px"></p>
+    </div>
+  </div>
+
+  <script src="js/network.js"></script>
+  <script src="js/lifestyle.js"></script>
+  <script src="js/shopping.js"></script>
+  <script src="js/health.js"></script>
+  <script src="js/explorer.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
