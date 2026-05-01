@@ -162,10 +162,8 @@ function hideSplash() {
 
 /* ════ LIST VIEW ════ */
 function renderList() {
-  const totalOrders = PERSONAS.reduce((s,p) => s + orderSummary(p.id).count, 0);
   const cards = PERSONAS.map(p => {
     const profile = personaProfile(p.id);
-    const orders = orderSummary(p.id);
     const details = [
       profile.phone ? ['Phone', profile.phone] : null,
       profile.address ? ['Address', profile.address] : null,
@@ -182,11 +180,6 @@ function renderList() {
         '</div>' +
       '</div>' +
       (details ? '<div class="persona-contact">'+details+'</div>' : '') +
-      '<div class="persona-stats">' +
-        '<span class="ps">'+orders.count+' orders</span>' +
-        '<span class="ps">$'+Math.round(orders.spend).toLocaleString()+' total spend</span>' +
-        '<span class="ps">'+orders.sources+' order source'+(orders.sources===1?'':'s')+'</span>' +
-      '</div>' +
     '</div>';
   }).join('');
   view(
@@ -194,7 +187,6 @@ function renderList() {
     '<p>11 personas across 19 integrated services — click any card to explore</p></div>' +
     '<div class="stats-row">' +
       '<span class="stat-pill"><strong>11</strong> Personas</span>' +
-      '<span class="stat-pill"><strong>'+totalOrders.toLocaleString()+'</strong> Total Orders</span>' +
       '<span class="stat-pill"><strong>19</strong> Services</span>' +
     '</div>' +
     '<div class="persona-grid">'+cards+'</div>'
