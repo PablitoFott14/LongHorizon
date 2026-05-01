@@ -81,6 +81,32 @@ body { background: var(--bg); color: var(--text); font-family: var(--font); min-
 .persona-name  { font-weight: 600; font-size: 13px; }
 .persona-email { font-size: 10px; color: var(--text3); margin-top: 1px; }
 .persona-id    { font-size: 10px; color: var(--text3); font-family: var(--mono); margin-top: 1px; }
+.persona-contact {
+  display: grid;
+  gap: 5px;
+  margin: 0 0 10px;
+  padding: 8px 0 9px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.persona-detail {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 8px;
+  min-width: 0;
+  font-size: 10px;
+}
+.persona-detail span {
+  color: var(--text3);
+  font-weight: 700;
+}
+.persona-detail strong {
+  color: var(--text2);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .persona-stats { display: flex; gap: 7px; flex-wrap: wrap; }
 .ps { font-size: 11px; color: var(--text2); background: var(--surface2); border: 1px solid var(--border2); border-radius: 4px; padding: 2px 7px; }
 

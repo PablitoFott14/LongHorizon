@@ -162,25 +162,30 @@ function hideSplash() {
 
 /* ════ LIST VIEW ════ */
 function renderList() {
-  const totalOrders = PERSONAS.reduce((s,p) => s + shopOrders(p.id).length, 0);
-  const garminDays  = (D.garmin?.daily_stats || []).length;
+  const totalOrders = PERSONAS.reduce((s,p) => s + orderSummary(p.id).count, 0);
   const cards = PERSONAS.map(p => {
-    const orders = shopOrders(p.id).length;
-    const garmin = (D.garmin?.daily_stats || []).filter(d => d.user_id === p.id).length;
-    const whoop  = (D.whoop?.cycles || []).filter(c => c.persona_id === p.id).length;
+    const profile = personaProfile(p.id);
+    const orders = orderSummary(p.id);
+    const details = [
+      profile.phone ? ['Phone', profile.phone] : null,
+      profile.address ? ['Address', profile.address] : null,
+    ].filter(Boolean).map(([k,v]) =>
+      '<div class="persona-detail"><span>'+k+'</span><strong>'+esc(v)+'</strong></div>'
+    ).join('');
     return '<div class="persona-card" onclick="lhNav(\''+p.id+'\')" style="cursor:pointer">' +
       '<div class="persona-card-top">' +
-        '<div class="avatar">'+p.initials+'</div>' +
+        '<div class="avatar">'+initials(profile.name||p.name)+'</div>' +
         '<div>' +
-          '<div class="persona-name">'+p.name+'</div>' +
-          '<div class="persona-email">'+p.email+'</div>' +
+          '<div class="persona-name">'+esc(profile.name||p.name)+'</div>' +
+          '<div class="persona-email">'+esc(profile.email||p.email)+'</div>' +
           '<div class="persona-id">'+p.id+'</div>' +
         '</div>' +
       '</div>' +
+      (details ? '<div class="persona-contact">'+details+'</div>' : '') +
       '<div class="persona-stats">' +
-        '<span class="ps">'+orders+' orders</span>' +
-        '<span class="ps">'+garmin+' Garmin days</span>' +
-        '<span class="ps">'+whoop+' Whoop cycles</span>' +
+        '<span class="ps">'+orders.count+' orders</span>' +
+        '<span class="ps">$'+Math.round(orders.spend).toLocaleString()+' total spend</span>' +
+        '<span class="ps">'+orders.sources+' order source'+(orders.sources===1?'':'s')+'</span>' +
       '</div>' +
     '</div>';
   }).join('');
@@ -190,7 +195,6 @@ function renderList() {
     '<div class="stats-row">' +
       '<span class="stat-pill"><strong>11</strong> Personas</span>' +
       '<span class="stat-pill"><strong>'+totalOrders.toLocaleString()+'</strong> Total Orders</span>' +
-      '<span class="stat-pill"><strong>'+garminDays.toLocaleString()+'</strong> Garmin Days</span>' +
       '<span class="stat-pill"><strong>19</strong> Services</span>' +
     '</div>' +
     '<div class="persona-grid">'+cards+'</div>'
@@ -1500,6 +1504,54 @@ function shopOrders(pid) {
   return ['amazon','walmart','target','instacart','fresh-direct','amazon-fresh']
     .flatMap(k=>(D[k]?.orders||[]).filter(o=>o.user_id===pid));
 }
+
+function orderSummary(pid) {
+  const keys = ['amazon','walmart','target','instacart','fresh-direct','amazon-fresh','ticketmaster'];
+  let count = 0, spend = 0, sources = 0;
+  keys.forEach(key => {
+    const rows = (D[key]?.orders||[]).filter(o=>o.user_id===pid);
+    if (!rows.length) return;
+    sources++;
+    count += rows.length;
+    spend += rows.reduce((s,o)=>s+Number(o.total??o.total_amount??o.total_price??o.subtotal??0),0);
+  });
+  return { count, spend, sources };
+}
+
+function personaProfile(pid) {
+  const fields = {};
+  const apply = (row, spec={}) => {
+    if (!row) return;
+    const name = spec.name ? spec.name(row) : row.name || row.full_name || ([row.first_name,row.last_name].filter(Boolean).join(' ') || null);
+    const email = row.email;
+    const phone = row.phone;
+    const address = spec.address ? spec.address(row) : row.address || row.default_address || row.shipping_address;
+    if (!fields.name && name) fields.name = name;
+    if (!fields.email && email) fields.email = email;
+    if (!fields.phone && phone) fields.phone = phone;
+    if (!fields.address && address) fields.address = address;
+  };
+
+  apply((D.amazon?.users||[]).find(u=>u.user_id===pid), {address:u=>u.default_address});
+  apply((D.walmart?.users||[]).find(u=>u.user_id===pid), {address:u=>u.shipping_address});
+  apply((D.target?.users||[]).find(u=>u.user_id===pid), {address:u=>u.shipping_address});
+  apply((D.instacart?.users||[]).find(u=>u.user_id===pid));
+  apply((D['fresh-direct']?.users||[]).find(u=>u.user_id===pid));
+  apply((D['amazon-fresh']?.users||[]).find(u=>u.user_id===pid));
+  apply((D.ticketmaster?.users||[]).find(u=>u.user_id===pid), {
+    address:u=>[u.address,u.city,u.state,u.zip].filter(Boolean).join(', ')
+  });
+  apply((D.garmin?.users||[]).find(u=>u.user_id===pid));
+  apply((D.fitbit?.user_profiles||[]).find(u=>u.user_id===pid), {name:u=>u.full_name||u.display_name});
+  apply((D.obsidian?.users||[]).find(u=>u.user_id===pid), {name:u=>u.username});
+  return fields;
+}
+
+function initials(name) {
+  const parts = String(name||'').trim().split(/\s+/).filter(Boolean);
+  return (parts[0]?.[0]||'?') + (parts[1]?.[0]||'');
+}
+
 function view(html) { document.getElementById('view').innerHTML = html; }
 function tableWrap(headers, body) {
   return '<div class="table-wrap"><table class="data-table"><thead><tr>'+
