@@ -97,6 +97,8 @@ window.toggleItems = function(id) {
   if (el) el.style.display = el.style.display === 'none' ? '' : 'none';
 };
 
+let VIZ_DETAIL_SEQ = 0;
+
 /* ════ BOOTSTRAP ════ */
 function initChartTooltip() {
   if (document.getElementById('chart-tooltip')) return;
@@ -582,13 +584,19 @@ function modalVisuals(pid, key) {
       const hr = byDate((D.garmin?.heart_rate||[]).filter(r=>r.user_id===pid), 'date');
       const hrv = byDate((D.garmin?.hrv||[]).filter(r=>r.user_id===pid), 'date');
       const sleep = byDate((D.garmin?.sleep||[]).filter(r=>r.user_id===pid), 'date');
+      const daily30 = takeLast(daily, 30), hr30 = takeLast(hr, 30), hrv30 = takeLast(hrv, 30), sleep30 = takeLast(sleep, 30), sleep14 = takeLast(sleep, 14);
       charts.push(
-        lineViz('Steps by day', 'Date', 'Steps', takeLast(daily, 30).map(r=>pt(r.date, r.steps)), '#22c55e', true),
-        lineViz('Calories by day', 'Date', 'kcal', takeLast(daily, 30).map(r=>pt(r.date, r.calories_total)), '#f59e0b', true),
-        lineViz('Resting heart rate by day', 'Date', 'bpm', takeLast(hr, 30).map(r=>pt(r.date, r.resting_hr)), '#f87171', false),
-        lineViz('HRV last night by day', 'Date', 'ms', takeLast(hrv, 30).map(r=>pt(r.date, r.hrv_last_night)), '#818cf8', false),
-        lineViz('Sleep score by night', 'Date', 'Score', takeLast(sleep, 30).map(r=>pt(r.date, r.sleep_score)), '#38bdf8', false),
-        stackedBarViz('Sleep stages by night', 'Date', 'Hours', takeLast(sleep, 14).map(r=>({
+        lineViz('Steps by day', 'Date', 'Steps', daily30.map(r=>pt(r.date, r.steps)), '#22c55e', true,
+          detailTable(['Date','Steps','Distance (km)','Calories','Floors','Intensity Min'], daily30.slice().reverse(), r=>'<tr><td>'+r.date+'</td><td class="num">'+fmt(r.steps)+'</td><td class="num">'+(r.distance_meters?(r.distance_meters/1000).toFixed(2):'—')+'</td><td class="num">'+fmt(r.calories_total)+'</td><td class="num">'+nvl(r.floors_climbed)+'</td><td class="num">'+nvl(r.intensity_minutes)+'</td></tr>')),
+        lineViz('Calories by day', 'Date', 'kcal', daily30.map(r=>pt(r.date, r.calories_total)), '#f59e0b', true,
+          detailTable(['Date','Total Calories','Active Calories','Steps','Intensity Min'], daily30.slice().reverse(), r=>'<tr><td>'+r.date+'</td><td class="num">'+fmt(r.calories_total)+'</td><td class="num">'+fmt(r.calories_active)+'</td><td class="num">'+fmt(r.steps)+'</td><td class="num">'+nvl(r.intensity_minutes)+'</td></tr>')),
+        lineViz('Resting heart rate by day', 'Date', 'bpm', hr30.map(r=>pt(r.date, r.resting_hr)), '#f87171', false,
+          detailTable(['Date','Resting HR','Min HR','Avg HR','Max HR'], hr30.slice().reverse(), r=>'<tr><td>'+r.date+'</td><td class="num">'+nvl(r.resting_hr)+'</td><td class="num">'+nvl(r.min_hr)+'</td><td class="num">'+nvl(r.avg_hr)+'</td><td class="num">'+nvl(r.max_hr)+'</td></tr>')),
+        lineViz('HRV last night by day', 'Date', 'ms', hrv30.map(r=>pt(r.date, r.hrv_last_night)), '#818cf8', false,
+          detailTable(['Date','Last Night HRV','Weekly Avg','Status','Baseline'], hrv30.slice().reverse(), r=>'<tr><td>'+r.date+'</td><td class="num">'+nvl(r.hrv_last_night)+'</td><td class="num">'+nvl(r.hrv_weekly_avg)+'</td><td>'+esc(r.hrv_status||'—')+'</td><td class="num">'+nvl(r.baseline_low)+'–'+nvl(r.baseline_high)+'</td></tr>')),
+        lineViz('Sleep score by night', 'Date', 'Score', sleep30.map(r=>pt(r.date, r.sleep_score)), '#38bdf8', false,
+          detailTable(['Date','Sleep Score','Quality','Total Sleep','Deep','Light','REM','Awake'], sleep30.slice().reverse(), r=>'<tr><td>'+r.date+'</td><td class="num">'+nvl(r.sleep_score)+'</td><td>'+esc(r.sleep_quality||'—')+'</td><td class="num">'+nvl(r.total_sleep_minutes)+' min</td><td class="num">'+nvl(r.deep_sleep_minutes)+'</td><td class="num">'+nvl(r.light_sleep_minutes)+'</td><td class="num">'+nvl(r.rem_sleep_minutes)+'</td><td class="num">'+nvl(r.awake_minutes)+'</td></tr>')),
+        stackedBarViz('Sleep stages by night', 'Date', 'Hours', sleep14.map(r=>({
           x:r.date,
           values:{
             Deep:(r.deep_sleep_minutes||0)/60,
@@ -601,7 +609,7 @@ function modalVisuals(pid, key) {
           {key:'Light', color:'#60a5fa'},
           {key:'REM', color:'#a78bfa'},
           {key:'Awake', color:'#f97316'},
-        ])
+        ], detailTable(['Date','Sleep Start','Sleep End','Total','Deep','Light','REM','Awake','Score'], sleep14.slice().reverse(), r=>'<tr><td>'+r.date+'</td><td>'+esc((r.sleep_start||'').replace('T',' ').slice(0,16)||'—')+'</td><td>'+esc((r.sleep_end||'').replace('T',' ').slice(0,16)||'—')+'</td><td class="num">'+nvl(r.total_sleep_minutes)+' min</td><td class="num">'+nvl(r.deep_sleep_minutes)+'</td><td class="num">'+nvl(r.light_sleep_minutes)+'</td><td class="num">'+nvl(r.rem_sleep_minutes)+'</td><td class="num">'+nvl(r.awake_minutes)+'</td><td class="num">'+nvl(r.sleep_score)+'</td></tr>'))
       );
       break;
     }
@@ -609,12 +617,17 @@ function modalVisuals(pid, key) {
       const rec = byDate((D.whoop?.recovery||[]).filter(r=>r.persona_id===pid), 'timestamp');
       const cycles = byDate((D.whoop?.cycles||[]).filter(r=>r.persona_id===pid), 'start_time');
       const sleep = byDate((D.whoop?.sleep||[]).filter(r=>r.persona_id===pid && !r.nap), 'start_time');
+      const rec30 = takeLast(rec, 30), cycles30 = takeLast(cycles, 30), sleep14 = takeLast(sleep, 14);
       charts.push(
-        lineViz('Recovery score by day', 'Date', 'Score %', takeLast(rec, 30).map(r=>pt(dateOnly(r.timestamp), r.recovery_score)), '#22c55e', false),
-        lineViz('HRV by day', 'Date', 'ms', takeLast(rec, 30).map(r=>pt(dateOnly(r.timestamp), r.hrv_rmssd)), '#818cf8', false),
-        lineViz('Resting heart rate by day', 'Date', 'bpm', takeLast(rec, 30).map(r=>pt(dateOnly(r.timestamp), r.resting_heart_rate)), '#f87171', false),
-        lineViz('Strain by cycle', 'Date', 'Strain', takeLast(cycles, 30).map(r=>pt(dateOnly(r.start_time), r.strain)), '#f59e0b', true),
-        stackedBarViz('Sleep stages by night', 'Date', 'Hours', takeLast(sleep, 14).map(r=>({
+        lineViz('Recovery score by day', 'Date', 'Score %', rec30.map(r=>pt(dateOnly(r.timestamp), r.recovery_score)), '#22c55e', false,
+          detailTable(['Date','Recovery %','HRV (ms)','RHR','SpO2 %','Skin Temp C','Cycle ID'], rec30.slice().reverse(), r=>'<tr><td>'+dateOnly(r.timestamp)+'</td><td class="num">'+nvl(r.recovery_score)+'</td><td class="num">'+nvl(r.hrv_rmssd)+'</td><td class="num">'+nvl(r.resting_heart_rate)+'</td><td class="num">'+nvl(r.spo2_percentage)+'</td><td class="num">'+nvl(r.skin_temp_celsius)+'</td><td class="mono dim">'+esc(r.cycle_id||'—')+'</td></tr>')),
+        lineViz('HRV by day', 'Date', 'ms', rec30.map(r=>pt(dateOnly(r.timestamp), r.hrv_rmssd)), '#818cf8', false,
+          detailTable(['Date','HRV (ms)','Recovery %','RHR','Cycle ID'], rec30.slice().reverse(), r=>'<tr><td>'+dateOnly(r.timestamp)+'</td><td class="num">'+nvl(r.hrv_rmssd)+'</td><td class="num">'+nvl(r.recovery_score)+'</td><td class="num">'+nvl(r.resting_heart_rate)+'</td><td class="mono dim">'+esc(r.cycle_id||'—')+'</td></tr>')),
+        lineViz('Resting heart rate by day', 'Date', 'bpm', rec30.map(r=>pt(dateOnly(r.timestamp), r.resting_heart_rate)), '#f87171', false,
+          detailTable(['Date','RHR','Recovery %','HRV (ms)','Cycle ID'], rec30.slice().reverse(), r=>'<tr><td>'+dateOnly(r.timestamp)+'</td><td class="num">'+nvl(r.resting_heart_rate)+'</td><td class="num">'+nvl(r.recovery_score)+'</td><td class="num">'+nvl(r.hrv_rmssd)+'</td><td class="mono dim">'+esc(r.cycle_id||'—')+'</td></tr>')),
+        lineViz('Strain by cycle', 'Date', 'Strain', cycles30.map(r=>pt(dateOnly(r.start_time), r.strain, r.cycle_id)), '#f59e0b', true,
+          detailTable(['Date','Cycle ID','Strain','kJ','Avg HR','Max HR','Start','End'], cycles30.slice().reverse(), r=>'<tr><td>'+dateOnly(r.start_time)+'</td><td class="mono dim">'+esc(r.cycle_id||'—')+'</td><td class="num">'+nvl(r.strain)+'</td><td class="num">'+nvl(r.kilojoules)+'</td><td class="num">'+nvl(r.average_heart_rate)+'</td><td class="num">'+nvl(r.max_heart_rate)+'</td><td>'+esc((r.start_time||'').replace('T',' ').slice(0,16))+'</td><td>'+esc((r.end_time||'').replace('T',' ').slice(0,16))+'</td></tr>')),
+        stackedBarViz('Sleep stages by night', 'Date', 'Hours', sleep14.map(r=>({
           x:dateOnly(r.start_time),
           values:{
             Slow:(r.total_slow_wave_sleep_ms||0)/3600000,
@@ -627,7 +640,7 @@ function modalVisuals(pid, key) {
           {key:'Light', color:'#60a5fa'},
           {key:'REM', color:'#a78bfa'},
           {key:'Awake', color:'#f97316'},
-        ])
+        ], detailTable(['Date','Sleep ID','Performance','Consistency','Efficiency','In Bed','Awake','Light','Slow Wave','REM','Cycles','Disturbances','Resp Rate'], sleep14.slice().reverse(), r=>'<tr><td>'+dateOnly(r.start_time)+'</td><td class="mono dim">'+esc(r.sleep_id||'—')+'</td><td class="num">'+nvl(r.score_sleep_performance)+'</td><td class="num">'+nvl(r.score_sleep_consistency)+'</td><td class="num">'+nvl(r.score_sleep_efficiency)+'</td><td class="num">'+msToHours(r.total_in_bed_ms)+'</td><td class="num">'+msToHours(r.total_awake_ms)+'</td><td class="num">'+msToHours(r.total_light_sleep_ms)+'</td><td class="num">'+msToHours(r.total_slow_wave_sleep_ms)+'</td><td class="num">'+msToHours(r.total_rem_sleep_ms)+'</td><td class="num">'+nvl(r.sleep_cycle_count)+'</td><td class="num">'+nvl(r.disturbance_count)+'</td><td class="num">'+nvl(r.respiratory_rate)+'</td></tr>'))
       );
       break;
     }
@@ -639,18 +652,24 @@ function modalVisuals(pid, key) {
       const hrv = byDate((ah.hrv_records||[]).filter(r=>r.user_id===pid), 'date');
       const bm = byDate((ah.body_mass_records||[]).filter(r=>r.user_id===pid), 'date');
       const sleep = appleSleepNights((ah.sleep_records||[]).filter(r=>r.user_id===pid));
+      const steps30 = takeLast(steps, 30), act30 = takeLast(act, 30), rhr30 = takeLast(rhr, 30), hrv30 = takeLast(hrv, 30), sleep14 = takeLast(sleep, 14), bm20 = takeLast(bm, 20);
       charts.push(
-        lineViz('Steps by day', 'Date', 'Steps', takeLast(steps, 30).map(r=>pt(r.date, r.total_steps)), '#ff375f', true),
-        lineViz('Active energy by day', 'Date', 'kcal', takeLast(act, 30).map(r=>pt(r.date, r.active_energy_kcal)), '#f59e0b', true),
-        lineViz('Resting heart rate by day', 'Date', 'bpm', takeLast(rhr, 30).map(r=>pt(dateOnly(r.date), r.value)), '#f87171', false),
-        lineViz('HRV by day', 'Date', 'ms', takeLast(hrv, 30).map(r=>pt(dateOnly(r.date), r.value)), '#818cf8', false),
-        stackedBarViz('Sleep stages by night', 'Date', 'Hours', takeLast(sleep, 14).map(r=>({x:r.date, values:r.values})), [
+        lineViz('Steps by day', 'Date', 'Steps', steps30.map(r=>pt(r.date, r.total_steps)), '#ff375f', true,
+          detailTable(['Date','Steps','Record ID'], steps30.slice().reverse(), r=>'<tr><td>'+r.date+'</td><td class="num">'+fmt(r.total_steps)+'</td><td class="mono dim">'+esc(r.record_id||'—')+'</td></tr>')),
+        lineViz('Active energy by day', 'Date', 'kcal', act30.map(r=>pt(r.date, r.active_energy_kcal)), '#f59e0b', true,
+          detailTable(['Date','Active Energy','Basal Energy','Exercise Min','Stand Hours','Distance km','Flights'], act30.slice().reverse(), r=>'<tr><td>'+r.date+'</td><td class="num">'+nvl(r.active_energy_kcal)+'</td><td class="num">'+nvl(r.basal_energy_kcal)+'</td><td class="num">'+nvl(r.exercise_minutes)+'</td><td class="num">'+nvl(r.stand_hours)+'</td><td class="num">'+nvl(r.distance_km)+'</td><td class="num">'+nvl(r.flights_climbed)+'</td></tr>')),
+        lineViz('Resting heart rate by day', 'Date', 'bpm', rhr30.map(r=>pt(dateOnly(r.date), r.value, r.record_id)), '#f87171', false,
+          detailTable(['Date','RHR','Unit','Record ID'], rhr30.slice().reverse(), r=>'<tr><td>'+dateOnly(r.date)+'</td><td class="num">'+nvl(r.value)+'</td><td>'+esc(r.unit||'—')+'</td><td class="mono dim">'+esc(r.record_id||'—')+'</td></tr>')),
+        lineViz('HRV by day', 'Date', 'ms', hrv30.map(r=>pt(dateOnly(r.date), r.value, r.record_id)), '#818cf8', false,
+          detailTable(['Date','HRV','Unit','Record ID'], hrv30.slice().reverse(), r=>'<tr><td>'+dateOnly(r.date)+'</td><td class="num">'+nvl(r.value)+'</td><td>'+esc(r.unit||'—')+'</td><td class="mono dim">'+esc(r.record_id||'—')+'</td></tr>')),
+        stackedBarViz('Sleep stages by night', 'Date', 'Hours', sleep14.map(r=>({x:r.date, values:r.values})), [
           {key:'Deep', color:'#312e81'},
           {key:'Core', color:'#60a5fa'},
           {key:'REM', color:'#a78bfa'},
           {key:'Awake', color:'#f97316'},
-        ]),
-        lineViz('Body mass by date', 'Date', 'kg', takeLast(bm, 20).map(r=>pt(dateOnly(r.date), r.value)), '#34d399', false)
+        ], detailTable(['Date','Deep h','Core h','REM h','Awake h','Total h'], sleep14.slice().reverse(), r=>'<tr><td>'+r.date+'</td><td class="num">'+num2(r.values.Deep)+'</td><td class="num">'+num2(r.values.Core)+'</td><td class="num">'+num2(r.values.REM)+'</td><td class="num">'+num2(r.values.Awake)+'</td><td class="num">'+num2(Object.values(r.values).reduce((s,v)=>s+v,0))+'</td></tr>')),
+        lineViz('Body mass by date', 'Date', 'kg', bm20.map(r=>pt(dateOnly(r.date), r.value, r.record_id)), '#34d399', false,
+          detailTable(['Date','Weight','Unit','Record ID'], bm20.slice().reverse(), r=>'<tr><td>'+dateOnly(r.date)+'</td><td class="num">'+nvl(r.value)+'</td><td>'+esc(r.unit||'—')+'</td><td class="mono dim">'+esc(r.record_id||'—')+'</td></tr>'))
       );
       break;
     }
@@ -659,11 +678,15 @@ function modalVisuals(pid, key) {
       const hr = byDate((D.fitbit?.heart_rate_summaries||[]).filter(r=>r.user_id===pid), 'date');
       const sleep = byDate((D.fitbit?.sleep_logs||[]).filter(r=>r.user_id===pid), 'date');
       const body = byDate((D.fitbit?.body_measurements||[]).filter(r=>r.user_id===pid), 'date');
+      const daily30 = takeLast(daily, 30), hr30 = takeLast(hr, 30), sleep14 = takeLast(sleep, 14), body20 = takeLast(body, 20);
       charts.push(
-        lineViz('Steps by day', 'Date', 'Steps', takeLast(daily, 30).map(r=>pt(r.date, r.steps)), '#00b0b9', true),
-        lineViz('Active zone minutes by day', 'Date', 'Minutes', takeLast(daily, 30).map(r=>pt(r.date, r.active_zone_minutes)), '#f59e0b', true),
-        lineViz('Resting heart rate by day', 'Date', 'bpm', takeLast(hr, 30).map(r=>pt(r.date, r.resting_heart_rate)), '#f87171', false),
-        stackedBarViz('Sleep stages by night', 'Date', 'Hours', takeLast(sleep, 14).map(r=>({
+        lineViz('Steps by day', 'Date', 'Steps', daily30.map(r=>pt(r.date, r.steps)), '#00b0b9', true,
+          detailTable(['Date','Steps','Distance','Calories','Floors','Sedentary Min','Light Min','Fairly Active','Very Active'], daily30.slice().reverse(), r=>'<tr><td>'+r.date+'</td><td class="num">'+fmt(r.steps)+'</td><td class="num">'+nvl(r.distance)+' '+esc(r.distance_unit||'')+'</td><td class="num">'+fmt(r.calories)+'</td><td class="num">'+nvl(r.floors)+'</td><td class="num">'+nvl(r.sedentary_minutes)+'</td><td class="num">'+nvl(r.lightly_active_minutes)+'</td><td class="num">'+nvl(r.fairly_active_minutes)+'</td><td class="num">'+nvl(r.very_active_minutes)+'</td></tr>')),
+        lineViz('Active zone minutes by day', 'Date', 'Minutes', daily30.map(r=>pt(r.date, r.active_zone_minutes)), '#f59e0b', true,
+          detailTable(['Date','Active Zone','Fat Burn','Cardio','Peak','Calories Active'], daily30.slice().reverse(), r=>'<tr><td>'+r.date+'</td><td class="num">'+nvl(r.active_zone_minutes)+'</td><td class="num">'+nvl(r.fat_burn_minutes)+'</td><td class="num">'+nvl(r.cardio_minutes)+'</td><td class="num">'+nvl(r.peak_minutes)+'</td><td class="num">'+fmt(r.calories_active)+'</td></tr>')),
+        lineViz('Resting heart rate by day', 'Date', 'bpm', hr30.map(r=>pt(r.date, r.resting_heart_rate)), '#f87171', false,
+          detailTable(['Date','RHR','Out Range Min','Fat Burn Min','Cardio Min','Peak Min'], hr30.slice().reverse(), r=>'<tr><td>'+r.date+'</td><td class="num">'+nvl(r.resting_heart_rate)+'</td><td class="num">'+nvl(r.out_of_range_minutes)+'</td><td class="num">'+nvl(r.fat_burn_minutes)+'</td><td class="num">'+nvl(r.cardio_minutes)+'</td><td class="num">'+nvl(r.peak_minutes)+'</td></tr>')),
+        stackedBarViz('Sleep stages by night', 'Date', 'Hours', sleep14.map(r=>({
           x:r.date,
           values:{
             Deep:(r.deep_minutes||0)/60,
@@ -676,18 +699,23 @@ function modalVisuals(pid, key) {
           {key:'Light', color:'#60a5fa'},
           {key:'REM', color:'#a78bfa'},
           {key:'Wake', color:'#f97316'},
-        ]),
-        lineViz('Weight by date', 'Date', 'kg', takeLast(body, 20).map(r=>pt(r.date, r.weight)), '#34d399', false)
+        ], detailTable(['Date','Start','End','Efficiency','In Bed','Asleep','Awake','Deep','Light','REM','Wake','Main Sleep'], sleep14.slice().reverse(), r=>'<tr><td>'+r.date+'</td><td>'+esc((r.start_time||'').replace('T',' ').slice(0,16))+'</td><td>'+esc((r.end_time||'').replace('T',' ').slice(0,16))+'</td><td class="num">'+nvl(r.efficiency)+'</td><td class="num">'+nvl(r.time_in_bed)+'</td><td class="num">'+nvl(r.minutes_asleep)+'</td><td class="num">'+nvl(r.minutes_awake)+'</td><td class="num">'+nvl(r.deep_minutes)+'</td><td class="num">'+nvl(r.light_minutes)+'</td><td class="num">'+nvl(r.rem_minutes)+'</td><td class="num">'+nvl(r.wake_minutes)+'</td><td>'+esc(String(r.is_main_sleep))+'</td></tr>')),
+        lineViz('Weight by date', 'Date', 'kg', body20.map(r=>pt(r.date, r.weight)), '#34d399', false,
+          detailTable(['Date','Time','Weight','BMI','Body Fat','Lean Mass','Source'], body20.slice().reverse(), r=>'<tr><td>'+r.date+'</td><td>'+esc(r.time||'—')+'</td><td class="num">'+nvl(r.weight)+'</td><td class="num">'+nvl(r.bmi)+'</td><td class="num">'+nvl(r.body_fat)+'</td><td class="num">'+nvl(r.lean_mass)+'</td><td>'+esc(r.source||'—')+'</td></tr>'))
       );
       break;
     }
     case 'eight-sleep': {
       const sess = byDate((D['eight-sleep']?.sleep_sessions||[]).filter(r=>r.persona_id===pid), 'start_time');
+      const sess30 = takeLast(sess, 30), sess14 = takeLast(sess, 14);
       charts.push(
-        lineViz('Sleep fitness score by night', 'Date', 'Score', takeLast(sess, 30).map(r=>pt(dateOnly(r.start_time||r.session_date), r.sleep_fitness_score??r.sleep_score)), '#818cf8', false),
-        lineViz('HRV by night', 'Date', 'ms', takeLast(sess, 30).map(r=>pt(dateOnly(r.start_time||r.session_date), r.hrv_ms??r.hrv)), '#38bdf8', false),
-        lineViz('Respiratory rate by night', 'Date', 'br/min', takeLast(sess, 30).map(r=>pt(dateOnly(r.start_time||r.session_date), r.respiratory_rate)), '#f59e0b', false),
-        stackedBarViz('Sleep stages by night', 'Date', 'Hours', takeLast(sess, 14).map(r=>({
+        lineViz('Sleep fitness score by night', 'Date', 'Score', sess30.map(r=>pt(dateOnly(r.start_time||r.session_date), r.sleep_fitness_score??r.sleep_score, r.session_id)), '#818cf8', false,
+          detailTable(['Date','Session ID','Fitness','Duration','Quality','Start','End','Bedtime','Wake'], sess30.slice().reverse(), r=>'<tr><td>'+dateOnly(r.start_time||r.session_date)+'</td><td class="mono dim">'+esc(r.session_id||'—')+'</td><td class="num">'+nvl(r.sleep_fitness_score??r.sleep_score)+'</td><td class="num">'+nvl(r.duration_score)+'</td><td class="num">'+nvl(r.quality_score)+'</td><td>'+esc((r.start_time||'').replace('T',' ').slice(0,16))+'</td><td>'+esc((r.end_time||'').replace('T',' ').slice(0,16))+'</td><td>'+esc(r.bedtime||'—')+'</td><td>'+esc(r.wake_time||'—')+'</td></tr>')),
+        lineViz('HRV by night', 'Date', 'ms', sess30.map(r=>pt(dateOnly(r.start_time||r.session_date), r.hrv_ms??r.hrv, r.session_id)), '#38bdf8', false,
+          detailTable(['Date','Session ID','HRV','Avg HR','Resp Rate','Fitness Score'], sess30.slice().reverse(), r=>'<tr><td>'+dateOnly(r.start_time||r.session_date)+'</td><td class="mono dim">'+esc(r.session_id||'—')+'</td><td class="num">'+nvl(r.hrv_ms??r.hrv)+'</td><td class="num">'+nvl(r.avg_heart_rate)+'</td><td class="num">'+nvl(r.respiratory_rate)+'</td><td class="num">'+nvl(r.sleep_fitness_score??r.sleep_score)+'</td></tr>')),
+        lineViz('Respiratory rate by night', 'Date', 'br/min', sess30.map(r=>pt(dateOnly(r.start_time||r.session_date), r.respiratory_rate, r.session_id)), '#f59e0b', false,
+          detailTable(['Date','Session ID','Resp Rate','Avg HR','HRV','Fitness Score'], sess30.slice().reverse(), r=>'<tr><td>'+dateOnly(r.start_time||r.session_date)+'</td><td class="mono dim">'+esc(r.session_id||'—')+'</td><td class="num">'+nvl(r.respiratory_rate)+'</td><td class="num">'+nvl(r.avg_heart_rate)+'</td><td class="num">'+nvl(r.hrv_ms??r.hrv)+'</td><td class="num">'+nvl(r.sleep_fitness_score??r.sleep_score)+'</td></tr>')),
+        stackedBarViz('Sleep stages by night', 'Date', 'Hours', sess14.map(r=>({
           x:dateOnly(r.start_time||r.session_date),
           values:{
             Deep:(r.deep_duration_s||0)/3600,
@@ -700,40 +728,53 @@ function modalVisuals(pid, key) {
           {key:'Light', color:'#60a5fa'},
           {key:'REM', color:'#a78bfa'},
           {key:'Awake', color:'#f97316'},
-        ])
+        ], detailTable(['Date','Session ID','Awake h','Light h','Deep h','REM h','Fitness','HRV','Resp Rate'], sess14.slice().reverse(), r=>'<tr><td>'+dateOnly(r.start_time||r.session_date)+'</td><td class="mono dim">'+esc(r.session_id||'—')+'</td><td class="num">'+secToHours(r.awake_duration_s)+'</td><td class="num">'+secToHours(r.light_duration_s)+'</td><td class="num">'+secToHours(r.deep_duration_s)+'</td><td class="num">'+secToHours(r.rem_duration_s)+'</td><td class="num">'+nvl(r.sleep_fitness_score??r.sleep_score)+'</td><td class="num">'+nvl(r.hrv_ms??r.hrv)+'</td><td class="num">'+nvl(r.respiratory_rate)+'</td></tr>'))
       );
       break;
     }
     case 'strava': {
       const acts = byDate((D.strava?.activities||[]).filter(r=>r.user_id===pid), 'start_date');
+      const acts14 = takeLast(acts, 14), acts30 = takeLast(acts, 30);
       charts.push(
-        barViz('Distance by recent activity', 'Activity date', 'km', takeLast(acts, 14).map(r=>pt(dateOnly(r.start_date), (r.distance||0)/1000, r.name)), '#fc4c02'),
-        lineViz('Average heart rate by activity', 'Activity date', 'bpm', takeLast(acts, 30).map(r=>pt(dateOnly(r.start_date), r.average_heartrate, r.name)), '#f87171', false),
-        barViz('Elevation gain by recent activity', 'Activity date', 'm', takeLast(acts, 14).map(r=>pt(dateOnly(r.start_date), r.total_elevation_gain, r.name)), '#22c55e')
+        barViz('Distance by recent activity', 'Activity date', 'km', acts14.map(r=>pt(dateOnly(r.start_date), (r.distance||0)/1000, r.name)), '#fc4c02',
+          detailTable(['Date','Activity','Type','Distance km','Duration min','Avg HR','Elevation m'], acts14.slice().reverse(), r=>'<tr><td>'+dateOnly(r.start_date)+'</td><td>'+esc(r.name||'—')+'</td><td>'+esc(r.type||'—')+'</td><td class="num">'+num2((r.distance||0)/1000)+'</td><td class="num">'+(r.moving_time?Math.round(r.moving_time/60):'—')+'</td><td class="num">'+nvl(r.average_heartrate)+'</td><td class="num">'+nvl(r.total_elevation_gain)+'</td></tr>')),
+        lineViz('Average heart rate by activity', 'Activity date', 'bpm', acts30.map(r=>pt(dateOnly(r.start_date), r.average_heartrate, r.name)), '#f87171', false,
+          detailTable(['Date','Activity','Type','Avg HR','Max HR','Distance km','Duration min'], acts30.slice().reverse(), r=>'<tr><td>'+dateOnly(r.start_date)+'</td><td>'+esc(r.name||'—')+'</td><td>'+esc(r.type||'—')+'</td><td class="num">'+nvl(r.average_heartrate)+'</td><td class="num">'+nvl(r.max_heartrate)+'</td><td class="num">'+num2((r.distance||0)/1000)+'</td><td class="num">'+(r.moving_time?Math.round(r.moving_time/60):'—')+'</td></tr>')),
+        barViz('Elevation gain by recent activity', 'Activity date', 'm', acts14.map(r=>pt(dateOnly(r.start_date), r.total_elevation_gain, r.name)), '#22c55e',
+          detailTable(['Date','Activity','Elevation m','Distance km','Avg Watts','Kilojoules'], acts14.slice().reverse(), r=>'<tr><td>'+dateOnly(r.start_date)+'</td><td>'+esc(r.name||'—')+'</td><td class="num">'+nvl(r.total_elevation_gain)+'</td><td class="num">'+num2((r.distance||0)/1000)+'</td><td class="num">'+nvl(r.average_watts)+'</td><td class="num">'+nvl(r.kilojoules)+'</td></tr>'))
       );
       break;
     }
     case 'myfitnesspal': {
       const agg = mfpDaily(pid);
+      const agg30 = takeLast(agg, 30), agg14 = takeLast(agg, 14);
       charts.push(
-        lineViz('Logged calories by day', 'Date', 'kcal', takeLast(agg, 30).map(r=>pt(r.date, r.calories)), '#4ca2cd', true),
-        stackedBarViz('Macros by day', 'Date', 'grams', takeLast(agg, 14).map(r=>({x:r.date, values:{Protein:r.protein, Carbs:r.carbs, Fat:r.fat}})), [
+        lineViz('Logged calories by day', 'Date', 'kcal', agg30.map(r=>pt(r.date, r.calories)), '#4ca2cd', true,
+          detailTable(['Date','Calories','Protein g','Carbs g','Fat g','Exercise kcal','Water ml'], agg30.slice().reverse(), r=>'<tr><td>'+r.date+'</td><td class="num">'+Math.round(r.calories)+'</td><td class="num">'+num1(r.protein)+'</td><td class="num">'+num1(r.carbs)+'</td><td class="num">'+num1(r.fat)+'</td><td class="num">'+Math.round(r.exerciseCalories)+'</td><td class="num">'+Math.round(r.waterMl)+'</td></tr>')),
+        stackedBarViz('Macros by day', 'Date', 'grams', agg14.map(r=>({x:r.date, values:{Protein:r.protein, Carbs:r.carbs, Fat:r.fat}})), [
           {key:'Protein', color:'#22c55e'},
           {key:'Carbs', color:'#38bdf8'},
           {key:'Fat', color:'#f59e0b'},
-        ]),
-        lineViz('Exercise calories burned by day', 'Date', 'kcal', takeLast(agg, 30).map(r=>pt(r.date, r.exerciseCalories)), '#f97316', true),
-        lineViz('Water logged by day', 'Date', 'ml', takeLast(agg, 30).map(r=>pt(r.date, r.waterMl)), '#38bdf8', true)
+        ], detailTable(['Date','Protein g','Carbs g','Fat g','Calories'], agg14.slice().reverse(), r=>'<tr><td>'+r.date+'</td><td class="num">'+num1(r.protein)+'</td><td class="num">'+num1(r.carbs)+'</td><td class="num">'+num1(r.fat)+'</td><td class="num">'+Math.round(r.calories)+'</td></tr>')),
+        lineViz('Exercise calories burned by day', 'Date', 'kcal', agg30.map(r=>pt(r.date, r.exerciseCalories)), '#f97316', true,
+          detailTable(['Date','Exercise kcal','Logged calories','Water ml'], agg30.slice().reverse(), r=>'<tr><td>'+r.date+'</td><td class="num">'+Math.round(r.exerciseCalories)+'</td><td class="num">'+Math.round(r.calories)+'</td><td class="num">'+Math.round(r.waterMl)+'</td></tr>')),
+        lineViz('Water logged by day', 'Date', 'ml', agg30.map(r=>pt(r.date, r.waterMl)), '#38bdf8', true,
+          detailTable(['Date','Water ml','Logged calories','Exercise kcal'], agg30.slice().reverse(), r=>'<tr><td>'+r.date+'</td><td class="num">'+Math.round(r.waterMl)+'</td><td class="num">'+Math.round(r.calories)+'</td><td class="num">'+Math.round(r.exerciseCalories)+'</td></tr>'))
       );
       break;
     }
     case 'renpho': {
       const rows = byDate((D.renpho?.measurements||[]).filter(r=>r.persona_id===pid), 'timestamp');
+      const rows30 = takeLast(rows, 30);
       charts.push(
-        lineViz('Weight by date', 'Date', 'kg', takeLast(rows, 30).map(r=>pt(dateOnly(r.timestamp), r.weight)), '#34d399', false),
-        lineViz('Body fat by date', 'Date', '%', takeLast(rows, 30).map(r=>pt(dateOnly(r.timestamp), r.body_fat)), '#f87171', false),
-        lineViz('Muscle mass by date', 'Date', 'kg', takeLast(rows, 30).map(r=>pt(dateOnly(r.timestamp), r.muscle_mass)), '#22c55e', false),
-        lineViz('Water percentage by date', 'Date', '%', takeLast(rows, 30).map(r=>pt(dateOnly(r.timestamp), r.water_percentage)), '#38bdf8', false)
+        lineViz('Weight by date', 'Date', 'kg', rows30.map(r=>pt(dateOnly(r.timestamp), r.weight)), '#34d399', false,
+          detailTable(['Date','Weight','BMI','Body Fat %','Muscle','Water %','Bone','BMR'], rows30.slice().reverse(), renphoRow)),
+        lineViz('Body fat by date', 'Date', '%', rows30.map(r=>pt(dateOnly(r.timestamp), r.body_fat)), '#f87171', false,
+          detailTable(['Date','Weight','BMI','Body Fat %','Muscle','Water %','Bone','BMR'], rows30.slice().reverse(), renphoRow)),
+        lineViz('Muscle mass by date', 'Date', 'kg', rows30.map(r=>pt(dateOnly(r.timestamp), r.muscle_mass)), '#22c55e', false,
+          detailTable(['Date','Weight','BMI','Body Fat %','Muscle','Water %','Bone','BMR'], rows30.slice().reverse(), renphoRow)),
+        lineViz('Water percentage by date', 'Date', '%', rows30.map(r=>pt(dateOnly(r.timestamp), r.water_percentage)), '#38bdf8', false,
+          detailTable(['Date','Weight','BMI','Body Fat %','Muscle','Water %','Bone','BMR'], rows30.slice().reverse(), renphoRow))
       );
       break;
     }
@@ -746,10 +787,16 @@ function modalVisuals(pid, key) {
       const tm = D.ticketmaster||{};
       const orders = byDate((tm.orders||[]).filter(o=>o.user_id===pid), 'purchased_at');
       const eMap={}; (tm.events||[]).forEach(e=>{eMap[e.id]=e;});
+      const ttMap={}; (tm.ticket_types||[]).forEach(t=>{ttMap[t.id]=t;});
+      const orders14 = takeLast(orders, 14);
+      const genreRows = Object.entries(countBy(orders, o=>eMap[o.event_id]?.genre||'Unknown')).map(([genre,count])=>({genre,count}));
       charts.push(
-        barViz('Ticket order spend by purchase date', 'Purchase date', '$', takeLast(orders, 14).map(o=>pt(dateOnly(o.purchased_at), o.total_price||o.subtotal, o.confirmation_code)), '#ef4444'),
-        barViz('Tickets per order', 'Purchase date', 'Qty', takeLast(orders, 14).map(o=>pt(dateOnly(o.purchased_at), o.quantity, eMap[o.event_id]?.name)), '#f59e0b'),
-        barViz('Orders by event genre', 'Genre', 'Orders', countsToPoints(countBy(orders, o=>eMap[o.event_id]?.genre||'Unknown')), '#8b5cf6')
+        barViz('Ticket order spend by purchase date', 'Purchase date', '$', orders14.map(o=>pt(dateOnly(o.purchased_at), o.total_price||o.subtotal, o.confirmation_code)), '#ef4444',
+          detailTable(['Purchased','Confirmation','Event','Genre','Qty','Total'], orders14.slice().reverse(), o=>'<tr><td>'+dateOnly(o.purchased_at)+'</td><td class="mono dim">'+esc(o.confirmation_code||'—')+'</td><td>'+esc(eMap[o.event_id]?.name||'—')+'</td><td>'+esc(eMap[o.event_id]?.genre||'—')+'</td><td class="num">'+nvl(o.quantity)+'</td><td class="num">$'+Number(o.total_price||o.subtotal||0).toFixed(2)+'</td></tr>')),
+        barViz('Tickets per order', 'Purchase date', 'Qty', orders14.map(o=>pt(dateOnly(o.purchased_at), o.quantity, eMap[o.event_id]?.name)), '#f59e0b',
+          detailTable(['Purchased','Event','Qty','Ticket Type','Section','Total','Confirmation'], orders14.slice().reverse(), o=>'<tr><td>'+dateOnly(o.purchased_at)+'</td><td>'+esc(eMap[o.event_id]?.name||'—')+'</td><td class="num">'+nvl(o.quantity)+'</td><td>'+esc(ttMap[o.ticket_type_id]?.name||'—')+'</td><td>'+esc(ttMap[o.ticket_type_id]?.section||'—')+'</td><td class="num">$'+Number(o.total_price||o.subtotal||0).toFixed(2)+'</td><td class="mono dim">'+esc(o.confirmation_code||'—')+'</td></tr>')),
+        barViz('Orders by event genre', 'Genre', 'Orders', countsToPoints(countBy(orders, o=>eMap[o.event_id]?.genre||'Unknown')), '#8b5cf6',
+          detailTable(['Genre','Orders'], genreRows, r=>'<tr><td>'+esc(r.genre)+'</td><td class="num">'+r.count+'</td></tr>'))
       );
       break;
     }
@@ -758,10 +805,14 @@ function modalVisuals(pid, key) {
       const pMap={}; (zd.properties||[]).forEach(p=>{pMap[p.id]=p;});
       const saved = (zd.saved_properties||[]).filter(s=>s.user_id===pid);
       const props = saved.map(s=>Object.assign({saved_at:s.saved_at}, pMap[s.property_id]||{})).filter(p=>p.id);
+      const tours = (zd.scheduled_tours||[]).filter(t=>t.user_id===pid);
       charts.push(
-        barViz('Saved property prices', 'Property', '$', props.slice(0, 12).map(p=>pt(shortAddress(p.address), p.price, p.address)), '#38bdf8'),
-        barViz('Saved properties by type', 'Home type', 'Count', countsToPoints(countBy(props, p=>p.home_type||'Unknown')), '#22c55e'),
-        barViz('Scheduled tours by status', 'Status', 'Tours', countsToPoints(countBy((zd.scheduled_tours||[]).filter(t=>t.user_id===pid), t=>t.status||'Unknown')), '#f59e0b')
+        barViz('Saved property prices', 'Property', '$', props.slice(0, 12).map(p=>pt(shortAddress(p.address), p.price, p.address)), '#38bdf8',
+          detailTable(['Address','City','Price','Beds','Baths','Sqft','Type','Saved'], props.slice(0,12), p=>'<tr><td>'+esc(p.address||'—')+'</td><td>'+esc(p.city?p.city+', '+p.state:'—')+'</td><td class="num">$'+Number(p.price||0).toLocaleString()+'</td><td class="num">'+nvl(p.bedrooms)+'</td><td class="num">'+nvl(p.bathrooms)+'</td><td class="num">'+fmt(p.sqft)+'</td><td>'+esc(p.home_type||'—')+'</td><td>'+dateOnly(p.saved_at)+'</td></tr>')),
+        barViz('Saved properties by type', 'Home type', 'Count', countsToPoints(countBy(props, p=>p.home_type||'Unknown')), '#22c55e',
+          detailTable(['Type','Saved Properties'], Object.entries(countBy(props, p=>p.home_type||'Unknown')).map(([type,count])=>({type,count})), r=>'<tr><td>'+esc(r.type)+'</td><td class="num">'+r.count+'</td></tr>')),
+        barViz('Scheduled tours by status', 'Status', 'Tours', countsToPoints(countBy(tours, t=>t.status||'Unknown')), '#f59e0b',
+          detailTable(['Status','Tours'], Object.entries(countBy(tours, t=>t.status||'Unknown')).map(([status,count])=>({status,count})), r=>'<tr><td>'+esc(r.status)+'</td><td class="num">'+r.count+'</td></tr>'))
       );
       break;
     }
@@ -770,9 +821,12 @@ function modalVisuals(pid, key) {
       const spks = (sn.speakers||[]).filter(s=>s.user_id===pid);
       const favs = (sn.favorites||[]).filter(f=>f.user_id===pid);
       charts.push(
-        barViz('Speaker volume by room', 'Room', 'Volume %', spks.map(s=>pt(s.room||s.speaker_id, s.volume, s.model)), '#14b8a6'),
-        barViz('Favorites by type', 'Type', 'Favorites', countsToPoints(countBy(favs, f=>f.type||'Unknown')), '#8b5cf6'),
-        barViz('Speakers by playback state', 'State', 'Speakers', countsToPoints(countBy(spks, s=>s.playback_state||'Unknown')), '#38bdf8')
+        barViz('Speaker volume by room', 'Room', 'Volume %', spks.map(s=>pt(s.room||s.speaker_id, s.volume, s.model)), '#14b8a6',
+          detailTable(['Room','Speaker ID','Model','Volume','Mute','State','Now Playing','Artist'], spks, s=>'<tr><td>'+esc(s.room||'—')+'</td><td class="mono dim">'+esc(s.speaker_id||'—')+'</td><td>'+esc(s.model||'—')+'</td><td class="num">'+nvl(s.volume)+'</td><td>'+esc(String(s.mute))+'</td><td>'+statusBadge(s.playback_state||'')+'</td><td>'+esc(s.now_playing_title||'—')+'</td><td>'+esc(s.now_playing_artist||'—')+'</td></tr>')),
+        barViz('Favorites by type', 'Type', 'Favorites', countsToPoints(countBy(favs, f=>f.type||'Unknown')), '#8b5cf6',
+          detailTable(['Type','Favorites'], Object.entries(countBy(favs, f=>f.type||'Unknown')).map(([type,count])=>({type,count})), r=>'<tr><td>'+esc(r.type)+'</td><td class="num">'+r.count+'</td></tr>')),
+        barViz('Speakers by playback state', 'State', 'Speakers', countsToPoints(countBy(spks, s=>s.playback_state||'Unknown')), '#38bdf8',
+          detailTable(['State','Speakers'], Object.entries(countBy(spks, s=>s.playback_state||'Unknown')).map(([state,count])=>({state,count})), r=>'<tr><td>'+esc(r.state)+'</td><td class="num">'+r.count+'</td></tr>'))
       );
       break;
     }
@@ -780,10 +834,16 @@ function modalVisuals(pid, key) {
       const ob = D.obsidian||{};
       const notes = (ob.notes||[]).filter(n=>n.user_id===pid);
       const tags = (ob.tags||[]).filter(t=>t.user_id===pid);
+      const folderRows = Object.entries(countBy(notes, n=>n.folder||'Root')).map(([folder,count])=>({folder,count}));
+      const largestNotes = notes.slice().sort((a,b)=>(b.size_bytes||0)-(a.size_bytes||0)).slice(0,12);
+      const tagRows = Object.entries(countBy(tags, t=>t.tag||'Unknown')).sort((a,b)=>b[1]-a[1]).slice(0,12).map(([tag,count])=>({tag,count}));
       charts.push(
-        barViz('Notes by folder', 'Folder', 'Notes', countsToPoints(countBy(notes, n=>n.folder||'Root')), '#8b5cf6'),
-        barViz('Largest notes by size', 'Note', 'Bytes', notes.slice().sort((a,b)=>(b.size_bytes||0)-(a.size_bytes||0)).slice(0,12).map(n=>pt(n.title||n.path, n.size_bytes, n.path)), '#38bdf8'),
-        barViz('Top tags', 'Tag', 'Uses', countsToPoints(countBy(tags, t=>t.tag||'Unknown')).slice(0,12), '#22c55e')
+        barViz('Notes by folder', 'Folder', 'Notes', countsToPoints(countBy(notes, n=>n.folder||'Root')), '#8b5cf6',
+          detailTable(['Folder','Notes'], folderRows, r=>'<tr><td>'+esc(r.folder)+'</td><td class="num">'+r.count+'</td></tr>')),
+        barViz('Largest notes by size', 'Note', 'Bytes', largestNotes.map(n=>pt(n.title||n.path, n.size_bytes, n.path)), '#38bdf8',
+          detailTable(['Title','Path','Folder','Size','Modified'], largestNotes, n=>'<tr><td>'+esc(n.title||'—')+'</td><td>'+esc(n.path||'—')+'</td><td>'+esc(n.folder||'Root')+'</td><td class="num">'+fmt(n.size_bytes)+'</td><td>'+dateOnly(n.modified_at)+'</td></tr>')),
+        barViz('Top tags', 'Tag', 'Uses', tagRows.map(r=>pt(r.tag, r.count)), '#22c55e',
+          detailTable(['Tag','Uses'], tagRows, r=>'<tr><td>'+esc(r.tag)+'</td><td class="num">'+r.count+'</td></tr>'))
       );
       break;
     }
@@ -792,10 +852,14 @@ function modalVisuals(pid, key) {
       const ships = byDate((lg.shipments||[]).filter(s=>s.user_id===pid), 'created_at');
       const evCount = {};
       (lg.tracking_events||[]).forEach(e=>{ evCount[e.tracking_number]=(evCount[e.tracking_number]||0)+1; });
+      const ships14 = takeLast(ships, 14);
       charts.push(
-        barViz('Shipments by status', 'Status', 'Shipments', countsToPoints(countBy(ships, s=>s.status||'Unknown')), '#14b8a6'),
-        barViz('Shipments by carrier', 'Carrier', 'Shipments', countsToPoints(countBy(ships, s=>s.carrier||'Unknown')), '#38bdf8'),
-        barViz('Tracking events per recent shipment', 'Created date', 'Events', takeLast(ships, 14).map(s=>pt(dateOnly(s.created_at), evCount[s.tracking_number]||0, s.tracking_number)), '#f59e0b')
+        barViz('Shipments by status', 'Status', 'Shipments', countsToPoints(countBy(ships, s=>s.status||'Unknown')), '#14b8a6',
+          detailTable(['Status','Shipments'], Object.entries(countBy(ships, s=>s.status||'Unknown')).map(([status,count])=>({status,count})), r=>'<tr><td>'+esc(r.status)+'</td><td class="num">'+r.count+'</td></tr>')),
+        barViz('Shipments by carrier', 'Carrier', 'Shipments', countsToPoints(countBy(ships, s=>s.carrier||'Unknown')), '#38bdf8',
+          detailTable(['Carrier','Shipments'], Object.entries(countBy(ships, s=>s.carrier||'Unknown')).map(([carrier,count])=>({carrier,count})), r=>'<tr><td>'+esc(r.carrier)+'</td><td class="num">'+r.count+'</td></tr>')),
+        barViz('Tracking events per recent shipment', 'Created date', 'Events', ships14.map(s=>pt(dateOnly(s.created_at), evCount[s.tracking_number]||0, s.tracking_number)), '#f59e0b',
+          detailTable(['Created','Tracking','Carrier','Status','Origin','Destination','Events'], ships14.slice().reverse(), s=>'<tr><td>'+dateOnly(s.created_at)+'</td><td class="mono dim">'+esc(s.tracking_number||'—')+'</td><td>'+esc(s.carrier||'—')+'</td><td>'+statusBadge(s.status||'')+'</td><td>'+esc(s.origin||'—')+'</td><td>'+esc(s.destination||'—')+'</td><td class="num">'+(evCount[s.tracking_number]||0)+'</td></tr>'))
       );
       break;
     }
@@ -808,19 +872,19 @@ function chartPanel(charts) {
   return html ? '<div class="viz-section"><div class="sub-heading">Visual Summary</div><div class="viz-grid">'+html+'</div></div>' : '';
 }
 
-function lineViz(title, xLabel, yLabel, points, color, zeroBase) {
+function lineViz(title, xLabel, yLabel, points, color, zeroBase, detailHtml) {
   const clean = cleanPoints(points);
   if (clean.length < 2) return '';
-  return svgViz('line', {title, xLabel, yLabel, series:[{label:yLabel, color, points:clean}], zeroBase:!!zeroBase});
+  return svgViz('line', {title, xLabel, yLabel, series:[{label:yLabel, color, points:clean}], zeroBase:!!zeroBase, detailHtml});
 }
 
-function barViz(title, xLabel, yLabel, points, color) {
+function barViz(title, xLabel, yLabel, points, color, detailHtml) {
   const clean = cleanPoints(points);
   if (!clean.length) return '';
-  return svgViz('bar', {title, xLabel, yLabel, series:[{label:yLabel, color, points:clean}], zeroBase:true});
+  return svgViz('bar', {title, xLabel, yLabel, series:[{label:yLabel, color, points:clean}], zeroBase:true, detailHtml});
 }
 
-function stackedBarViz(title, xLabel, yLabel, rows, stacks) {
+function stackedBarViz(title, xLabel, yLabel, rows, stacks, detailHtml) {
   const cleanRows = (rows||[]).map(r => ({
     x: r.x,
     values: Object.fromEntries(Object.entries(r.values||{}).map(([k,v])=>[k, Number(v)||0]))
@@ -849,7 +913,7 @@ function stackedBarViz(title, xLabel, yLabel, rows, stacks) {
     });
   });
   const legend = stacks.map(st=>'<span style="--legend-color:'+st.color+'">'+esc(st.key)+'</span>').join('');
-  return '<div class="viz-card"><div class="viz-title">'+esc(title)+'</div><svg class="viz-svg" viewBox="0 0 '+W+' '+H+'">'+body+'</svg><div class="trend-chart-legend">'+legend+'</div></div>';
+  return vizCard(title, '<svg class="viz-svg" viewBox="0 0 '+W+' '+H+'">'+body+'</svg>', '<div class="trend-chart-legend">'+legend+'</div>', detailHtml);
 }
 
 function svgViz(type, cfg) {
@@ -884,7 +948,22 @@ function svgViz(type, cfg) {
       if (showLabel) body += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+Math.max(T+10,y-5).toFixed(1)+'" text-anchor="middle" class="viz-value">'+esc(compactNumber(p.y))+'</text>';
     });
   }
-  return '<div class="viz-card"><div class="viz-title">'+esc(cfg.title)+'</div><svg class="viz-svg" viewBox="0 0 '+W+' '+H+'">'+body+'</svg></div>';
+  return vizCard(cfg.title, '<svg class="viz-svg" viewBox="0 0 '+W+' '+H+'">'+body+'</svg>', '', cfg.detailHtml);
+}
+
+function vizCard(title, chartSvg, footerHtml, detailHtml) {
+  const id = 'viz-detail-'+(++VIZ_DETAIL_SEQ);
+  const detail = detailHtml
+    ? '<button type="button" class="viz-detail-btn" onclick="toggleItems(\''+id+'\')">Click for details</button>' +
+      '<div id="'+id+'" class="viz-detail-panel" style="display:none">'+detailHtml+'</div>'
+    : '';
+  return '<div class="viz-card"><div class="viz-title">'+esc(title)+'</div>'+chartSvg+(footerHtml||'')+detail+'</div>';
+}
+
+function detailTable(headers, rows, mapRow, label) {
+  if (!rows || !rows.length) return '';
+  const body = rows.map(mapRow).join('');
+  return '<div class="viz-detail-title">'+esc(label||'Records behind this chart')+'</div>'+tableWrap(headers, body);
 }
 
 function gridSvg(W,H,L,R,T,B,ticks,yMin,yMax,xLabel,yLabel,xLabels) {
@@ -956,6 +1035,14 @@ function niceStep(v) {
 function yTicks(min, max, count) { const out=[]; for(let i=0;i<=count;i++) out.push(min+(max-min)*(i/count)); return out; }
 function compactNumber(v) { const n=Number(v); if (!Number.isFinite(n)) return '0'; if (Math.abs(n)>=1000000) return (n/1000000).toFixed(1).replace(/\.0$/,'')+'M'; if (Math.abs(n)>=1000) return (n/1000).toFixed(1).replace(/\.0$/,'')+'K'; return Math.abs(n)%1 ? n.toFixed(1) : String(Math.round(n)); }
 function formatNumber(v) { const n=Number(v); return Number.isFinite(n) ? (Math.abs(n)%1 ? n.toFixed(2).replace(/0$/,'') : Math.round(n).toLocaleString()) : '0'; }
+function num1(v) { const n=Number(v); return Number.isFinite(n) ? n.toFixed(1) : '—'; }
+function num2(v) { const n=Number(v); return Number.isFinite(n) ? n.toFixed(2) : '—'; }
+function msToHours(v) { const n=Number(v); return Number.isFinite(n) ? (n/3600000).toFixed(2) : '—'; }
+function secToHours(v) { const n=Number(v); return Number.isFinite(n) ? (n/3600).toFixed(2) : '—'; }
+function durationMin(start, end) {
+  const ms = new Date(end) - new Date(start);
+  return Number.isFinite(ms) && ms > 0 ? Math.round(ms/60000)+' min' : '—';
+}
 function chartTip(title, xLabel, x, yLabel, y, detail) {
   return title + '\n' +
     xLabel + ': ' + x + '\n' +
@@ -1005,6 +1092,14 @@ function mfpDaily(pid) {
   return Object.values(by).sort((a,b)=>a.date.localeCompare(b.date));
 }
 
+function renphoRow(m) {
+  return '<tr><td>'+dateOnly(m.timestamp)+'</td>' +
+    '<td class="num">'+nvl(m.weight)+'</td><td class="num">'+nvl(m.bmi)+'</td>' +
+    '<td class="num">'+nvl(m.body_fat)+'</td><td class="num">'+nvl(m.muscle_mass)+'</td>' +
+    '<td class="num">'+nvl(m.water_percentage)+'</td><td class="num">'+nvl(m.bone_mass)+'</td>' +
+    '<td class="num">'+nvl(m.bmr)+'</td></tr>';
+}
+
 function shoppingVisuals(pid, key) {
   const sd = D[key]||{};
   const orders = byDate((sd.orders||[]).filter(o=>o.user_id===pid), 'created_at');
@@ -1014,6 +1109,7 @@ function shoppingVisuals(pid, key) {
   (sd.products||[]).forEach(p=>{ productById[p.asin??p.product_id??p.id]=p; });
   const itemCount = {};
   const catSpend = {};
+  const catRows = {};
   (sd.order_items||[]).forEach(i=>{
     const oid = i.order_id;
     const order = orders.find(o=>orderId(o)===oid);
@@ -1023,12 +1119,22 @@ function shoppingVisuals(pid, key) {
     const cat = p.category||p.department||'Unknown';
     const spend = Number(i.price_at_purchase??i.unit_price??i.price??0) * Number(i.quantity??1);
     catSpend[cat] = (catSpend[cat]||0) + spend;
+    if (!catRows[cat]) catRows[cat] = {category:cat, items:0, spend:0};
+    catRows[cat].items += Number(i.quantity??1);
+    catRows[cat].spend += spend;
   });
+  const orders14 = takeLast(orders, 14);
+  const statusRows = Object.entries(countBy(orders, o=>o.status??o.order_status??'Unknown')).map(([status,count])=>({status,count}));
+  const categoryRows = Object.values(catRows).sort((a,b)=>b.spend-a.spend).slice(0,12);
   return [
-    barViz('Order total by date', 'Order date', '$', takeLast(orders, 14).map(o=>pt(dateOnly(o.created_at), o.total??o.total_amount??o.subtotal, orderId(o))), SVCMETA[key].color),
-    barViz('Items per order', 'Order date', 'Items', takeLast(orders, 14).map(o=>pt(dateOnly(o.created_at), itemCount[orderId(o)]||0, orderId(o))), '#38bdf8'),
-    barViz('Order status counts', 'Status', 'Orders', countsToPoints(countBy(orders, o=>o.status??o.order_status??'Unknown')), '#22c55e'),
-    barViz('Spend by product category', 'Category', '$', countsToPoints(catSpend).slice(0,12), '#f59e0b')
+    barViz('Order total by date', 'Order date', '$', orders14.map(o=>pt(dateOnly(o.created_at), o.total??o.total_amount??o.subtotal, orderId(o))), SVCMETA[key].color,
+      detailTable(['Date','Order ID','Total','Status','Items','Carrier'], orders14.slice().reverse(), o=>'<tr><td>'+dateOnly(o.created_at)+'</td><td class="mono dim">'+esc(orderId(o))+'</td><td class="num">$'+Number(o.total??o.total_amount??o.subtotal??0).toFixed(2)+'</td><td>'+statusBadge(o.status??o.order_status??'')+'</td><td class="num">'+nvl(itemCount[orderId(o)]||0)+'</td><td>'+esc(o.carrier||'—')+'</td></tr>')),
+    barViz('Items per order', 'Order date', 'Items', orders14.map(o=>pt(dateOnly(o.created_at), itemCount[orderId(o)]||0, orderId(o))), '#38bdf8',
+      detailTable(['Date','Order ID','Items','Total','Status'], orders14.slice().reverse(), o=>'<tr><td>'+dateOnly(o.created_at)+'</td><td class="mono dim">'+esc(orderId(o))+'</td><td class="num">'+nvl(itemCount[orderId(o)]||0)+'</td><td class="num">$'+Number(o.total??o.total_amount??o.subtotal??0).toFixed(2)+'</td><td>'+statusBadge(o.status??o.order_status??'')+'</td></tr>')),
+    barViz('Order status counts', 'Status', 'Orders', countsToPoints(countBy(orders, o=>o.status??o.order_status??'Unknown')), '#22c55e',
+      detailTable(['Status','Orders'], statusRows, r=>'<tr><td>'+esc(r.status)+'</td><td class="num">'+r.count+'</td></tr>')),
+    barViz('Spend by product category', 'Category', '$', countsToPoints(catSpend).slice(0,12), '#f59e0b',
+      detailTable(['Category','Items','Spend'], categoryRows, r=>'<tr><td>'+esc(r.category)+'</td><td class="num">'+r.items+'</td><td class="num">$'+r.spend.toFixed(2)+'</td></tr>'))
   ];
 }
 
@@ -1071,7 +1177,8 @@ function buildModalContent(pid, key) {
 function modalGarmin(pid) {
   const rows = (D.garmin?.daily_stats||[]).filter(d=>d.user_id===pid)
     .sort((a,b)=>b.date.localeCompare(a.date));
-  if (!rows.length) return empty();
+  let out = '';
+  if (rows.length) {
   const body = rows.map(d =>
     '<tr><td>'+d.date+'</td><td class="num">'+fmt(d.steps)+'</td>' +
     '<td class="num">'+fmt(d.calories_total)+'</td>' +
@@ -1079,7 +1186,28 @@ function modalGarmin(pid) {
     '<td class="num">'+nvl(d.floors_climbed)+'</td>' +
     '<td class="num">'+nvl(d.intensity_minutes)+'</td></tr>'
   ).join('');
-  return tableWrap(['Date','Steps','Calories','Dist (km)','Floors','Intensity Min'], body);
+    out += '<div class="sub-heading">Daily Stats ('+rows.length+' days)</div>';
+    out += tableWrap(['Date','Steps','Calories','Dist (km)','Floors','Intensity Min'], body);
+  }
+  const sleep = (D.garmin?.sleep||[]).filter(s=>s.user_id===pid).sort((a,b)=>b.date.localeCompare(a.date));
+  if (sleep.length) {
+    out += '<div class="sub-heading" style="margin-top:14px">Sleep ('+sleep.length+' nights)</div>';
+    out += tableWrap(['Date','Score','Quality','Total Min','Deep','Light','REM','Awake','Start','End'],
+      sleep.map(s=>'<tr><td>'+s.date+'</td><td class="num">'+nvl(s.sleep_score)+'</td><td>'+esc(s.sleep_quality||'—')+'</td><td class="num">'+nvl(s.total_sleep_minutes)+'</td><td class="num">'+nvl(s.deep_sleep_minutes)+'</td><td class="num">'+nvl(s.light_sleep_minutes)+'</td><td class="num">'+nvl(s.rem_sleep_minutes)+'</td><td class="num">'+nvl(s.awake_minutes)+'</td><td>'+esc((s.sleep_start||'').replace('T',' ').slice(0,16))+'</td><td>'+esc((s.sleep_end||'').replace('T',' ').slice(0,16))+'</td></tr>').join(''));
+  }
+  const hrv = (D.garmin?.hrv||[]).filter(r=>r.user_id===pid).sort((a,b)=>b.date.localeCompare(a.date));
+  if (hrv.length) {
+    out += '<div class="sub-heading" style="margin-top:14px">HRV ('+hrv.length+' days)</div>';
+    out += tableWrap(['Date','Last Night','Weekly Avg','Status','Baseline Low','Baseline High'],
+      hrv.map(r=>'<tr><td>'+r.date+'</td><td class="num">'+nvl(r.hrv_last_night)+'</td><td class="num">'+nvl(r.hrv_weekly_avg)+'</td><td>'+esc(r.hrv_status||'—')+'</td><td class="num">'+nvl(r.baseline_low)+'</td><td class="num">'+nvl(r.baseline_high)+'</td></tr>').join(''));
+  }
+  const acts = (D.garmin?.activities||[]).filter(a=>a.user_id===pid).sort((a,b)=>(b.start_time||'').localeCompare(a.start_time||''));
+  if (acts.length) {
+    out += '<div class="sub-heading" style="margin-top:14px">Activities ('+acts.length+' sessions)</div>';
+    out += tableWrap(['Date','Type','Name','Duration','Distance km','Calories','Avg HR','Max HR','Steps'],
+      acts.map(a=>'<tr><td>'+dateOnly(a.start_time)+'</td><td>'+esc(a.activity_type||'—')+'</td><td>'+esc(a.activity_name||'—')+'</td><td class="num">'+(a.duration_seconds?Math.round(a.duration_seconds/60):'—')+' min</td><td class="num">'+(a.distance_meters?num2(a.distance_meters/1000):'—')+'</td><td class="num">'+nvl(a.calories)+'</td><td class="num">'+nvl(a.avg_hr)+'</td><td class="num">'+nvl(a.max_hr)+'</td><td class="num">'+nvl(a.steps)+'</td></tr>').join(''));
+  }
+  return out || empty();
 }
 
 function modalWhoop(pid) {

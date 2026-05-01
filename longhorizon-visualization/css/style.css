@@ -278,6 +278,33 @@ body { background: var(--bg); color: var(--text); font-family: var(--font); min-
 }
 .viz-dot { pointer-events: none; }
 .viz-hit:hover + .viz-dot { r: 4; }
+.viz-detail-btn {
+  margin-top: 8px;
+  border: 1px solid var(--border2);
+  background: var(--surface3);
+  color: var(--text2);
+  border-radius: 6px;
+  padding: 5px 9px;
+  font-size: 11px;
+  cursor: pointer;
+}
+.viz-detail-btn:hover { color: var(--teal); border-color: var(--teal); }
+.viz-detail-panel {
+  margin-top: 10px;
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+}
+.viz-detail-title {
+  color: var(--text3);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .45px;
+  margin-bottom: 6px;
+}
+.viz-detail-panel .data-table { font-size: 11px; }
+.viz-detail-panel .data-table th,
+.viz-detail-panel .data-table td { padding: 6px 8px; }
 .chart-tooltip {
   position: fixed;
   z-index: 1000;
