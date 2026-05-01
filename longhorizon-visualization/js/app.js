@@ -1,1164 +1,722 @@
-const BASE = "../openclaw-long_horizon-universe/openclaw-long_horizon-universe-2frtws95/services";
+/* ════════════════════════════════════════════════════
+   LongHorizon · OpenClaw Universe Visualizer
+   Persona-first view of 19 integrated services
+════════════════════════════════════════════════════ */
 
-const SERVICES = {
-  "apple-health": { label: "Apple Health", category: "health", path: `${BASE}/apple-health/data.json` },
-  "amazon": { label: "Amazon", category: "shopping", path: `${BASE}/amazon/data.json` },
-  "amazon-fresh": { label: "Amazon Fresh", category: "shopping", path: `${BASE}/amazon-fresh/data.json` },
-  "eight-sleep": { label: "Eight Sleep", category: "health", path: `${BASE}/eight-sleep/data.json` },
-  "fitbit": { label: "Fitbit", category: "health", path: `${BASE}/fitbit/data.json` },
-  "fresh-direct": { label: "FreshDirect", category: "shopping", path: `${BASE}/fresh-direct/data.json` },
-  "garmin-connect": { label: "Garmin", category: "health", path: `${BASE}/garmin-connect/data.json` },
-  "instacart": { label: "Instacart", category: "shopping", path: `${BASE}/instacart/data.json` },
-  "logistics-tracking": { label: "Logistics", category: "lifestyle", path: `${BASE}/logistics-tracking/data.json` },
-  "myfitnesspal": { label: "MyFitnessPal", category: "health", path: `${BASE}/myfitnesspal/data.json` },
-  "obsidian": { label: "Obsidian", category: "lifestyle", path: `${BASE}/obsidian/data.json` },
-  "renpho": { label: "Renpho", category: "health", path: `${BASE}/renpho/data.json` },
-  "sonos": { label: "Sonos", category: "lifestyle", path: `${BASE}/sonos/data.json` },
-  "strava": { label: "Strava", category: "health", path: `${BASE}/strava/data.json` },
-  "target": { label: "Target", category: "shopping", path: `${BASE}/target/data.json` },
-  "ticketmaster": { label: "Ticketmaster", category: "lifestyle", path: `${BASE}/ticketmaster/data.json` },
-  "walmart": { label: "Walmart", category: "shopping", path: `${BASE}/walmart/data.json` },
-  "whoop": { label: "Whoop", category: "health", path: `${BASE}/whoop/data.json` },
-  "zillow": { label: "Zillow", category: "lifestyle", path: `${BASE}/zillow/data.json` },
+const BASE = '../openclaw-long_horizon-universe/openclaw-long_horizon-universe-2frtws95/services';
+
+const DATA_PATHS = {
+  strava:         `${BASE}/strava/data.json`,
+  whoop:          `${BASE}/whoop/data.json`,
+  'eight-sleep':  `${BASE}/eight-sleep/data.json`,
+  renpho:         `${BASE}/renpho/data.json`,
+  fitbit:         `${BASE}/fitbit/data.json`,
+  garmin:         `${BASE}/garmin-connect/data.json`,
+  myfitnesspal:   `${BASE}/myfitnesspal/data.json`,
+  'apple-health': `${BASE}/apple-health/data.json`,
+  amazon:         `${BASE}/amazon/data.json`,
+  walmart:        `${BASE}/walmart/data.json`,
+  target:         `${BASE}/target/data.json`,
+  instacart:      `${BASE}/instacart/data.json`,
+  'fresh-direct': `${BASE}/fresh-direct/data.json`,
+  'amazon-fresh': `${BASE}/amazon-fresh/data.json`,
+  ticketmaster:   `${BASE}/ticketmaster/data.json`,
+  zillow:         `${BASE}/zillow/data.json`,
+  sonos:          `${BASE}/sonos/data.json`,
+  obsidian:       `${BASE}/obsidian/data.json`,
+  logistics:      `${BASE}/logistics-tracking/data.json`,
 };
 
-const PERSONA_ID = /^persona_\d+$/;
-const CATALOG_DATASETS = new Set([
-  "products", "product_variants", "policies", "faqs", "carts", "cart_lines", "cart_items",
-  "foods", "exercises", "segments", "clubs", "venues", "attractions", "events",
-  "event_attractions", "ticket_types", "properties", "market_data", "search_history",
-]);
+const PERSONAS = [
+  { id: 'persona_001', name: 'John Doe',          email: 'john.doe@email.com',          initials: 'JD' },
+  { id: 'persona_002', name: 'Marcus Johnson',    email: 'marcus.johnson@email.com',    initials: 'MJ' },
+  { id: 'persona_009', name: 'William Thompson',  email: 'william.thompson@email.com',  initials: 'WT' },
+  { id: 'persona_010', name: 'Sophie Laurent',    email: 'sophie.laurent@email.com',    initials: 'SL' },
+  { id: 'persona_013', name: 'Carlos Mendez',     email: 'carlos.mendez@email.com',     initials: 'CM' },
+  { id: 'persona_014', name: 'Lisa Park',         email: 'lisa.park@email.com',         initials: 'LP' },
+  { id: 'persona_016', name: 'Priya Sharma',      email: 'priya.sharma@email.com',      initials: 'PS' },
+  { id: 'persona_022', name: 'Anna Kowalczyk',    email: 'anna.kowalczyk@email.com',    initials: 'AK' },
+  { id: 'persona_023', name: 'Jordan Williams',   email: 'jordan.williams@email.com',   initials: 'JW' },
+  { id: 'persona_027', name: 'Patrick Murphy',    email: 'patrick.murphy@email.com',    initials: 'PM' },
+  { id: 'persona_031', name: 'Jennifer Martinez', email: 'jennifer.martinez@email.com', initials: 'JM' },
+];
 
-const RELATIONS = {
-  amazon: [{ from: "orders", to: "order_items", parentKey: "order_id", childKey: "order_id" }],
-  walmart: [{ from: "orders", to: "order_items", parentKey: "order_id", childKey: "order_id" }],
-  target: [{ from: "orders", to: "order_items", parentKey: "order_id", childKey: "order_id" }],
-  instacart: [{ from: "orders", to: "order_items", parentKey: "id", childKey: "order_id" }],
-  "fresh-direct": [{ from: "orders", to: "order_items", parentKey: "id", childKey: "order_id" }],
-  "amazon-fresh": [{ from: "orders", to: "order_items", parentKey: "id", childKey: "order_id" }],
-  sonos: [{ from: "favorites", to: "favorite_tracks", parentKey: "favorite_id", childKey: "favorite_id" }],
-  "logistics-tracking": [{ from: "shipments", to: "tracking_events", parentKey: "tracking_number", childKey: "tracking_number" }],
-};
+let D = {}; // all loaded service data
 
-const DETAIL_PAGE_SIZE = 50;
-const PREFERRED_DATASETS = {
-  "apple-health": "activity_summaries",
-  "amazon": "orders",
-  "amazon-fresh": "orders",
-  "eight-sleep": "sleep_sessions",
-  "fitbit": "daily_stats",
-  "fresh-direct": "orders",
-  "garmin-connect": "daily_stats",
-  "instacart": "orders",
-  "logistics-tracking": "shipments",
-  "myfitnesspal": "food_logs",
-  "obsidian": "notes",
-  "renpho": "measurements",
-  "sonos": "speakers",
-  "strava": "activities",
-  "target": "orders",
-  "ticketmaster": "orders",
-  "walmart": "orders",
-  "whoop": "cycles",
-  "zillow": "saved_properties",
-};
-let DRILL = { personaId: "", serviceKey: "", datasetKey: "", page: 0 };
-
-document.addEventListener("DOMContentLoaded", () => {
-  main().catch((error) => {
-    console.error(error);
-    setStatus(`Failed: ${error.message}`);
-    document.getElementById("personas-root").innerHTML = `<p class="empty">Failed to load JSON data.</p>`;
-    hideLoading();
-  });
+/* ════════════════════════════════════════════════════
+   BOOTSTRAP
+════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadData();
+  hideSplash();
+  window.addEventListener('hashchange', route);
+  route();
 });
 
-async function main() {
-  setupTabs();
-  const data = await loadServices();
-  const model = buildModel(data);
-  window.LH_MODEL = model;
-  render(model);
-  setStatus(`${model.totals.personas} personas - ${formatNumber(model.totals.mapped)} mapped records - ${model.totals.unmapped} unmapped`);
-  document.getElementById("status-dot")?.classList.add("live");
-  hideLoading();
+function route() {
+  const hash = location.hash.slice(1);
+  const p = PERSONAS.find(p => p.id === hash);
+  if (p) renderDetail(p.id);
+  else renderList();
 }
 
-async function loadServices() {
-  const entries = await Promise.all(Object.entries(SERVICES).map(async ([key, service]) => {
-    const response = await fetch(service.path);
-    if (!response.ok) throw new Error(`${service.label} returned ${response.status}`);
-    return [key, await response.json()];
-  }));
-  return Object.fromEntries(entries);
+/* ════════════════════════════════════════════════════
+   DATA LOADING
+════════════════════════════════════════════════════ */
+async function loadData() {
+  const keys = Object.keys(DATA_PATHS);
+  let done = 0;
+  await Promise.all(keys.map(key =>
+    fetch(DATA_PATHS[key])
+      .then(r => r.ok ? r.json() : {})
+      .then(json => { D[key] = json; })
+      .catch(() => { D[key] = {}; })
+      .finally(() => {
+        done++;
+        const pct = Math.round(done / keys.length * 100);
+        const bar = document.getElementById('progress-bar');
+        const msg = document.getElementById('load-msg');
+        if (bar) bar.style.width = pct + '%';
+        if (msg) msg.textContent = 'Loading… ' + pct + '%';
+      })
+  ));
 }
 
-function buildModel(data) {
-  const personas = buildPersonaIndex(data);
-  const personaIds = new Set(Object.keys(personas));
-  const shared = {};
-  const unmapped = {};
-
-  for (const [serviceKey, serviceData] of Object.entries(data)) {
-    const arrays = arrayDatasets(serviceData);
-    const personaSets = inferServiceOwnership(serviceKey, arrays, personaIds);
-
-    for (const [datasetKey, rows] of arrays) {
-      if (CATALOG_DATASETS.has(datasetKey)) {
-        addDatasetCount(shared, serviceKey, datasetKey, rows.length);
-        continue;
-      }
-
-      for (const row of rows) {
-        const owners = [...(personaSets.get(row) || [])].filter((id) => personaIds.has(id));
-        if (!owners.length) {
-          addDatasetCount(unmapped, serviceKey, datasetKey, 1);
-          continue;
-        }
-        for (const personaId of owners) {
-          addRecord(personas[personaId], serviceKey, datasetKey, row);
-        }
-      }
-    }
-  }
-
-  const personaList = Object.values(personas)
-    .map(finalizePersona)
-    .sort((a, b) => a.name.localeCompare(b.name));
-
-  return {
-    personas: personaList,
-    shared,
-    unmapped,
-    totals: {
-      personas: personaList.length,
-      services: Object.keys(SERVICES).length,
-      mapped: sum(personaList.map((p) => p.totalRecords)),
-      unmapped: sumNestedCounts(unmapped),
-      shared: sumNestedCounts(shared),
-      orders: sum(personaList.map((p) => p.summary.orderCount)),
-      spend: sum(personaList.map((p) => p.summary.spend)),
-      healthRecords: sum(personaList.map((p) => p.summary.healthRecords)),
-    },
-    categoryTotals: categoryTotals(personaList),
-    serviceTotals: serviceTotals(personaList),
-  };
+function hideSplash() {
+  const el = document.getElementById('loading-overlay');
+  if (el) { el.classList.add('hidden'); setTimeout(() => el.remove(), 500); }
+  const dot = document.getElementById('status-dot');
+  if (dot) dot.classList.add('live');
+  setStatus(PERSONAS.length + ' personas · 19 services loaded');
 }
 
-function buildPersonaIndex(data) {
-  const personas = {};
-  for (const [serviceKey, serviceData] of Object.entries(data)) {
-    for (const [, rows] of arrayDatasets(serviceData)) {
-      for (const row of rows) {
-        const id = directPersonaId(row);
-        if (!id) continue;
-        if (!personas[id]) personas[id] = createPersona(id);
-        mergeIdentity(personas[id], serviceKey, row);
-      }
-    }
-  }
-  return personas;
+function setStatus(t) {
+  const el = document.getElementById('status-text');
+  if (el) el.textContent = t;
 }
 
-function inferServiceOwnership(serviceKey, arrays, personaIds) {
-  const rowOwners = new Map();
-  const byDataset = new Map(arrays);
+/* ════════════════════════════════════════════════════
+   LIST VIEW
+════════════════════════════════════════════════════ */
+function renderList() {
+  const totalOrders = PERSONAS.reduce((s, p) => s + personaOrders(p.id).length, 0);
+  const garminDays  = (D.garmin?.daily_stats || []).length;
 
-  for (const [, rows] of arrays) {
-    for (const row of rows) {
-      const id = directPersonaId(row);
-      if (!id || !personaIds.has(id)) continue;
-      setOwner(rowOwners, row, id);
-    }
-  }
+  const cards = PERSONAS.map(p => {
+    const orders = personaOrders(p.id).length;
+    const garmin = (D.garmin?.daily_stats || []).filter(d => d.user_id === p.id).length;
+    const whoop  = (D.whoop?.cycles || []).filter(c => c.persona_id === p.id).length;
+    return '<div class="persona-card" onclick="location.hash=\'' + p.id + '\'">' +
+      '<div class="persona-card-top">' +
+        '<div class="avatar">' + p.initials + '</div>' +
+        '<div>' +
+          '<div class="persona-name">' + p.name + '</div>' +
+          '<div class="persona-email">' + p.email + '</div>' +
+          '<div class="persona-id">' + p.id + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="persona-stats">' +
+        '<span class="ps">' + orders + ' orders</span>' +
+        '<span class="ps">' + garmin + ' Garmin days</span>' +
+        '<span class="ps">' + whoop + ' Whoop cycles</span>' +
+      '</div>' +
+    '</div>';
+  }).join('');
 
-  for (const relation of RELATIONS[serviceKey] || []) {
-    const parents = byDataset.get(relation.from) || [];
-    const children = byDataset.get(relation.to) || [];
-    const ownersByParentValue = new Map();
-    for (const parent of parents) {
-      const value = parent[relation.parentKey];
-      if (value === null || value === undefined) continue;
-      const owners = rowOwners.get(parent);
-      if (!owners?.size) continue;
-      if (!ownersByParentValue.has(String(value))) ownersByParentValue.set(String(value), new Set());
-      for (const owner of owners) ownersByParentValue.get(String(value)).add(owner);
-    }
-    for (const child of children) {
-      const value = child[relation.childKey];
-      const owners = ownersByParentValue.get(String(value));
-      if (!owners?.size) continue;
-      for (const owner of owners) setOwner(rowOwners, child, owner);
-    }
-  }
-
-  if (serviceKey === "obsidian") {
-    const notes = byDataset.get("notes") || [];
-    const tags = byDataset.get("tags") || [];
-    const ownersByNote = new Map();
-    for (const note of notes) {
-      const owners = rowOwners.get(note);
-      if (!owners?.size) continue;
-      ownersByNote.set(String(note.note_id), new Set(owners));
-    }
-    for (const tag of tags) {
-      const owners = ownersByNote.get(String(tag.note_id));
-      if (!owners?.size) continue;
-      for (const owner of owners) {
-        if (directPersonaId(tag) === owner || !directPersonaId(tag)) setOwner(rowOwners, tag, owner);
-      }
-    }
-  }
-  return rowOwners;
-}
-
-function createPersona(id) {
-  return {
-    id,
-    name: humanize(id),
-    email: "",
-    location: "",
-    sources: new Set(),
-    records: {},
-    datasetCounts: {},
-    totalRecords: 0,
-    summary: {
-      orderCount: 0,
-      spend: 0,
-      healthRecords: 0,
-      activityCount: 0,
-      sleepRecords: 0,
-      notes: 0,
-      shipments: 0,
-    },
-  };
-}
-
-function mergeIdentity(persona, serviceKey, row) {
-  persona.sources.add(serviceKey);
-  const name = row.name || row.full_name || row.display_name || joinName(row.first_name, row.last_name);
-  if (name && persona.name === humanize(persona.id)) persona.name = name;
-  if (!persona.email && row.email) persona.email = row.email;
-  if (!persona.location && row.city && (row.state || row.region)) {
-    persona.location = `${row.city}, ${row.state || row.region}`;
-  }
-}
-
-function addRecord(persona, serviceKey, datasetKey, row) {
-  if (!persona.records[serviceKey]) persona.records[serviceKey] = {};
-  if (!persona.records[serviceKey][datasetKey]) persona.records[serviceKey][datasetKey] = [];
-  persona.records[serviceKey][datasetKey].push(row);
-
-  if (!persona.datasetCounts[serviceKey]) persona.datasetCounts[serviceKey] = {};
-  persona.datasetCounts[serviceKey][datasetKey] = (persona.datasetCounts[serviceKey][datasetKey] || 0) + 1;
-  persona.totalRecords += 1;
-
-  const service = SERVICES[serviceKey];
-  if (service.category === "health") persona.summary.healthRecords += 1;
-  if (datasetKey.includes("sleep")) persona.summary.sleepRecords += 1;
-  if (datasetKey.includes("activit") || datasetKey.includes("workout") || datasetKey === "exercise_logs") persona.summary.activityCount += 1;
-  if (datasetKey === "notes") persona.summary.notes += 1;
-  if (datasetKey === "shipments") persona.summary.shipments += 1;
-  if (datasetKey === "orders") {
-    persona.summary.orderCount += 1;
-    persona.summary.spend += Number(row.total ?? row.total_price ?? 0);
-  }
-}
-
-function finalizePersona(persona) {
-  persona.sources = [...persona.sources].sort((a, b) => SERVICES[a].label.localeCompare(SERVICES[b].label));
-  persona.sections = buildPersonaSections(persona);
-  return persona;
-}
-
-function buildPersonaSections(persona) {
-  return {
-    health: healthSection(persona.records),
-    shopping: shoppingSection(persona.records),
-    lifestyle: lifestyleSection(persona.records),
-    datasets: datasetRows(persona.datasetCounts),
-  };
-}
-
-function healthSection(records) {
-  const rows = [];
-  addHealthRow(rows, "Apple Health", records["apple-health"], [
-    ["Steps", "step_records", "total_steps", "sum"],
-    ["Workouts", "workout_records", "duration_minutes", "count"],
-    ["Sleep stages", "sleep_records", "stage", "count"],
-    ["Latest body mass", "body_mass_records", "value", "latest"],
-  ]);
-  addHealthRow(rows, "Garmin", records["garmin-connect"], [
-    ["Steps", "daily_stats", "steps", "sum"],
-    ["Activities", "activities", "distance_meters", "sumDistanceM"],
-    ["Sleep", "sleep", "sleep_score", "avg"],
-    ["Body comp", "body_composition", "weight_kg", "latest"],
-  ]);
-  addHealthRow(rows, "Fitbit", records.fitbit, [
-    ["Steps", "daily_stats", "steps", "sum"],
-    ["Activities", "activities", "duration_minutes", "count"],
-    ["Sleep", "sleep_logs", "efficiency", "avg"],
-    ["Food logs", "food_logs", "calories", "sum"],
-  ]);
-  addHealthRow(rows, "Whoop", records.whoop, [
-    ["Cycles", "cycles", "strain", "avg"],
-    ["Recovery", "recovery", "recovery_score", "avg"],
-    ["Sleep", "sleep", "score_sleep_performance", "avg"],
-    ["Workouts", "workouts", "score_strain", "count"],
-  ]);
-  addHealthRow(rows, "Eight Sleep", records["eight-sleep"], [
-    ["Sleep sessions", "sleep_sessions", "avg_sleep_quality_score", "count"],
-    ["Alarms", "alarms", "alarm_id", "count"],
-    ["Schedules", "temperature_schedules", "schedule_id", "count"],
-  ]);
-  addHealthRow(rows, "Renpho", records.renpho, [
-    ["Measurements", "measurements", "weight", "count"],
-    ["Latest weight", "measurements", "weight", "latest"],
-    ["Latest BMI", "measurements", "bmi", "latest"],
-  ]);
-  addHealthRow(rows, "MyFitnessPal", records.myfitnesspal, [
-    ["Food logs", "food_logs", "servings", "count"],
-    ["Exercise logs", "exercise_logs", "calories_burned", "sum"],
-    ["Water", "water_logs", "amount_ml", "sumMl"],
-  ]);
-  addHealthRow(rows, "Strava", records.strava, [
-    ["Activities", "activities", "distance", "sumDistanceM"],
-    ["Personal records", "personal_records", "value", "count"],
-    ["Routes", "routes", "distance", "sumDistanceM"],
-  ]);
-  return rows;
-}
-
-function addHealthRow(rows, label, serviceRecords, metrics) {
-  if (!serviceRecords) return;
-  const facts = metrics.map(([name, dataset, field, mode]) => {
-    const values = serviceRecords[dataset] || [];
-    return { name, value: metricValue(values, field, mode) };
-  });
-  rows.push({ label, count: countServiceRecords(serviceRecords), facts });
-}
-
-function shoppingSection(records) {
-  const serviceKeys = ["amazon", "walmart", "target", "instacart", "fresh-direct", "amazon-fresh"];
-  return serviceKeys.map((serviceKey) => {
-    const serviceRecords = records[serviceKey] || {};
-    const orders = serviceRecords.orders || [];
-    const items = serviceRecords.order_items || [];
-    return {
-      label: SERVICES[serviceKey].label,
-      orders: orders.length,
-      items: items.length,
-      spend: sum(orders.map((order) => Number(order.total || 0))),
-      recent: recentRows(orders, (row) => row.created_at || row.delivery_date, 4).map((order) => ({
-        id: order.order_id || order.id,
-        date: shortDate(order.created_at || order.delivery_date),
-        status: order.status || "unknown",
-        total: money(order.total),
-      })),
-    };
-  }).filter((row) => row.orders || row.items);
-}
-
-function lifestyleSection(records) {
-  return [
-    {
-      label: "Obsidian",
-      facts: [
-        ["Notes", count(records.obsidian?.notes)],
-        ["Tags", count(records.obsidian?.tags)],
-        ["Latest note", latestTitle(records.obsidian?.notes, "modified_at")],
-      ],
-    },
-    {
-      label: "Sonos",
-      facts: [
-        ["Speakers", count(records.sonos?.speakers)],
-        ["Queue items", count(records.sonos?.queue_items)],
-        ["Favorites", count(records.sonos?.favorites)],
-        ["Favorite tracks", count(records.sonos?.favorite_tracks)],
-      ],
-    },
-    {
-      label: "Ticketmaster",
-      facts: [
-        ["Orders", count(records.ticketmaster?.orders)],
-        ["Spend", money(sum((records.ticketmaster?.orders || []).map((row) => Number(row.total_price || 0))))],
-        ["Latest purchase", latestTitle(records.ticketmaster?.orders, "purchased_at", "confirmation_code")],
-      ],
-    },
-    {
-      label: "Zillow",
-      facts: [
-        ["Saved properties", count(records.zillow?.saved_properties)],
-        ["Scheduled tours", count(records.zillow?.scheduled_tours)],
-        ["Latest tour", latestTitle(records.zillow?.scheduled_tours, "tour_date", "status")],
-      ],
-    },
-    {
-      label: "Logistics",
-      facts: [
-        ["Shipments", count(records["logistics-tracking"]?.shipments)],
-        ["Tracking events", count(records["logistics-tracking"]?.tracking_events)],
-        ["Latest status", latestTitle(records["logistics-tracking"]?.tracking_events, "timestamp", "status")],
-      ],
-    },
-  ].filter((section) => section.facts.some(([, value]) => value && value !== "0" && value !== "$0.00"));
-}
-
-function render(model) {
-  renderOverview(model);
-  renderPersonaTable(model.personas);
-  setupPersonaSearch(model.personas);
-  renderPersonas(model.personas);
-  setupDrilldown(model);
-  renderAudit(model);
-}
-
-function setupTabs() {
-  document.querySelectorAll(".tab").forEach((button) => {
-    button.addEventListener("click", () => navigateTo(button.dataset.tab));
-  });
-}
-
-function navigateTo(tab) {
-  document.querySelectorAll(".tab").forEach((button) => {
-    button.classList.toggle("active", button.dataset.tab === tab);
-  });
-  document.querySelectorAll(".page").forEach((page) => {
-    page.classList.toggle("active", page.id === `page-${tab}`);
-  });
-}
-
-function renderOverview(model) {
-  const cards = [
-    { label: "Personas", value: formatNumber(model.totals.personas), sub: `${model.totals.services} services loaded`, color: "#818cf8", icon: "P" },
-    { label: "Mapped Records", value: formatNumber(model.totals.mapped), sub: "Persona-owned rows", color: "#34d399", icon: "R" },
-    { label: "Orders", value: formatNumber(model.totals.orders), sub: money(model.totals.spend), color: "#fbbf24", icon: "$" },
-    { label: "Health Records", value: formatNumber(model.totals.healthRecords), sub: "Activity, sleep, body, nutrition", color: "#22d3ee", icon: "H" },
-    { label: "Shared Catalog Rows", value: formatNumber(model.totals.shared), sub: "Products, events, properties, foods", color: "#a78bfa", icon: "C" },
-    { label: "Unmapped Records", value: formatNumber(model.totals.unmapped), sub: "Should be zero", color: model.totals.unmapped ? "#f87171" : "#34d399", icon: "!" },
-  ];
-
-  document.getElementById("kpi-row").innerHTML = cards.map((card) => `
-    <div class="kpi-card" style="--accent:${card.color}">
-      <div class="kpi-icon">${escapeHtml(card.icon)}</div>
-      <div>
-        <div class="kpi-value">${escapeHtml(card.value)}</div>
-        <div class="kpi-label">${escapeHtml(card.label)}</div>
-        <div class="kpi-sub">${escapeHtml(card.sub)}</div>
-      </div>
-    </div>
-  `).join("");
-
-  renderBars("category-bars", Object.entries(model.categoryTotals)
-    .map(([key, value]) => [titleCase(key), value])
-    .sort((a, b) => b[1] - a[1]));
-  renderBars("service-bars", Object.entries(model.serviceTotals)
-    .map(([key, value]) => [SERVICES[key].label, value])
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 12));
-  renderCoverageTable(model.personas);
-}
-
-function renderBars(id, rows) {
-  const max = Math.max(...rows.map(([, value]) => value), 1);
-  document.getElementById(id).innerHTML = rows.map(([label, value], index) => `
-    <div class="bar-row">
-      <strong>${escapeHtml(label)}</strong>
-      <div class="bar-track"><div class="bar-fill" style="width:${Math.max(2, (value / max) * 100)}%;background:${barColor(index)}"></div></div>
-      <span class="bar-value">${formatNumber(value)}</span>
-    </div>
-  `).join("");
-}
-
-function renderCoverageTable(personas) {
-  document.getElementById("coverage-table").innerHTML = `
-    <table class="data-table">
-      <thead><tr><th>Persona</th><th>ID</th><th>Services</th><th>Mapped Records</th><th>Orders</th><th>Health Records</th><th>Notes</th></tr></thead>
-      <tbody>${personas.map((persona) => `
-        <tr>
-          <td><a href="#page-drilldown" onclick="openPersonaDrill('${persona.id}')"><strong>${escapeHtml(persona.name)}</strong></a></td>
-          <td class="mono">${escapeHtml(persona.id)}</td>
-          <td>${persona.sources.length}/${Object.keys(SERVICES).length}</td>
-          <td class="num">${formatNumber(persona.totalRecords)}</td>
-          <td class="num">${formatNumber(persona.summary.orderCount)}</td>
-          <td class="num">${formatNumber(persona.summary.healthRecords)}</td>
-          <td class="num">${formatNumber(persona.summary.notes)}</td>
-        </tr>
-      `).join("")}</tbody>
-    </table>
-  `;
-}
-
-function setupPersonaSearch(personas) {
-  const input = document.getElementById("persona-search");
-  input.addEventListener("input", () => renderPersonaTable(personas, input.value));
-}
-
-function renderPersonaTable(personas, query = "") {
-  const q = query.trim().toLowerCase();
-  const filtered = personas.filter((persona) =>
-    [persona.name, persona.email, persona.id, persona.location].some((value) => String(value || "").toLowerCase().includes(q))
+  view(
+    '<div class="list-header">' +
+      '<h2>LongHorizon Personas</h2>' +
+      '<p>11 personas across 19 integrated services — click any card for the full data view</p>' +
+    '</div>' +
+    '<div class="stats-row">' +
+      '<span class="stat-pill"><strong>11</strong> Personas</span>' +
+      '<span class="stat-pill"><strong>' + totalOrders.toLocaleString() + '</strong> Total Orders</span>' +
+      '<span class="stat-pill"><strong>' + garminDays.toLocaleString() + '</strong> Garmin Days</span>' +
+      '<span class="stat-pill"><strong>19</strong> Services</span>' +
+    '</div>' +
+    '<div class="persona-grid">' + cards + '</div>'
   );
-  setText("persona-count", `${filtered.length} of ${personas.length} personas`);
-  document.getElementById("personas-table").innerHTML = `
-    <table class="data-table">
-      <thead><tr><th>Persona</th><th>Email</th><th>Location</th><th>Services</th><th>Records</th><th>Orders</th><th>Spend</th><th>Health</th><th>Notes</th></tr></thead>
-      <tbody>${filtered.map((persona) => `
-        <tr>
-          <td><a href="#page-drilldown" onclick="openPersonaDrill('${persona.id}')"><strong>${escapeHtml(persona.name)}</strong><div class="mono">${escapeHtml(persona.id)}</div></a></td>
-          <td>${escapeHtml(persona.email || "")}</td>
-          <td>${escapeHtml(persona.location || "")}</td>
-          <td>${persona.sources.length}/${Object.keys(SERVICES).length}</td>
-          <td class="num">${formatNumber(persona.totalRecords)}</td>
-          <td class="num">${formatNumber(persona.summary.orderCount)}</td>
-          <td class="num">${money(persona.summary.spend)}</td>
-          <td class="num">${formatNumber(persona.summary.healthRecords)}</td>
-          <td class="num">${formatNumber(persona.summary.notes)}</td>
-        </tr>
-      `).join("")}</tbody>
-    </table>
-  `;
 }
 
-function renderPersonas(personas) {
-  document.getElementById("personas-root").innerHTML = personas.map(renderPersona).join("");
+/* ════════════════════════════════════════════════════
+   DETAIL VIEW
+════════════════════════════════════════════════════ */
+function renderDetail(pid) {
+  const p = PERSONAS.find(x => x.id === pid);
+  if (!p) { renderList(); return; }
+
+  view(
+    '<div class="detail-back" onclick="location.hash=\'\'">← All Personas</div>' +
+    '<div class="detail-hero">' +
+      '<div class="hero-avatar">' + p.initials + '</div>' +
+      '<div>' +
+        '<div class="hero-name">' + p.name + '</div>' +
+        '<div class="hero-email">' + p.email + '</div>' +
+        '<div class="hero-id">' + p.id + '</div>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="cat-section">' +
+      '<div class="cat-heading"><span class="cat-dot" style="background:#22c55e"></span>Health &amp; Fitness</div>' +
+      svcBlock('Garmin Connect','🏃', garminSection(pid)) +
+      svcBlock('Whoop','💚', whoopSection(pid)) +
+      svcBlock('Apple Health','❤️', appleHealthSection(pid)) +
+      svcBlock('Fitbit','⌚', fitbitSection(pid)) +
+      svcBlock('Eight Sleep','😴', eightSleepSection(pid)) +
+      svcBlock('Strava','🚴', stravaSection(pid)) +
+      svcBlock('MyFitnessPal','🥗', mfpSection(pid)) +
+      svcBlock('Renpho','⚖️', renphoSection(pid)) +
+    '</div>' +
+
+    '<div class="cat-section">' +
+      '<div class="cat-heading"><span class="cat-dot" style="background:#f59e0b"></span>Shopping</div>' +
+      svcBlock('Amazon','📦', shopSection(pid,'amazon')) +
+      svcBlock('Walmart','🛒', shopSection(pid,'walmart')) +
+      svcBlock('Target','🎯', shopSection(pid,'target')) +
+      svcBlock('Instacart','🛍️', shopSection(pid,'instacart')) +
+      svcBlock('FreshDirect','🥬', shopSection(pid,'fresh-direct')) +
+      svcBlock('Amazon Fresh','🌿', shopSection(pid,'amazon-fresh')) +
+    '</div>' +
+
+    '<div class="cat-section">' +
+      '<div class="cat-heading"><span class="cat-dot" style="background:#a855f7"></span>Lifestyle</div>' +
+      svcBlock('Ticketmaster','🎫', ticketmasterSection(pid)) +
+      svcBlock('Zillow','🏠', zillowSection(pid)) +
+      svcBlock('Sonos','🔊', sonosSection(pid)) +
+      svcBlock('Obsidian','📋', obsidianSection(pid)) +
+      svcBlock('Logistics','🚚', logisticsSection(pid)) +
+    '</div>'
+  );
+
+  document.querySelectorAll('.svc-header').forEach(h => {
+    h.addEventListener('click', () => h.parentElement.classList.toggle('open'));
+  });
+  document.querySelectorAll('.svc-block').forEach(b => b.classList.add('open'));
 }
 
-function setupDrilldown(model) {
-  if (!model.personas.length) return;
-  DRILL.personaId = DRILL.personaId || model.personas[0].id;
-  const persona = personaById(DRILL.personaId);
-  DRILL.serviceKey = DRILL.serviceKey || persona.sources[0];
-  DRILL.datasetKey = DRILL.datasetKey || firstDatasetKey(persona, DRILL.serviceKey);
+function view(html) {
+  document.getElementById('view').innerHTML = html;
+}
 
-  const personaSelect = document.getElementById("drill-persona");
-  personaSelect.innerHTML = model.personas.map((personaOption) =>
-    `<option value="${personaOption.id}">${escapeHtml(personaOption.name)} (${personaOption.id})</option>`
-  ).join("");
-  personaSelect.value = DRILL.personaId;
-  personaSelect.addEventListener("change", () => {
-    const selected = personaById(personaSelect.value);
-    DRILL = {
-      personaId: selected.id,
-      serviceKey: selected.sources[0],
-      datasetKey: firstDatasetKey(selected, selected.sources[0]),
-      page: 0,
-    };
-    renderDrilldown();
+/* ─────────────────────────────────────────
+   SERVICE ACCORDION WRAPPER
+───────────────────────────────────────── */
+function svcBlock(title, icon, bodyHtml) {
+  const m = bodyHtml.match(/data-count="(\d+)"/);
+  const count = m ? m[1] + ' records' : '';
+  return '<div class="svc-block">' +
+    '<div class="svc-header">' +
+      '<span class="svc-icon">' + icon + '</span>' +
+      '<span class="svc-title">' + title + '</span>' +
+      (count ? '<span class="svc-count">' + count + '</span>' : '') +
+      '<span class="svc-chevron">▾</span>' +
+    '</div>' +
+    '<div class="svc-body">' + bodyHtml + '</div>' +
+  '</div>';
+}
+
+/* ════════════════════════════════════════════════════
+   HEALTH SECTIONS
+════════════════════════════════════════════════════ */
+
+function garminSection(pid) {
+  const rows = (D.garmin?.daily_stats || [])
+    .filter(d => d.user_id === pid)
+    .sort((a, b) => b.date.localeCompare(a.date));
+  if (!rows.length) return empty();
+  const body = rows.map(d =>
+    '<tr>' +
+      '<td>' + d.date + '</td>' +
+      '<td class="num">' + fmt(d.steps) + '</td>' +
+      '<td class="num">' + fmt(d.calories_total) + '</td>' +
+      '<td class="num">' + (d.distance_meters ? (d.distance_meters/1000).toFixed(1) : '—') + '</td>' +
+      '<td class="num">' + nvl(d.floors_climbed) + '</td>' +
+      '<td class="num">' + nvl(d.intensity_minutes) + '</td>' +
+    '</tr>'
+  ).join('');
+  return '<span data-count="' + rows.length + '"></span>' +
+    tableWrap(['Date','Steps','Calories','Dist (km)','Floors','Intensity Min'], body);
+}
+
+function whoopSection(pid) {
+  const recovery = (D.whoop?.recovery || []).filter(r => r.persona_id === pid);
+  const cycles   = (D.whoop?.cycles || []).filter(c => c.persona_id === pid);
+  const cycleMap = {};
+  cycles.forEach(c => { cycleMap[c.cycle_id] = c; });
+  const rows = recovery
+    .map(r => Object.assign({}, r, { _c: cycleMap[r.cycle_id] || {} }))
+    .sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+  if (!rows.length) return empty();
+  const body = rows.map(r => {
+    const score = r.recovery_score;
+    const col = score >= 67 ? 'var(--green)' : score >= 34 ? 'var(--amber)' : 'var(--rose)';
+    return '<tr>' +
+      '<td>' + r.timestamp.slice(0,10) + '</td>' +
+      '<td class="num"><strong style="color:' + col + '">' + score + '%</strong></td>' +
+      '<td class="num">' + nvl(r.hrv_rmssd) + '</td>' +
+      '<td class="num">' + nvl(r.resting_heart_rate) + '</td>' +
+      '<td class="num">' + nvl(r.spo2_percentage) + '</td>' +
+      '<td class="num">' + nvl(r.skin_temp_celsius) + '</td>' +
+      '<td class="num">' + nvl(r._c.strain) + '</td>' +
+      '<td class="num">' + nvl(r._c.kilojoules) + '</td>' +
+    '</tr>';
+  }).join('');
+  return '<span data-count="' + rows.length + '"></span>' +
+    tableWrap(['Date','Recovery %','HRV (ms)','RHR (bpm)','SpO₂ %','Skin Temp °C','Strain','kJ'], body);
+}
+
+function appleHealthSection(pid) {
+  const ah = D['apple-health'] || {};
+  let totalRecs = 0;
+  let out = '';
+
+  function subTable(label, arr, cols, rowFn) {
+    const recs = arr.filter(r => r.user_id === pid).sort((a,b) => (b.start_date??'').localeCompare(a.start_date??''));
+    if (!recs.length) return '';
+    totalRecs += recs.length;
+    return '<div style="padding:8px 12px 2px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--text3)">' + label + ' (' + recs.length + ')</div>' +
+      tableWrap(cols, recs.map(rowFn).join(''));
+  }
+
+  out += subTable('Step Records', ah.step_records || [],
+    ['Date','Steps','Unit'],
+    r => '<tr><td>' + (r.start_date||'').slice(0,10) + '</td><td class="num">' + fmt(r.value) + '</td><td>' + (r.unit||'count') + '</td></tr>');
+
+  out += subTable('Resting Heart Rate', ah.resting_heart_rate_records || [],
+    ['Date','Value','Unit'],
+    r => '<tr><td>' + (r.start_date||'').slice(0,10) + '</td><td class="num">' + nvl(r.value) + '</td><td>' + (r.unit||'bpm') + '</td></tr>');
+
+  out += subTable('HRV', ah.hrv_records || [],
+    ['Date','Value','Unit'],
+    r => '<tr><td>' + (r.start_date||'').slice(0,10) + '</td><td class="num">' + nvl(r.value) + '</td><td>' + (r.unit||'ms') + '</td></tr>');
+
+  out += subTable('Body Mass', ah.body_mass_records || [],
+    ['Date','Value','Unit'],
+    r => '<tr><td>' + (r.start_date||'').slice(0,10) + '</td><td class="num">' + nvl(r.value) + '</td><td>' + (r.unit||'kg') + '</td></tr>');
+
+  out += subTable('VO₂ Max', ah.vo2max_records || [],
+    ['Date','Value','Unit'],
+    r => '<tr><td>' + (r.start_date||'').slice(0,10) + '</td><td class="num">' + nvl(r.value) + '</td><td>' + (r.unit||'mL/kg/min') + '</td></tr>');
+
+  if (!totalRecs) return empty();
+  return '<span data-count="' + totalRecs + '"></span>' + out;
+}
+
+function fitbitSection(pid) {
+  const profile = (D.fitbit?.user_profiles || []).find(u => u.user_id === pid);
+  const rows    = (D.fitbit?.daily_stats || [])
+    .filter(d => d.user_id === pid)
+    .sort((a, b) => (b.date||'').localeCompare(a.date||''));
+  let out = '';
+  if (profile) {
+    out += '<div class="fields-grid">' +
+      field('Display Name', profile.display_name) +
+      field('Gender', profile.gender) +
+      field('DOB', profile.date_of_birth) +
+      field('Height', profile.height ? profile.height + ' cm' : null) +
+      field('Weight', profile.weight ? profile.weight + ' kg' : null) +
+      field('Member Since', profile.member_since) +
+    '</div>';
+  }
+  if (!rows.length) return out + empty('No daily stats');
+  const body = rows.map(d =>
+    '<tr>' +
+      '<td>' + (d.date||'—') + '</td>' +
+      '<td class="num">' + fmt(d.steps) + '</td>' +
+      '<td class="num">' + fmt(d.calories_total ?? d.calories) + '</td>' +
+      '<td class="num">' + nvl(d.active_zone_minutes ?? d.minutes_fairly_active) + '</td>' +
+      '<td class="num">' + nvl(d.resting_heart_rate) + '</td>' +
+    '</tr>'
+  ).join('');
+  return '<span data-count="' + rows.length + '"></span>' + out +
+    tableWrap(['Date','Steps','Calories','Active Zone Min','Rest HR (bpm)'], body);
+}
+
+function eightSleepSection(pid) {
+  const profile  = (D['eight-sleep']?.users || []).find(u => u.persona_id === pid);
+  const device   = (D['eight-sleep']?.devices || []).find(d => d.persona_id === pid);
+  const sessions = (D['eight-sleep']?.sleep_sessions || [])
+    .filter(s => s.persona_id === pid)
+    .sort((a, b) => (b.start_time ?? b.session_date ?? '').localeCompare(a.start_time ?? a.session_date ?? ''));
+  let out = '';
+  if (profile || device) {
+    out += '<div class="fields-grid">' +
+      (profile ? field('Timezone', profile.timezone) : '') +
+      (profile ? field('Temp Unit', profile.temperature_unit?.toUpperCase()) : '') +
+      (profile ? field('Bed Side', profile.bed_side) : '') +
+      (device  ? field('Pod Model', device.model) : '') +
+      (device  ? field('Firmware', device.firmware_version) : '') +
+      (device  ? field('Water Level', device.water_level_pct != null ? device.water_level_pct + '%' : null) : '') +
+    '</div>';
+  }
+  if (!sessions.length) return out + empty('No sleep sessions');
+  const body = sessions.map(s => {
+    const date  = (s.start_time ?? s.session_date ?? '').slice(0, 10);
+    const score = s.sleep_fitness_score ?? s.sleep_score;
+    const col   = score != null ? (score >= 80 ? 'var(--green)' : score >= 60 ? 'var(--amber)' : 'var(--rose)') : '';
+    const hrv   = s.hrv_ms ?? s.hrv;
+    return '<tr>' +
+      '<td>' + date + '</td>' +
+      '<td class="num">' + (score != null ? '<strong style="color:' + col + '">' + score + '</strong>' : '—') + '</td>' +
+      '<td class="num">' + nvl(hrv) + '</td>' +
+      '<td class="num">' + nvl(s.respiratory_rate) + '</td>' +
+    '</tr>';
+  }).join('');
+  return '<span data-count="' + sessions.length + '"></span>' + out +
+    tableWrap(['Date','Sleep Score','HRV (ms)','Resp Rate'], body);
+}
+
+function stravaSection(pid) {
+  const athlete    = (D.strava?.athletes || []).find(a => a.user_id === pid);
+  const activities = (D.strava?.activities || [])
+    .filter(a => a.user_id === pid)
+    .sort((a, b) => b.start_date.localeCompare(a.start_date));
+  let out = '';
+  if (athlete) {
+    out += '<div class="fields-grid">' +
+      field('Location', athlete.city + ', ' + athlete.state) +
+      field('Premium', athlete.premium ? 'Yes' : 'No') +
+      field('FTP', athlete.ftp ? athlete.ftp + ' W' : null) +
+      field('Weight', athlete.weight ? athlete.weight + ' kg' : null) +
+    '</div>';
+  }
+  if (!activities.length) return out + empty('No activities');
+  const body = activities.map(a =>
+    '<tr>' +
+      '<td>' + a.start_date.slice(0,10) + '</td>' +
+      '<td>' + esc(a.name ?? '') + '</td>' +
+      '<td><span class="badge badge-teal">' + (a.type||'') + '</span></td>' +
+      '<td class="num">' + (a.distance ? (a.distance/1000).toFixed(2) : '—') + '</td>' +
+      '<td class="num">' + (a.moving_time ? Math.round(a.moving_time/60) + ' min' : '—') + '</td>' +
+      '<td class="num">' + nvl(a.average_heartrate) + '</td>' +
+      '<td class="num">' + nvl(a.total_elevation_gain) + '</td>' +
+      '<td class="num">' + nvl(a.average_watts) + '</td>' +
+      '<td class="num">' + nvl(a.kilojoules) + '</td>' +
+    '</tr>'
+  ).join('');
+  return '<span data-count="' + activities.length + '"></span>' + out +
+    tableWrap(['Date','Name','Type','Dist (km)','Duration','Avg HR','Elev (m)','Avg W','kJ'], body);
+}
+
+function mfpSection(pid) {
+  const profile = (D.myfitnesspal?.user_profiles || []).find(u => u.persona_id === pid);
+  const foodMap = {};
+  (D.myfitnesspal?.foods || []).forEach(f => { foodMap[f.food_id] = f; });
+  const logs = (D.myfitnesspal?.food_logs || [])
+    .filter(l => l.user_id === pid || l.persona_id === pid)
+    .sort((a, b) => (b.log_date ?? b.date ?? '').localeCompare(a.log_date ?? a.date ?? ''));
+  let out = '';
+  if (profile) {
+    out += '<div class="fields-grid">' +
+      field('Calorie Goal', profile.calorie_goal ? profile.calorie_goal + ' kcal' : null) +
+      field('Protein Goal', profile.protein_goal_g ? profile.protein_goal_g + ' g' : null) +
+      field('Carbs Goal',   profile.carbs_goal_g   ? profile.carbs_goal_g   + ' g' : null) +
+      field('Fat Goal',     profile.fat_goal_g     ? profile.fat_goal_g     + ' g' : null) +
+      field('Activity Level', profile.activity_level) +
+      field('Goal', profile.goal) +
+    '</div>';
+  }
+  if (!logs.length) return out + empty('No food logs');
+  const body = logs.map(l => {
+    const food = foodMap[l.food_id] || {};
+    const srv  = Number(l.servings ?? 1);
+    const cal  = food.calories  != null ? Math.round(food.calories  * srv) : nvl(l.calories);
+    const pro  = food.protein_g != null ? (food.protein_g * srv).toFixed(1)  : nvl(l.protein_g);
+    const carb = food.carbs_g   != null ? (food.carbs_g   * srv).toFixed(1)  : nvl(l.carbs_g);
+    const fat  = food.fat_g     != null ? (food.fat_g     * srv).toFixed(1)  : nvl(l.fat_g);
+    return '<tr>' +
+      '<td>' + (l.log_date ?? l.date ?? '—') + '</td>' +
+      '<td>' + esc(food.name ?? l.food_id ?? '—') + '</td>' +
+      '<td class="num">' + (l.servings ?? 1) + '</td>' +
+      '<td class="num">' + cal + '</td>' +
+      '<td class="num">' + pro + '</td>' +
+      '<td class="num">' + carb + '</td>' +
+      '<td class="num">' + fat + '</td>' +
+    '</tr>';
+  }).join('');
+  return '<span data-count="' + logs.length + '"></span>' + out +
+    tableWrap(['Date','Food','Servings','Cal','Protein (g)','Carbs (g)','Fat (g)'], body);
+}
+
+function renphoSection(pid) {
+  const rows = (D.renpho?.measurements || [])
+    .filter(m => m.persona_id === pid)
+    .sort((a, b) => (b.timestamp ?? '').localeCompare(a.timestamp ?? ''));
+  if (!rows.length) return empty();
+  const body = rows.map(m =>
+    '<tr>' +
+      '<td>' + (m.timestamp ?? '').slice(0,10) + '</td>' +
+      '<td class="num">' + nvl(m.weight) + '</td>' +
+      '<td class="num">' + nvl(m.bmi) + '</td>' +
+      '<td class="num">' + nvl(m.body_fat) + '</td>' +
+      '<td class="num">' + nvl(m.muscle_mass) + '</td>' +
+      '<td class="num">' + nvl(m.water_percentage) + '</td>' +
+      '<td class="num">' + nvl(m.bone_mass) + '</td>' +
+      '<td class="num">' + nvl(m.visceral_fat) + '</td>' +
+      '<td class="num">' + nvl(m.bmr) + '</td>' +
+    '</tr>'
+  ).join('');
+  return '<span data-count="' + rows.length + '"></span>' +
+    tableWrap(['Date','Weight (kg)','BMI','Body Fat %','Muscle (kg)','Water %','Bone (kg)','Visceral Fat','BMR'], body);
+}
+
+/* ════════════════════════════════════════════════════
+   SHOPPING SECTION (shared for all 6 services)
+════════════════════════════════════════════════════ */
+function shopSection(pid, svcKey) {
+  const sd       = D[svcKey] || {};
+  const orders   = (sd.orders || []).filter(o => o.user_id === pid)
+    .sort((a, b) => (b.created_at ?? '').localeCompare(a.created_at ?? ''));
+  const products = sd.products || [];
+  const variants = sd.product_variants || [];
+  const itemsMap = {};
+  (sd.order_items || []).forEach(i => {
+    if (!itemsMap[i.order_id]) itemsMap[i.order_id] = [];
+    itemsMap[i.order_id].push(i);
+  });
+  if (!orders.length) return empty();
+
+  const rows = orders.map(o => {
+    const items = itemsMap[o.order_id] || [];
+    const rowId = 'items-' + o.order_id.replace(/[^a-z0-9]/gi, '-');
+    const itemRows = items.map(item => {
+      const prod = products.find(p =>
+        p.asin === item.asin || p.product_id === item.product_id ||
+        p.item_id === item.item_id || p.sku === item.sku
+      ) || variants.find(v =>
+        v.variant_id === item.variant_id || v.product_id === item.product_id
+      ) || {};
+      const name  = prod.title ?? prod.name ?? item.product_title ?? item.name ?? item.item_name ?? String(item.product_id ?? item.variant_id ?? item.asin ?? '—');
+      const price = item.price_at_purchase ?? item.unit_price ?? item.price;
+      const qty   = item.quantity ?? 1;
+      return '<tr>' +
+        '<td>' + esc(name) + '</td>' +
+        '<td class="num">' + qty + '</td>' +
+        '<td class="num">' + (price != null ? '$' + Number(price).toFixed(2) : '—') + '</td>' +
+        '<td class="num">' + (price != null ? '$' + (Number(price)*qty).toFixed(2) : '—') + '</td>' +
+      '</tr>';
+    }).join('');
+
+    return '<tr style="cursor:' + (items.length ? 'pointer' : 'default') + '"' +
+        (items.length ? ' onclick="toggleItems(\'' + rowId + '\')"' : '') + '>' +
+      '<td>' + (o.created_at ?? '—').slice(0,10) + '</td>' +
+      '<td class="mono dim">' + esc(o.order_id) + '</td>' +
+      '<td class="num">$' + Number(o.total ?? o.total_amount ?? o.subtotal ?? 0).toFixed(2) + '</td>' +
+      '<td>' + statusBadge(o.status ?? o.order_status ?? '') + '</td>' +
+      '<td>' + (o.carrier ?? '—') + '</td>' +
+      '<td>' + (items.length ? '<span style="color:var(--teal);font-size:11px">▸ ' + items.length + ' item' + (items.length !== 1 ? 's' : '') + '</span>' : '<span class="dim">—</span>') + '</td>' +
+    '</tr>' +
+    (items.length ? '<tr id="' + rowId + '" class="items-row" style="display:none"><td colspan="6"><div class="items-inner"><table class="data-table"><thead><tr><th>Product</th><th>Qty</th><th>Unit Price</th><th>Line Total</th></tr></thead><tbody>' + itemRows + '</tbody></table></div></td></tr>' : '');
+  }).join('');
+
+  return '<span data-count="' + orders.length + '"></span>' +
+    tableWrap(['Date','Order ID','Total','Status','Carrier','Items'], rows);
+}
+
+function toggleItems(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = el.style.display === 'none' ? '' : 'none';
+}
+
+/* ════════════════════════════════════════════════════
+   LIFESTYLE SECTIONS
+════════════════════════════════════════════════════ */
+
+function ticketmasterSection(pid) {
+  const tm     = D.ticketmaster || {};
+  const orders = (tm.orders || []).filter(o => o.user_id === pid)
+    .sort((a, b) => b.purchased_at.localeCompare(a.purchased_at));
+  if (!orders.length) return empty();
+  const evtMap = {};
+  (tm.events || []).forEach(e => { evtMap[e.id] = e; });
+  const venMap = {};
+  (tm.venues || []).forEach(v => { venMap[v.id] = v; });
+
+  const body = orders.map(o => {
+    const evt = evtMap[o.event_id] || {};
+    const ven = venMap[evt.venue_id] || {};
+    return '<tr>' +
+      '<td>' + o.purchased_at.slice(0,10) + '</td>' +
+      '<td>' + esc(evt.name ?? '—') + '</td>' +
+      '<td>' + (evt.date ?? '—') + (evt.time ? ' ' + evt.time : '') + '</td>' +
+      '<td>' + esc(ven.name ?? '—') + '</td>' +
+      '<td>' + (ven.city ? ven.city + ', ' + ven.state : '—') + '</td>' +
+      '<td class="num">' + (o.quantity ?? '—') + '</td>' +
+      '<td class="num">$' + Number(o.total_price ?? o.subtotal ?? 0).toFixed(2) + '</td>' +
+      '<td class="mono dim">' + esc(o.confirmation_code ?? '—') + '</td>' +
+    '</tr>';
+  }).join('');
+  return '<span data-count="' + orders.length + '"></span>' +
+    tableWrap(['Purchased','Event','Event Date','Venue','Location','Qty','Total','Confirmation'], body);
+}
+
+function zillowSection(pid) {
+  const zd      = D.zillow || {};
+  const propMap = {};
+  (zd.properties || []).forEach(p => { propMap[p.id] = p; });
+  const saved = (zd.saved_properties || []).filter(s => s.user_id === pid)
+    .sort((a, b) => b.saved_at.localeCompare(a.saved_at));
+  if (!saved.length) return empty();
+
+  const body = saved.map(s => {
+    const p = propMap[s.property_id] || {};
+    return '<tr>' +
+      '<td>' + esc(p.address ?? String(s.property_id)) + '</td>' +
+      '<td>' + (p.city ? p.city + ', ' + p.state : '—') + '</td>' +
+      '<td class="num">' + (p.price ? '$' + Number(p.price).toLocaleString() : '—') + '</td>' +
+      '<td class="num">' + nvl(p.bedrooms) + '</td>' +
+      '<td class="num">' + nvl(p.bathrooms) + '</td>' +
+      '<td class="num">' + (p.sqft ? Number(p.sqft).toLocaleString() : '—') + '</td>' +
+      '<td>' + (p.home_type ?? '—') + '</td>' +
+      '<td>' + (p.property_status ?? '—') + '</td>' +
+      '<td>' + s.saved_at.slice(0,10) + '</td>' +
+      '<td style="font-size:11px;color:var(--text3)">' + esc(s.notes ?? '') + '</td>' +
+    '</tr>';
+  }).join('');
+  return '<span data-count="' + saved.length + '"></span>' +
+    tableWrap(['Address','City','Price','Beds','Baths','Sqft','Type','Status','Saved','Notes'], body);
+}
+
+function sonosSection(pid) {
+  const sn       = D.sonos || {};
+  const speakers = (sn.speakers || []).filter(s => s.user_id === pid);
+  const favs     = (sn.favorites || []).filter(f => f.user_id === pid);
+  const tracks   = (sn.favorite_tracks || []).filter(t => t.user_id === pid);
+  const total    = speakers.length + favs.length + tracks.length;
+  if (!total) return empty();
+  let out = '<span data-count="' + total + '"></span>';
+
+  if (speakers.length) {
+    const body = speakers.map(s =>
+      '<tr>' +
+        '<td>' + esc(s.room ?? '—') + '</td>' +
+        '<td>' + esc(s.model ?? '—') + '</td>' +
+        '<td class="num">' + nvl(s.volume) + '%</td>' +
+        '<td>' + statusBadge(s.playback_state ?? '') + '</td>' +
+        '<td>' + esc(s.now_playing_title ?? '—') + '</td>' +
+        '<td>' + esc(s.now_playing_artist ?? '—') + '</td>' +
+        '<td>' + (s.now_playing_source ?? '—') + '</td>' +
+      '</tr>'
+    ).join('');
+    out += tableWrap(['Room','Model','Vol','State','Now Playing','Artist','Source'], body);
+  }
+
+  if (favs.length) {
+    out += '<div style="padding:8px 12px 2px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--text3)">Favorites (' + favs.length + ')</div>';
+    const body = favs.map(f =>
+      '<tr><td>' + esc(f.name ?? f.title ?? '—') + '</td><td>' + (f.type ?? '—') + '</td><td>' + (f.added_at ?? '').slice(0,10) + '</td></tr>'
+    ).join('');
+    out += tableWrap(['Name','Type','Added'], body);
+  }
+
+  if (tracks.length) {
+    out += '<div style="padding:8px 12px 2px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--text3)">Favorite Tracks (' + tracks.length + ')</div>';
+    const body = tracks.map(t =>
+      '<tr><td>' + esc(t.title ?? t.track_name ?? '—') + '</td><td>' + esc(t.artist ?? '—') + '</td><td>' + esc(t.album ?? '—') + '</td><td>' + (t.service ?? t.source ?? '—') + '</td></tr>'
+    ).join('');
+    out += tableWrap(['Track','Artist','Album','Service'], body);
+  }
+
+  return out;
+}
+
+function obsidianSection(pid) {
+  const notes = (D.obsidian?.notes || [])
+    .filter(n => n.user_id === pid)
+    .sort((a, b) => (b.modified_at ?? '').localeCompare(a.modified_at ?? ''));
+  if (!notes.length) return empty();
+  const body = notes.map(n => {
+    const tags    = (n.tags || []).map(t => '<span style="background:rgba(168,85,247,.12);color:var(--violet);border-radius:4px;padding:1px 5px;font-size:9px">' + esc(t) + '</span>').join(' ');
+    const preview = (n.content ?? '').replace(/[#\[\]]/g, '').trim().slice(0, 80);
+    return '<tr>' +
+      '<td>' + (n.created_at ?? n.modified_at ?? '').slice(0,10) + '</td>' +
+      '<td>' + esc(n.folder ?? '—') + '</td>' +
+      '<td><strong>' + esc(n.title ?? n.path ?? '—') + '</strong></td>' +
+      '<td style="font-size:11px;color:var(--text3)">' + esc(preview) + (n.content?.length > 80 ? '…' : '') + '</td>' +
+      '<td>' + tags + '</td>' +
+    '</tr>';
+  }).join('');
+  return '<span data-count="' + notes.length + '"></span>' +
+    tableWrap(['Date','Folder','Title','Preview','Tags'], body);
+}
+
+function logisticsSection(pid) {
+  const lg    = D.logistics || {};
+  const ships = (lg.shipments || []).filter(s => s.user_id === pid)
+    .sort((a, b) => b.created_at.localeCompare(a.created_at));
+  if (!ships.length) return empty();
+  const evtIdx = {};
+  (lg.tracking_events || []).forEach(e => {
+    const k = e.tracking_number;
+    if (!evtIdx[k]) evtIdx[k] = [];
+    evtIdx[k].push(e);
   });
 
-  document.getElementById("drill-dataset").addEventListener("change", (event) => {
-    DRILL.datasetKey = event.target.value;
-    DRILL.page = 0;
-    renderDrilldown();
-  });
+  const rows = ships.map(s => {
+    const events = evtIdx[s.tracking_number] || [];
+    const rowId  = 'pkg-' + s.tracking_number.replace(/[^a-z0-9]/gi, '-');
+    const evtRows = events
+      .sort((a, b) => (a.timestamp ?? '').localeCompare(b.timestamp ?? ''))
+      .map(e => '<tr><td>' + (e.timestamp ?? '').slice(0,16).replace('T',' ') + '</td><td>' + esc(e.location ?? '—') + '</td><td>' + esc(e.status ?? e.description ?? '—') + '</td></tr>')
+      .join('');
+    return '<tr style="cursor:' + (events.length ? 'pointer' : 'default') + '"' +
+        (events.length ? ' onclick="toggleItems(\'' + rowId + '\')"' : '') + '>' +
+      '<td>' + s.created_at.slice(0,10) + '</td>' +
+      '<td class="mono dim" style="font-size:10px">' + esc(s.tracking_number) + '</td>' +
+      '<td>' + (s.carrier ?? '—') + '</td>' +
+      '<td>' + statusBadge(s.status ?? '') + '</td>' +
+      '<td>' + (s.origin ?? '—') + '</td>' +
+      '<td style="font-size:11px">' + esc(s.destination ?? '—') + '</td>' +
+      '<td>' + ((s.actual_delivery ?? s.estimated_delivery ?? '').slice(0,10) || '—') + '</td>' +
+      '<td>' + (events.length ? '<span style="color:var(--teal);font-size:11px">▸ ' + events.length + ' events</span>' : '<span class="dim">—</span>') + '</td>' +
+    '</tr>' +
+    (events.length ? '<tr id="' + rowId + '" class="items-row" style="display:none"><td colspan="8"><div class="items-inner"><table class="data-table"><thead><tr><th>Timestamp</th><th>Location</th><th>Status</th></tr></thead><tbody>' + evtRows + '</tbody></table></div></td></tr>' : '');
+  }).join('');
 
-  renderDrilldown();
+  return '<span data-count="' + ships.length + '"></span>' +
+    tableWrap(['Created','Tracking #','Carrier','Status','Origin','Destination','Delivered','Events'], rows);
 }
 
-function openPersonaDrill(personaId, serviceKey = "") {
-  const persona = personaById(personaId);
-  if (!persona) return;
-  DRILL.personaId = persona.id;
-  DRILL.serviceKey = serviceKey && persona.sources.includes(serviceKey) ? serviceKey : persona.sources[0];
-  DRILL.datasetKey = firstDatasetKey(persona, DRILL.serviceKey);
-  DRILL.page = 0;
-  navigateTo("drilldown");
-  const select = document.getElementById("drill-persona");
-  if (select) select.value = persona.id;
-  renderDrilldown();
+/* ════════════════════════════════════════════════════
+   UTILITIES
+════════════════════════════════════════════════════ */
+function personaOrders(pid) {
+  return ['amazon','walmart','target','instacart','fresh-direct','amazon-fresh']
+    .flatMap(k => (D[k]?.orders || []).filter(o => o.user_id === pid));
 }
 
-function setDrillService(serviceKey) {
-  const persona = personaById(DRILL.personaId);
-  if (!persona?.sources.includes(serviceKey)) return;
-  DRILL.serviceKey = serviceKey;
-  DRILL.datasetKey = firstDatasetKey(persona, serviceKey);
-  DRILL.page = 0;
-  renderDrilldown();
+function tableWrap(headers, body) {
+  const ths = headers.map(h => '<th>' + h + '</th>').join('');
+  return '<div class="table-wrap"><table class="data-table"><thead><tr>' + ths + '</tr></thead><tbody>' +
+    (body || '<tr><td colspan="' + headers.length + '" class="empty">No records</td></tr>') +
+    '</tbody></table></div>';
 }
 
-function setDetailPage(direction) {
-  DRILL.page = Math.max(0, DRILL.page + direction);
-  renderDrilldown();
+function empty(msg) {
+  return '<div class="empty">' + (msg ?? 'No data for this persona.') + '</div>';
 }
 
-function renderDrilldown() {
-  const persona = personaById(DRILL.personaId);
-  if (!persona) return;
-  if (!persona.sources.includes(DRILL.serviceKey)) DRILL.serviceKey = persona.sources[0];
-  if (!DRILL.datasetKey || !persona.records[DRILL.serviceKey]?.[DRILL.datasetKey]) {
-    DRILL.datasetKey = firstDatasetKey(persona, DRILL.serviceKey);
-  }
-
-  const serviceRecords = persona.records[DRILL.serviceKey] || {};
-  const datasetKeys = Object.keys(serviceRecords).sort();
-  const datasetSelect = document.getElementById("drill-dataset");
-  datasetSelect.innerHTML = datasetKeys.map((key) =>
-    `<option value="${key}">${escapeHtml(key)} (${formatNumber(serviceRecords[key].length)})</option>`
-  ).join("");
-  datasetSelect.value = DRILL.datasetKey;
-
-  const selectedRows = serviceRecords[DRILL.datasetKey] || [];
-  const maxPage = Math.max(0, Math.ceil(selectedRows.length / DETAIL_PAGE_SIZE) - 1);
-  DRILL.page = Math.min(DRILL.page, maxPage);
-  setText("drill-count", `${SERVICES[DRILL.serviceKey].label} - ${DRILL.datasetKey} - ${formatNumber(selectedRows.length)} records`);
-
-  document.getElementById("drill-root").innerHTML = `
-    <div class="drill-layout">
-      <aside class="server-nav">
-        ${persona.sources.map((serviceKey) => {
-          const total = countServiceRecords(persona.records[serviceKey]);
-          return `<button class="server-btn ${serviceKey === DRILL.serviceKey ? "active" : ""}" onclick="setDrillService('${serviceKey}')">
-            ${escapeHtml(SERVICES[serviceKey].label)}
-            <small>${formatNumber(total)} records - ${escapeHtml(SERVICES[serviceKey].category)}</small>
-          </button>`;
-        }).join("")}
-      </aside>
-      <div class="drill-main">
-        ${renderDrillHeader(persona)}
-        ${renderServiceMetrics(persona, DRILL.serviceKey)}
-        ${renderDatasetSummary(serviceRecords)}
-        ${renderRawRecords(selectedRows)}
-      </div>
-    </div>
-  `;
+function field(key, val) {
+  return '<div class="field"><div class="field-key">' + key + '</div><div class="field-val">' + (val ?? '—') + '</div></div>';
 }
 
-function renderDrillHeader(persona) {
-  const service = SERVICES[DRILL.serviceKey];
-  return `
-    <article class="persona-card">
-      <header class="persona-header">
-        <div class="avatar">${escapeHtml(initials(persona.name))}</div>
-        <div>
-          <h3>${escapeHtml(persona.name)} - ${escapeHtml(service.label)}</h3>
-          <p>${escapeHtml(persona.id)} - ${escapeHtml(persona.email || "no email")} - ${escapeHtml(service.category)}</p>
-        </div>
-        <div class="persona-mini">${formatNumber(countServiceRecords(persona.records[DRILL.serviceKey]))} server records<br>${Object.keys(persona.records[DRILL.serviceKey] || {}).length} datasets</div>
-      </header>
-    </article>
-  `;
+function fmt(n) { return n != null ? Number(n).toLocaleString() : '—'; }
+function nvl(n) { return n != null ? n : '—'; }
+
+function statusBadge(s) {
+  if (!s) return '<span class="dim">—</span>';
+  const m = {
+    delivered:'badge-green', active:'badge-green', completed:'badge-green',
+    cancelled:'badge-rose',  canceled:'badge-rose',
+    shipped:'badge-sky',     processing:'badge-sky', on_sale:'badge-green',
+    pending:'badge-amber',   placed:'badge-amber',   limited:'badge-amber',
+    paused:'badge-normal',   playing:'badge-green',
+  };
+  const cls = m[s.toLowerCase()] || 'badge-normal';
+  return '<span class="badge ' + cls + '">' + s + '</span>';
 }
 
-function renderServiceMetrics(persona, serviceKey) {
-  const metrics = serviceMetrics(serviceKey, persona.records[serviceKey] || {});
-  return `
-    <section class="persona-section">
-      <h4>Dedicated Server Metrics</h4>
-      <div class="metric-grid">${metrics.map(([label, value]) => stat(label, value)).join("")}</div>
-    </section>
-  `;
-}
-
-function renderDatasetSummary(serviceRecords) {
-  return `
-    <section class="persona-section">
-      <h4>Datasets in This Server</h4>
-      <table class="mini-table">
-        <thead><tr><th>Dataset</th><th>Records</th><th>Sample Fields</th></tr></thead>
-        <tbody>${Object.entries(serviceRecords).sort(([a], [b]) => a.localeCompare(b)).map(([datasetKey, rows]) => `
-          <tr>
-            <td><button class="link-btn" onclick="selectDrillDataset('${datasetKey}')">${escapeHtml(datasetKey)}</button></td>
-            <td class="num">${formatNumber(rows.length)}</td>
-            <td>${escapeHtml(Object.keys(rows[0] || {}).slice(0, 10).join(", "))}</td>
-          </tr>
-        `).join("")}</tbody>
-      </table>
-    </section>
-  `;
-}
-
-function selectDrillDataset(datasetKey) {
-  DRILL.datasetKey = datasetKey;
-  DRILL.page = 0;
-  renderDrilldown();
-}
-
-function renderRawRecords(rows) {
-  const pageRows = rows.slice(DRILL.page * DETAIL_PAGE_SIZE, (DRILL.page + 1) * DETAIL_PAGE_SIZE);
-  const columns = columnsForRows(pageRows.length ? pageRows : rows);
-  const totalPages = Math.max(1, Math.ceil(rows.length / DETAIL_PAGE_SIZE));
-  return `
-    <section class="persona-section">
-      <h4>Raw Records: ${escapeHtml(DRILL.datasetKey)}</h4>
-      <div class="record-table-wrap">
-        <table class="record-table">
-          <thead><tr>${columns.map((column) => `<th>${escapeHtml(column)}</th>`).join("")}</tr></thead>
-          <tbody>${pageRows.map((row) => `
-            <tr>${columns.map((column) => `<td>${escapeHtml(formatCell(row[column]))}</td>`).join("")}</tr>
-          `).join("") || `<tr><td colspan="${columns.length || 1}" class="empty">No records</td></tr>`}</tbody>
-        </table>
-      </div>
-      <div class="pager">
-        <button class="page-btn" onclick="setDetailPage(-1)" ${DRILL.page === 0 ? "disabled" : ""}>Previous</button>
-        <span class="page-info">Page ${DRILL.page + 1} of ${totalPages} - showing ${formatNumber(pageRows.length)} of ${formatNumber(rows.length)}</span>
-        <button class="page-btn" onclick="setDetailPage(1)" ${DRILL.page >= totalPages - 1 ? "disabled" : ""}>Next</button>
-      </div>
-    </section>
-  `;
-}
-
-function renderPersona(persona) {
-  return `
-    <article class="persona-card" id="${persona.id}">
-      <header class="persona-header">
-        <div class="avatar">${escapeHtml(initials(persona.name))}</div>
-        <div>
-          <h3>${escapeHtml(persona.name)}</h3>
-          <p>${escapeHtml([persona.id, persona.email, persona.location].filter(Boolean).join(" - "))}</p>
-        </div>
-        <div class="persona-mini">${formatNumber(persona.totalRecords)} records<br>${persona.sources.length}/${Object.keys(SERVICES).length} services</div>
-      </header>
-
-      <div class="chain">
-        <section class="persona-section full-span">
-          <h4>Persona Summary</h4>
-          <div class="metric-grid">
-        ${stat("Mapped records", formatNumber(persona.totalRecords))}
-        ${stat("Services", `${persona.sources.length}/${Object.keys(SERVICES).length}`)}
-        ${stat("Orders", formatNumber(persona.summary.orderCount))}
-        ${stat("Spend", money(persona.summary.spend))}
-        ${stat("Health records", formatNumber(persona.summary.healthRecords))}
-        ${stat("Notes", formatNumber(persona.summary.notes))}
-          </div>
-        </section>
-
-        <section class="persona-section">
-          <h4>Data Coverage</h4>
-          <div class="source-list">${persona.sources.map((key) => `<button class="source-pill source-button" onclick="openPersonaDrill('${persona.id}', '${key}')">${escapeHtml(SERVICES[key].label)}</button>`).join("")}</div>
-        </section>
-
-        <section class="persona-section">
-          <h4>Source Record Counts</h4>
-          <div class="dataset-list">${persona.sections.datasets.map(renderDatasetRow).join("")}</div>
-        </section>
-
-        <section class="persona-section full-span">
-          <h4>Health and Activity</h4>
-          ${renderHealthTable(persona.sections.health)}
-        </section>
-
-        <section class="persona-section full-span">
-          <h4>Purchases</h4>
-          ${renderShoppingTable(persona.sections.shopping)}
-        </section>
-
-        <section class="persona-section full-span">
-          <h4>Lifestyle, Housing, Events, Notes, Media</h4>
-          ${renderLifestyleTable(persona.sections.lifestyle)}
-        </section>
-      </div>
-    </article>
-  `;
-}
-
-function renderDatasetRow(row) {
-  return `
-    <div class="dataset-line">
-      <strong>${escapeHtml(row.service)}</strong>
-      <span>${row.datasets.map(([name, value]) => `${escapeHtml(name)} ${formatNumber(value)}`).join(" - ")}</span>
-    </div>
-  `;
-}
-
-function renderHealthTable(rows) {
-  if (!rows.length) return `<p class="empty">No health records.</p>`;
-  return `
-    <table class="mini-table">
-      <thead><tr><th>Service</th><th>Mapped Records</th><th>Metrics</th></tr></thead>
-      <tbody>${rows.map((section) => `
-        <tr>
-          <td><span class="badge badge-health">${escapeHtml(section.label)}</span></td>
-          <td class="num">${formatNumber(section.count)}</td>
-          <td>${section.facts.map((fact) => `${escapeHtml(fact.name)}: <strong>${escapeHtml(String(fact.value))}</strong>`).join(" - ")}</td>
-        </tr>
-      `).join("")}</tbody>
-    </table>
-  `;
-}
-
-function renderShoppingTable(rows) {
-  if (!rows.length) return `<p class="empty">No purchase records.</p>`;
-  return `
-    <table class="mini-table">
-      <thead><tr><th>Service</th><th>Orders</th><th>Items</th><th>Spend</th><th>Recent Orders</th></tr></thead>
-      <tbody>${rows.map((section) => `
-        <tr>
-          <td><span class="badge badge-shopping">${escapeHtml(section.label)}</span></td>
-          <td class="num">${formatNumber(section.orders)}</td>
-          <td class="num">${formatNumber(section.items)}</td>
-          <td class="num">${money(section.spend)}</td>
-          <td>${section.recent.map((row) => `${escapeHtml(row.date)} ${escapeHtml(row.total)} ${escapeHtml(row.status)}`).join(" - ")}</td>
-        </tr>
-      `).join("")}</tbody>
-    </table>
-  `;
-}
-
-function renderLifestyleTable(rows) {
-  if (!rows.length) return `<p class="empty">No lifestyle records.</p>`;
-  return `
-    <table class="mini-table">
-      <thead><tr><th>Service</th><th>Details</th></tr></thead>
-      <tbody>${rows.map((section) => `
-        <tr>
-          <td><span class="badge badge-lifestyle">${escapeHtml(section.label)}</span></td>
-          <td>${section.facts.map(([name, value]) => `${escapeHtml(name)}: <strong>${escapeHtml(String(value))}</strong>`).join(" - ")}</td>
-        </tr>
-      `).join("")}</tbody>
-    </table>
-  `;
-}
-
-function personaById(personaId) {
-  return window.LH_MODEL?.personas.find((persona) => persona.id === personaId);
-}
-
-function firstDatasetKey(persona, serviceKey) {
-  const keys = Object.keys(persona.records[serviceKey] || {}).sort();
-  return keys.includes(PREFERRED_DATASETS[serviceKey]) ? PREFERRED_DATASETS[serviceKey] : keys[0] || "";
-}
-
-function serviceMetrics(serviceKey, serviceRecords) {
-  const m = (label, dataset, field, mode) => [label, metricValue(serviceRecords[dataset] || [], field, mode)];
-  const countDataset = (label, dataset) => [label, formatNumber((serviceRecords[dataset] || []).length)];
-  const spend = (label, dataset, field = "total") => [label, money(sum((serviceRecords[dataset] || []).map((row) => Number(row[field] || 0))))];
-
-  switch (serviceKey) {
-    case "apple-health":
-      return [
-        m("Total steps", "step_records", "total_steps", "sum"),
-        countDataset("Workout records", "workout_records"),
-        m("Workout minutes", "workout_records", "duration_minutes", "sum"),
-        m("Active energy", "activity_summaries", "active_energy_kcal", "sum"),
-        countDataset("Sleep stage records", "sleep_records"),
-        m("Resting HR avg", "resting_heart_rate_records", "value", "avg"),
-        m("Latest VO2 max", "vo2max_records", "value", "latest"),
-        m("Latest body mass", "body_mass_records", "value", "latest"),
-      ];
-    case "garmin-connect":
-      return [
-        m("Total steps", "daily_stats", "steps", "sum"),
-        m("Total calories", "daily_stats", "calories_total", "sum"),
-        m("Intensity minutes", "daily_stats", "intensity_minutes", "sum"),
-        countDataset("Activities", "activities"),
-        m("Activity distance", "activities", "distance_meters", "sumDistanceM"),
-        m("Sleep score avg", "sleep", "sleep_score", "avg"),
-        m("Resting HR avg", "heart_rate", "resting_hr", "avg"),
-        m("Latest readiness", "training_readiness", "readiness_score", "latest"),
-      ];
-    case "eight-sleep":
-      return [
-        countDataset("Sleep sessions", "sleep_sessions"),
-        m("Deep sleep", "sleep_sessions", "deep_duration_s", "sumSecondsHours"),
-        m("REM sleep", "sleep_sessions", "rem_duration_s", "sumSecondsHours"),
-        m("Awake time", "sleep_sessions", "awake_duration_s", "sumSecondsHours"),
-        m("Avg heart rate", "sleep_sessions", "avg_heart_rate", "avg"),
-        countDataset("Temp schedules", "temperature_schedules"),
-        countDataset("Alarms", "alarms"),
-      ];
-    case "whoop":
-      return [
-        countDataset("Cycles", "cycles"),
-        m("Avg strain", "cycles", "strain", "avg"),
-        m("Recovery avg", "recovery", "recovery_score", "avg"),
-        countDataset("Sleep records", "sleep"),
-        m("Sleep performance", "sleep", "score_sleep_performance", "avg"),
-        countDataset("Workouts", "workouts"),
-        m("Workout kilojoules", "workouts", "score_kilojoules", "sum"),
-      ];
-    case "fitbit":
-      return [
-        m("Total steps", "daily_stats", "steps", "sum"),
-        m("Total calories", "daily_stats", "calories", "sum"),
-        countDataset("Activities", "activities"),
-        m("Sleep efficiency", "sleep_logs", "efficiency", "avg"),
-        m("Food calories", "food_logs", "calories", "sum"),
-        m("Water", "water_logs", "amount", "sum"),
-        countDataset("Badges", "badges"),
-      ];
-    case "renpho":
-      return [
-        countDataset("Measurements", "measurements"),
-        m("Latest weight", "measurements", "weight", "latest"),
-        m("Latest BMI", "measurements", "bmi", "latest"),
-        m("Latest body fat", "measurements", "body_fat", "latest"),
-        m("Latest muscle mass", "measurements", "muscle_mass", "latest"),
-      ];
-    case "myfitnesspal":
-      return [
-        countDataset("Food logs", "food_logs"),
-        countDataset("Exercise logs", "exercise_logs"),
-        m("Calories burned", "exercise_logs", "calories_burned", "sum"),
-        m("Water logged", "water_logs", "amount_ml", "sumMl"),
-        m("Servings logged", "food_logs", "servings", "sum"),
-      ];
-    case "strava":
-      return [
-        countDataset("Activities", "activities"),
-        m("Activity distance", "activities", "distance", "sumDistanceM"),
-        m("Moving time", "activities", "moving_time", "sumSecondsHours"),
-        m("Elevation gain", "activities", "total_elevation_gain", "sum"),
-        countDataset("Personal records", "personal_records"),
-        countDataset("Routes", "routes"),
-      ];
-    case "amazon":
-    case "walmart":
-    case "target":
-    case "instacart":
-    case "fresh-direct":
-    case "amazon-fresh":
-      return [
-        countDataset("Orders", "orders"),
-        countDataset("Order items", "order_items"),
-        spend("Order spend", "orders"),
-        m("Latest order total", "orders", "total", "latest"),
-      ];
-    case "ticketmaster":
-      return [
-        countDataset("Ticket orders", "orders"),
-        spend("Ticket spend", "orders", "total_price"),
-        m("Tickets purchased", "orders", "quantity", "sum"),
-        m("Latest total", "orders", "total_price", "latest"),
-      ];
-    case "zillow":
-      return [
-        countDataset("Saved properties", "saved_properties"),
-        countDataset("Scheduled tours", "scheduled_tours"),
-        ["Latest tour", latestTitle(serviceRecords.scheduled_tours, "tour_date", "status")],
-      ];
-    case "sonos":
-      return [
-        countDataset("Speakers", "speakers"),
-        countDataset("Queue items", "queue_items"),
-        countDataset("Favorites", "favorites"),
-        countDataset("Favorite tracks", "favorite_tracks"),
-      ];
-    case "obsidian":
-      return [
-        countDataset("Notes", "notes"),
-        countDataset("Tags", "tags"),
-        ["Latest note", latestTitle(serviceRecords.notes, "modified_at")],
-      ];
-    case "logistics-tracking":
-      return [
-        countDataset("Shipments", "shipments"),
-        countDataset("Tracking events", "tracking_events"),
-        ["Latest tracking status", latestTitle(serviceRecords.tracking_events, "timestamp", "status")],
-      ];
-    default:
-      return [["Mapped records", formatNumber(countServiceRecords(serviceRecords))]];
-  }
-}
-
-function columnsForRows(rows) {
-  const columns = [];
-  for (const row of rows.slice(0, DETAIL_PAGE_SIZE)) {
-    for (const key of Object.keys(row || {})) {
-      if (!columns.includes(key)) columns.push(key);
-    }
-  }
-  return columns;
-}
-
-function formatCell(value) {
-  if (value === null || value === undefined) return "";
-  if (Array.isArray(value)) return value.join(", ");
-  if (typeof value === "object") return JSON.stringify(value);
-  return String(value);
-}
-
-function renderAudit(model) {
-  const audit = document.getElementById("audit-root");
-  audit.innerHTML = `
-    <article class="audit-card">
-      <h3>Mapping Rules</h3>
-      <p>Rows map to a persona only through direct <code>user_id</code>/<code>persona_id</code> values or service-local foreign keys inherited from directly-owned rows.</p>
-    </article>
-    <article class="audit-card">
-      <h3>Unmapped Persona Records</h3>
-      ${renderCountGroups(model.unmapped) || "<p class=\"empty\">None found.</p>"}
-    </article>
-    <article class="audit-card">
-      <h3>Shared Catalog Data</h3>
-      ${renderCountGroups(model.shared) || "<p class=\"empty\">None found.</p>"}
-    </article>
-  `;
-}
-
-function renderCountGroups(groups) {
-  return Object.entries(groups).map(([serviceKey, datasets]) => `
-    <div class="audit-row">
-      <strong>${escapeHtml(SERVICES[serviceKey].label)}</strong>
-      <span>${Object.entries(datasets).map(([key, value]) => `${escapeHtml(key)} ${formatNumber(value)}`).join(" - ")}</span>
-    </div>
-  `).join("");
-}
-
-function datasetRows(datasetCounts) {
-  return Object.entries(datasetCounts)
-    .sort(([a], [b]) => SERVICES[a].label.localeCompare(SERVICES[b].label))
-    .map(([serviceKey, datasets]) => ({
-      service: SERVICES[serviceKey].label,
-      datasets: Object.entries(datasets).sort(([a], [b]) => a.localeCompare(b)),
-    }));
-}
-
-function metricValue(rows, field, mode) {
-  if (!rows?.length) return "0";
-  if (mode === "count") return formatNumber(rows.length);
-  if (mode === "latest") return formatValue(latestRow(rows)?.[field]);
-  const values = rows.map((row) => Number(row[field])).filter(Number.isFinite);
-  if (!values.length) return "0";
-  if (mode === "sum") return formatNumber(sum(values));
-  if (mode === "sumMl") return `${formatNumber(Math.round(sum(values) / 1000))} L`;
-  if (mode === "sumDistanceM") return `${formatNumber(Math.round(sum(values) / 1000))} km`;
-  if (mode === "sumSecondsHours") return `${formatNumber(Math.round(sum(values) / 3600))} h`;
-  if (mode === "sumMinutesHours") return `${formatNumber(Math.round(sum(values) / 60))} h`;
-  if (mode === "avg") return round(sum(values) / values.length);
-  return formatNumber(values.length);
-}
-
-function recentRows(rows, dateSelector, limit) {
-  return [...(rows || [])]
-    .sort((a, b) => String(dateSelector(b) || "").localeCompare(String(dateSelector(a) || "")))
-    .slice(0, limit);
-}
-
-function latestRow(rows) {
-  return recentRows(rows, (row) => row.date || row.timestamp || row.created_at || row.start_time || row.modified_at, 1)[0];
-}
-
-function latestTitle(rows, dateKey, titleKey = "title") {
-  const row = recentRows(rows || [], (item) => item[dateKey], 1)[0];
-  return row ? formatValue(row[titleKey] || row[dateKey]) : "0";
-}
-
-function arrayDatasets(serviceData) {
-  return Object.entries(serviceData)
-    .filter(([, value]) => Array.isArray(value))
-    .map(([key, rows]) => [key, rows.filter((row) => row && typeof row === "object" && !Array.isArray(row))]);
-}
-
-function directPersonaId(row) {
-  const id = row.user_id || row.persona_id;
-  return PERSONA_ID.test(String(id || "")) ? String(id) : "";
-}
-
-function addDatasetCount(target, serviceKey, datasetKey, countValue) {
-  if (!target[serviceKey]) target[serviceKey] = {};
-  target[serviceKey][datasetKey] = (target[serviceKey][datasetKey] || 0) + countValue;
-}
-
-function setOwner(map, key, owner) {
-  if (!map.has(key)) map.set(key, new Set());
-  map.get(key).add(owner);
-}
-
-function countServiceRecords(serviceRecords) {
-  return sum(Object.values(serviceRecords || {}).map((rows) => rows.length));
-}
-
-function count(rows) {
-  return formatNumber((rows || []).length);
-}
-
-function sum(values) {
-  return values.reduce((total, value) => total + (Number(value) || 0), 0);
-}
-
-function sumNestedCounts(groups) {
-  return sum(Object.values(groups).flatMap((datasets) => Object.values(datasets)));
-}
-
-function stat(label, value) {
-  return `<div class="metric-tile"><strong>${escapeHtml(String(value))}</strong><span>${escapeHtml(label)}</span></div>`;
-}
-
-function initials(name) {
-  return String(name).split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
-}
-
-function joinName(first, last) {
-  return [first, last].filter(Boolean).join(" ");
-}
-
-function humanize(id) {
-  return id.replace("_", " ");
-}
-
-function money(value) {
-  return Number(value || 0).toLocaleString("en-US", { style: "currency", currency: "USD" });
-}
-
-function formatNumber(value) {
-  return Number(value || 0).toLocaleString("en-US");
-}
-
-function formatValue(value) {
-  if (value === null || value === undefined || value === "") return "0";
-  return typeof value === "number" ? round(value) : String(value);
-}
-
-function round(value) {
-  return Number(value).toLocaleString("en-US", { maximumFractionDigits: 1 });
-}
-
-function shortDate(value) {
-  return value ? String(value).slice(0, 10) : "";
-}
-
-function setText(id, value) {
-  const element = document.getElementById(id);
-  if (element) element.textContent = value;
-}
-
-function setStatus(value) {
-  setText("status-text", value);
-}
-
-function hideLoading() {
-  const overlay = document.getElementById("loading-overlay");
-  if (!overlay) return;
-  overlay.classList.add("hidden");
-  setTimeout(() => overlay.remove(), 300);
-}
-
-function categoryTotals(personas) {
-  const totals = { health: 0, shopping: 0, lifestyle: 0 };
-  for (const persona of personas) {
-    for (const [serviceKey, datasets] of Object.entries(persona.datasetCounts)) {
-      totals[SERVICES[serviceKey].category] += sum(Object.values(datasets));
-    }
-  }
-  return totals;
-}
-
-function serviceTotals(personas) {
-  const totals = {};
-  for (const persona of personas) {
-    for (const [serviceKey, datasets] of Object.entries(persona.datasetCounts)) {
-      totals[serviceKey] = (totals[serviceKey] || 0) + sum(Object.values(datasets));
-    }
-  }
-  return totals;
-}
-
-function barColor(index) {
-  return ["#818cf8", "#34d399", "#fbbf24", "#a78bfa", "#22d3ee", "#f87171"][index % 6];
-}
-
-function titleCase(value) {
-  return String(value).replace(/(^|-)([a-z])/g, (match) => match.toUpperCase()).replaceAll("-", " ");
-}
-
-function escapeHtml(value) {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+function esc(str) {
+  if (str == null) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
