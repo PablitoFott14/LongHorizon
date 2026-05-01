@@ -478,14 +478,17 @@ function shopSection(pid, svcKey) {
   const variants = sd.product_variants || [];
   const itemsMap = {};
   (sd.order_items || []).forEach(i => {
-    if (!itemsMap[i.order_id]) itemsMap[i.order_id] = [];
-    itemsMap[i.order_id].push(i);
+    const k = i.order_id ?? i.id;
+    if (k == null) return;
+    if (!itemsMap[k]) itemsMap[k] = [];
+    itemsMap[k].push(i);
   });
   if (!orders.length) return empty();
 
-  const rows = orders.map(o => {
-    const items = itemsMap[o.order_id] || [];
-    const rowId = 'items-' + o.order_id.replace(/[^a-z0-9]/gi, '-');
+  const rows = orders.map((o, idx) => {
+    const oid   = o.order_id ?? o.id ?? ('o' + idx);
+    const items = itemsMap[oid] || [];
+    const rowId = 'items-' + String(oid).replace(/[^a-z0-9]/gi, '-');
     const itemRows = items.map(item => {
       const prod = products.find(p =>
         p.asin === item.asin || p.product_id === item.product_id ||
@@ -507,7 +510,7 @@ function shopSection(pid, svcKey) {
     return '<tr style="cursor:' + (items.length ? 'pointer' : 'default') + '"' +
         (items.length ? ' onclick="toggleItems(\'' + rowId + '\')"' : '') + '>' +
       '<td>' + (o.created_at ?? '—').slice(0,10) + '</td>' +
-      '<td class="mono dim">' + esc(o.order_id) + '</td>' +
+      '<td class="mono dim">' + esc(String(oid)) + '</td>' +
       '<td class="num">$' + Number(o.total ?? o.total_amount ?? o.subtotal ?? 0).toFixed(2) + '</td>' +
       '<td>' + statusBadge(o.status ?? o.order_status ?? '') + '</td>' +
       '<td>' + (o.carrier ?? '—') + '</td>' +
