@@ -1,0 +1,6417 @@
+{
+  "users": [
+    {
+      "user_id": "persona_001",
+      "name": "John Doe",
+      "email": "john.doe@email.com",
+      "address": "123 Main St",
+      "city": "New York",
+      "state": "NY",
+      "zip": "10001",
+      "is_user": false
+    },
+    {
+      "user_id": "persona_002",
+      "name": "Marcus Johnson",
+      "email": "marcus.johnson@email.com",
+      "address": "456 Oak Ave",
+      "city": "Chicago",
+      "state": "IL",
+      "zip": "60601",
+      "is_user": false
+    },
+    {
+      "user_id": "persona_009",
+      "name": "William Thompson",
+      "email": "william.thompson@email.com",
+      "address": "789 Pine Rd",
+      "city": "Houston",
+      "state": "TX",
+      "zip": "77001",
+      "is_user": false
+    },
+    {
+      "user_id": "persona_010",
+      "name": "Sophie Laurent",
+      "email": "sophie.laurent@email.com",
+      "address": "321 Elm St",
+      "city": "San Francisco",
+      "state": "CA",
+      "zip": "94102",
+      "is_user": false
+    },
+    {
+      "user_id": "persona_013",
+      "name": "Carlos Mendez",
+      "email": "carlos.mendez@email.com",
+      "address": "654 Maple Dr",
+      "city": "Miami",
+      "state": "FL",
+      "zip": "33101",
+      "is_user": false
+    },
+    {
+      "user_id": "persona_014",
+      "name": "Lisa Park",
+      "email": "lisa.park@email.com",
+      "address": "987 Cedar Ln",
+      "city": "Seattle",
+      "state": "WA",
+      "zip": "98101",
+      "is_user": false
+    },
+    {
+      "user_id": "persona_016",
+      "name": "Priya Sharma",
+      "email": "priya.sharma@email.com",
+      "address": "147 Birch Way",
+      "city": "Boston",
+      "state": "MA",
+      "zip": "02101",
+      "is_user": false
+    },
+    {
+      "user_id": "persona_022",
+      "name": "Anna Kowalczyk",
+      "email": "anna.kowalczyk@email.com",
+      "address": "258 Walnut St",
+      "city": "Philadelphia",
+      "state": "PA",
+      "zip": "19101",
+      "is_user": false
+    },
+    {
+      "user_id": "persona_023",
+      "name": "Jordan Williams",
+      "email": "jordan.williams@email.com",
+      "address": "369 Spruce Ave",
+      "city": "Denver",
+      "state": "CO",
+      "zip": "80201",
+      "is_user": false
+    },
+    {
+      "user_id": "persona_027",
+      "name": "Patrick Murphy",
+      "email": "patrick.murphy@email.com",
+      "address": "471 Willow Ct",
+      "city": "Nashville",
+      "state": "TN",
+      "zip": "37201",
+      "is_user": false
+    },
+    {
+      "user_id": "persona_031",
+      "name": "Jennifer Martinez",
+      "email": "jennifer.martinez@email.com",
+      "address": "582 Aspen Blvd",
+      "city": "Los Angeles",
+      "state": "CA",
+      "zip": "90001",
+      "is_user": false
+    }
+  ],
+  "venues": [
+    {
+      "id": "VEN001",
+      "name": "Madison Square Garden",
+      "city": "New York",
+      "state": "NY",
+      "capacity": 20789,
+      "venue_type": "arena",
+      "address": "4 Pennsylvania Plaza",
+      "zip": "10001"
+    },
+    {
+      "id": "VEN002",
+      "name": "SoFi Stadium",
+      "city": "Los Angeles",
+      "state": "CA",
+      "capacity": 70240,
+      "venue_type": "stadium",
+      "address": "1001 Stadium Dr",
+      "zip": "90301"
+    },
+    {
+      "id": "VEN003",
+      "name": "Red Rocks Amphitheatre",
+      "city": "Morrison",
+      "state": "CO",
+      "capacity": 9525,
+      "venue_type": "outdoor",
+      "address": "18300 W Alameda Pkwy",
+      "zip": "80465"
+    },
+    {
+      "id": "VEN004",
+      "name": "Fenway Park",
+      "city": "Boston",
+      "state": "MA",
+      "capacity": 37755,
+      "venue_type": "stadium",
+      "address": "4 Jersey St",
+      "zip": "02215"
+    },
+    {
+      "id": "VEN005",
+      "name": "United Center",
+      "city": "Chicago",
+      "state": "IL",
+      "capacity": 20917,
+      "venue_type": "arena",
+      "address": "1901 W Madison St",
+      "zip": "60612"
+    },
+    {
+      "id": "VEN006",
+      "name": "Ryman Auditorium",
+      "city": "Nashville",
+      "state": "TN",
+      "capacity": 2362,
+      "venue_type": "theater",
+      "address": "116 5th Ave N",
+      "zip": "37219"
+    },
+    {
+      "id": "VEN007",
+      "name": "The Fox Theatre",
+      "city": "Atlanta",
+      "state": "GA",
+      "capacity": 4665,
+      "venue_type": "theater",
+      "address": "660 Peachtree St NE",
+      "zip": "30308"
+    },
+    {
+      "id": "VEN008",
+      "name": "Moody Center",
+      "city": "Austin",
+      "state": "TX",
+      "capacity": 15000,
+      "venue_type": "arena",
+      "address": "2001 Robert Dedman Dr",
+      "zip": "78712"
+    },
+    {
+      "id": "VEN009",
+      "name": "T-Mobile Arena",
+      "city": "Las Vegas",
+      "state": "NV",
+      "capacity": 20000,
+      "venue_type": "arena",
+      "address": "3780 S Las Vegas Blvd",
+      "zip": "89158"
+    },
+    {
+      "id": "VEN010",
+      "name": "The Anthem",
+      "city": "Washington",
+      "state": "DC",
+      "capacity": 6000,
+      "venue_type": "club",
+      "address": "901 Wharf St SW",
+      "zip": "20024"
+    },
+    {
+      "id": "VEN011",
+      "name": "Chase Center",
+      "city": "San Francisco",
+      "state": "CA",
+      "capacity": 18064,
+      "venue_type": "arena",
+      "address": "1 Warriors Way",
+      "zip": "94158"
+    },
+    {
+      "id": "VEN012",
+      "name": "Kaseya Center",
+      "city": "Miami",
+      "state": "FL",
+      "capacity": 19600,
+      "venue_type": "arena",
+      "address": "601 Biscayne Blvd",
+      "zip": "33132"
+    },
+    {
+      "id": "VEN013",
+      "name": "Toyota Center",
+      "city": "Houston",
+      "state": "TX",
+      "capacity": 18055,
+      "venue_type": "arena",
+      "address": "1510 Polk St",
+      "zip": "77002"
+    },
+    {
+      "id": "VEN014",
+      "name": "Crypto.com Arena",
+      "city": "Los Angeles",
+      "state": "CA",
+      "capacity": 20000,
+      "venue_type": "arena",
+      "address": "1111 S Figueroa St",
+      "zip": "90015"
+    },
+    {
+      "id": "VEN015",
+      "name": "Wrigley Field",
+      "city": "Chicago",
+      "state": "IL",
+      "capacity": 41649,
+      "venue_type": "stadium",
+      "address": "1060 W Addison St",
+      "zip": "60613"
+    },
+    {
+      "id": "VEN016",
+      "name": "The Wiltern",
+      "city": "Los Angeles",
+      "state": "CA",
+      "capacity": 1850,
+      "venue_type": "club",
+      "address": "3790 Wilshire Blvd",
+      "zip": "90010"
+    },
+    {
+      "id": "VEN017",
+      "name": "Radio City Music Hall",
+      "city": "New York",
+      "state": "NY",
+      "capacity": 5960,
+      "venue_type": "theater",
+      "address": "1260 6th Ave",
+      "zip": "10020"
+    },
+    {
+      "id": "VEN018",
+      "name": "Gorge Amphitheatre",
+      "city": "George",
+      "state": "WA",
+      "capacity": 27500,
+      "venue_type": "outdoor",
+      "address": "754 Silica Rd NW",
+      "zip": "98848"
+    }
+  ],
+  "attractions": [
+    {
+      "id": "ATT001",
+      "name": "Taylor Swift",
+      "type": "artist",
+      "genre": "Pop",
+      "segment": "Music",
+      "description": "Grammy-winning pop superstar known for her songwriting and stadium tours"
+    },
+    {
+      "id": "ATT002",
+      "name": "Beyonce",
+      "type": "artist",
+      "genre": "R&B",
+      "segment": "Music",
+      "description": "Iconic performer and cultural icon with record-breaking world tours"
+    },
+    {
+      "id": "ATT003",
+      "name": "Kendrick Lamar",
+      "type": "artist",
+      "genre": "Hip-Hop",
+      "segment": "Music",
+      "description": "Pulitzer Prize-winning rapper and lyrical mastermind"
+    },
+    {
+      "id": "ATT004",
+      "name": "Billie Eilish",
+      "type": "artist",
+      "genre": "Pop",
+      "segment": "Music",
+      "description": "Gen-Z pop phenomenon known for her unique style and vocals"
+    },
+    {
+      "id": "ATT005",
+      "name": "Bad Bunny",
+      "type": "artist",
+      "genre": "Pop",
+      "segment": "Music",
+      "description": "Global reggaeton and Latin pop superstar"
+    },
+    {
+      "id": "ATT006",
+      "name": "Drake",
+      "type": "artist",
+      "genre": "Hip-Hop",
+      "segment": "Music",
+      "description": "Multi-platinum artist blending hip-hop and R&B"
+    },
+    {
+      "id": "ATT007",
+      "name": "Adele",
+      "type": "artist",
+      "genre": "Pop",
+      "segment": "Music",
+      "description": "Powerhouse vocalist with record-setting albums"
+    },
+    {
+      "id": "ATT008",
+      "name": "The Weeknd",
+      "type": "artist",
+      "genre": "R&B",
+      "segment": "Music",
+      "description": "Chart-topping R&B artist known for atmospheric productions"
+    },
+    {
+      "id": "ATT009",
+      "name": "Morgan Wallen",
+      "type": "artist",
+      "genre": "Country",
+      "segment": "Music",
+      "description": "Country music chart-topper with massive crossover appeal"
+    },
+    {
+      "id": "ATT010",
+      "name": "Zach Bryan",
+      "type": "artist",
+      "genre": "Country",
+      "segment": "Music",
+      "description": "Singer-songwriter leading the new wave of country music"
+    },
+    {
+      "id": "ATT011",
+      "name": "SZA",
+      "type": "artist",
+      "genre": "R&B",
+      "segment": "Music",
+      "description": "Grammy-winning R&B artist with genre-defying sound"
+    },
+    {
+      "id": "ATT012",
+      "name": "Dua Lipa",
+      "type": "artist",
+      "genre": "Pop",
+      "segment": "Music",
+      "description": "International pop star known for dance-pop anthems"
+    },
+    {
+      "id": "ATT013",
+      "name": "Tyler The Creator",
+      "type": "artist",
+      "genre": "Hip-Hop",
+      "segment": "Music",
+      "description": "Visionary rapper-producer and fashion icon"
+    },
+    {
+      "id": "ATT014",
+      "name": "Sabrina Carpenter",
+      "type": "artist",
+      "genre": "Pop",
+      "segment": "Music",
+      "description": "Rising pop star with platinum singles"
+    },
+    {
+      "id": "ATT015",
+      "name": "Chappell Roan",
+      "type": "artist",
+      "genre": "Pop",
+      "segment": "Music",
+      "description": "Breakout queer pop artist with theatrical performances"
+    },
+    {
+      "id": "ATT016",
+      "name": "Foo Fighters",
+      "type": "band",
+      "genre": "Rock",
+      "segment": "Music",
+      "description": "Legendary rock band led by Dave Grohl"
+    },
+    {
+      "id": "ATT017",
+      "name": "Radiohead",
+      "type": "band",
+      "genre": "Rock",
+      "segment": "Music",
+      "description": "Pioneering art-rock band with experimental sound"
+    },
+    {
+      "id": "ATT018",
+      "name": "Red Hot Chili Peppers",
+      "type": "band",
+      "genre": "Rock",
+      "segment": "Music",
+      "description": "Funk-rock legends with decades of hits"
+    },
+    {
+      "id": "ATT019",
+      "name": "Coldplay",
+      "type": "band",
+      "genre": "Rock",
+      "segment": "Music",
+      "description": "Stadium-filling rock band known for anthemic songs"
+    },
+    {
+      "id": "ATT020",
+      "name": "Green Day",
+      "type": "band",
+      "genre": "Rock",
+      "segment": "Music",
+      "description": "Punk rock icons with multi-generational appeal"
+    },
+    {
+      "id": "ATT021",
+      "name": "Metallica",
+      "type": "band",
+      "genre": "Rock",
+      "segment": "Music",
+      "description": "Thrash metal pioneers and stadium headliners"
+    },
+    {
+      "id": "ATT022",
+      "name": "Imagine Dragons",
+      "type": "band",
+      "genre": "Rock",
+      "segment": "Music",
+      "description": "Pop-rock band with chart-topping anthems"
+    },
+    {
+      "id": "ATT023",
+      "name": "The Rolling Stones",
+      "type": "band",
+      "genre": "Rock",
+      "segment": "Music",
+      "description": "The greatest rock and roll band in the world"
+    },
+    {
+      "id": "ATT024",
+      "name": "Los Angeles Lakers",
+      "type": "team",
+      "genre": "NBA",
+      "segment": "Sports",
+      "description": "Iconic NBA franchise based in Los Angeles"
+    },
+    {
+      "id": "ATT025",
+      "name": "New York Yankees",
+      "type": "team",
+      "genre": "MLB",
+      "segment": "Sports",
+      "description": "Storied MLB franchise with 27 World Series titles"
+    },
+    {
+      "id": "ATT026",
+      "name": "Chicago Bulls",
+      "type": "team",
+      "genre": "NBA",
+      "segment": "Sports",
+      "description": "Legendary NBA team based in Chicago"
+    },
+    {
+      "id": "ATT027",
+      "name": "Green Bay Packers",
+      "type": "team",
+      "genre": "NFL",
+      "segment": "Sports",
+      "description": "Historic NFL franchise with passionate fanbase"
+    },
+    {
+      "id": "ATT028",
+      "name": "Boston Red Sox",
+      "type": "team",
+      "genre": "MLB",
+      "segment": "Sports",
+      "description": "Historic MLB franchise based in Boston"
+    },
+    {
+      "id": "ATT029",
+      "name": "Golden State Warriors",
+      "type": "team",
+      "genre": "NBA",
+      "segment": "Sports",
+      "description": "Dynasty NBA team based in San Francisco"
+    },
+    {
+      "id": "ATT030",
+      "name": "Miami Heat",
+      "type": "team",
+      "genre": "NBA",
+      "segment": "Sports",
+      "description": "Championship NBA franchise in Miami"
+    },
+    {
+      "id": "ATT031",
+      "name": "Dallas Cowboys",
+      "type": "team",
+      "genre": "NFL",
+      "segment": "Sports",
+      "description": "Americas Team based in Dallas"
+    },
+    {
+      "id": "ATT032",
+      "name": "Houston Astros",
+      "type": "team",
+      "genre": "MLB",
+      "segment": "Sports",
+      "description": "AL powerhouse based in Houston"
+    },
+    {
+      "id": "ATT033",
+      "name": "Chicago Cubs",
+      "type": "team",
+      "genre": "MLB",
+      "segment": "Sports",
+      "description": "Beloved NL franchise at Wrigley Field"
+    },
+    {
+      "id": "ATT034",
+      "name": "John Mulaney",
+      "type": "comedian",
+      "genre": "Stand-Up",
+      "segment": "Comedy",
+      "description": "Emmy-winning comedian and former SNL writer"
+    },
+    {
+      "id": "ATT035",
+      "name": "Trevor Noah",
+      "type": "comedian",
+      "genre": "Stand-Up",
+      "segment": "Comedy",
+      "description": "International comedian and former Daily Show host"
+    },
+    {
+      "id": "ATT036",
+      "name": "Nate Bargatze",
+      "type": "comedian",
+      "genre": "Stand-Up",
+      "segment": "Comedy",
+      "description": "The nicest man in stand-up comedy"
+    },
+    {
+      "id": "ATT037",
+      "name": "Matt Rife",
+      "type": "comedian",
+      "genre": "Stand-Up",
+      "segment": "Comedy",
+      "description": "Social media sensation turned arena comedian"
+    },
+    {
+      "id": "ATT038",
+      "name": "Ali Wong",
+      "type": "comedian",
+      "genre": "Stand-Up",
+      "segment": "Comedy",
+      "description": "Actress and comedian known for Netflix specials"
+    },
+    {
+      "id": "ATT039",
+      "name": "Shane Gillis",
+      "type": "comedian",
+      "genre": "Stand-Up",
+      "segment": "Comedy",
+      "description": "Stand-up comedian and sketch comedy creator"
+    },
+    {
+      "id": "ATT040",
+      "name": "Hamilton",
+      "type": "company",
+      "genre": "Musical",
+      "segment": "Arts & Theater",
+      "description": "Lin-Manuel Mirandas hip-hop musical phenomenon"
+    },
+    {
+      "id": "ATT041",
+      "name": "Wicked",
+      "type": "company",
+      "genre": "Musical",
+      "segment": "Arts & Theater",
+      "description": "The untold story of the witches of Oz"
+    },
+    {
+      "id": "ATT042",
+      "name": "The Lion King",
+      "type": "company",
+      "genre": "Musical",
+      "segment": "Arts & Theater",
+      "description": "Disneys spectacular Broadway musical"
+    },
+    {
+      "id": "ATT043",
+      "name": "Six The Musical",
+      "type": "company",
+      "genre": "Musical",
+      "segment": "Arts & Theater",
+      "description": "Pop concert meets history lesson about Henry VIIIs wives"
+    },
+    {
+      "id": "ATT044",
+      "name": "Disney On Ice",
+      "type": "company",
+      "genre": "Show",
+      "segment": "Family",
+      "description": "Disneys beloved characters perform on ice"
+    },
+    {
+      "id": "ATT045",
+      "name": "Cirque du Soleil",
+      "type": "company",
+      "genre": "Show",
+      "segment": "Family",
+      "description": "World-renowned acrobatic and artistic entertainment"
+    }
+  ],
+  "events": [
+    {
+      "id": "EVT001",
+      "name": "Taylor Swift | The Eras Tour",
+      "date": "2026-06-14",
+      "time": "19:00",
+      "venue_id": "VEN002",
+      "status": "on_sale",
+      "min_price": 89.5,
+      "max_price": 449.5,
+      "segment": "Music",
+      "genre": "Pop",
+      "sub_genre": "Pop",
+      "ticket_limit": 4,
+      "on_sale_date": "2026-01-15",
+      "presale_date": "2026-01-10"
+    },
+    {
+      "id": "EVT002",
+      "name": "Taylor Swift | The Eras Tour",
+      "date": "2026-06-15",
+      "time": "19:00",
+      "venue_id": "VEN002",
+      "status": "on_sale",
+      "min_price": 89.5,
+      "max_price": 449.5,
+      "segment": "Music",
+      "genre": "Pop",
+      "sub_genre": "Pop",
+      "ticket_limit": 4,
+      "on_sale_date": "2026-01-15",
+      "presale_date": "2026-01-10"
+    },
+    {
+      "id": "EVT003",
+      "name": "Beyonce | Renaissance World Tour",
+      "date": "2026-07-19",
+      "time": "20:00",
+      "venue_id": "VEN001",
+      "status": "on_sale",
+      "min_price": 75.0,
+      "max_price": 399.0,
+      "segment": "Music",
+      "genre": "R&B",
+      "sub_genre": "R&B",
+      "ticket_limit": 6,
+      "on_sale_date": "2026-02-01",
+      "presale_date": "2026-01-25"
+    },
+    {
+      "id": "EVT004",
+      "name": "Beyonce | Renaissance World Tour",
+      "date": "2026-07-20",
+      "time": "20:00",
+      "venue_id": "VEN001",
+      "status": "limited",
+      "min_price": 75.0,
+      "max_price": 399.0,
+      "segment": "Music",
+      "genre": "R&B",
+      "sub_genre": "R&B",
+      "ticket_limit": 6,
+      "on_sale_date": "2026-02-01",
+      "presale_date": "2026-01-25"
+    },
+    {
+      "id": "EVT005",
+      "name": "Kendrick Lamar | Grand National Tour",
+      "date": "2026-05-10",
+      "time": "20:00",
+      "venue_id": "VEN011",
+      "status": "on_sale",
+      "min_price": 65.0,
+      "max_price": 275.0,
+      "segment": "Music",
+      "genre": "Hip-Hop",
+      "sub_genre": "Hip-Hop",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-02-10",
+      "presale_date": "2026-02-05"
+    },
+    {
+      "id": "EVT006",
+      "name": "Kendrick Lamar | Grand National Tour",
+      "date": "2026-05-17",
+      "time": "20:00",
+      "venue_id": "VEN005",
+      "status": "on_sale",
+      "min_price": 65.0,
+      "max_price": 275.0,
+      "segment": "Music",
+      "genre": "Hip-Hop",
+      "sub_genre": "Hip-Hop",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-02-10",
+      "presale_date": "2026-02-05"
+    },
+    {
+      "id": "EVT007",
+      "name": "Billie Eilish | Hit Me Hard and Soft Tour",
+      "date": "2026-04-25",
+      "time": "19:30",
+      "venue_id": "VEN001",
+      "status": "on_sale",
+      "min_price": 59.5,
+      "max_price": 225.0,
+      "segment": "Music",
+      "genre": "Pop",
+      "sub_genre": "Pop",
+      "ticket_limit": 6,
+      "on_sale_date": "2026-01-20",
+      "presale_date": "2026-01-15"
+    },
+    {
+      "id": "EVT008",
+      "name": "Billie Eilish | Hit Me Hard and Soft Tour",
+      "date": "2026-04-26",
+      "time": "19:30",
+      "venue_id": "VEN001",
+      "status": "limited",
+      "min_price": 59.5,
+      "max_price": 225.0,
+      "segment": "Music",
+      "genre": "Pop",
+      "sub_genre": "Pop",
+      "ticket_limit": 6,
+      "on_sale_date": "2026-01-20",
+      "presale_date": "2026-01-15"
+    },
+    {
+      "id": "EVT009",
+      "name": "Bad Bunny | Most Wanted Tour",
+      "date": "2026-08-02",
+      "time": "20:00",
+      "venue_id": "VEN012",
+      "status": "on_sale",
+      "min_price": 69.0,
+      "max_price": 350.0,
+      "segment": "Music",
+      "genre": "Pop",
+      "sub_genre": "Pop",
+      "ticket_limit": 6,
+      "on_sale_date": "2026-03-01",
+      "presale_date": "2026-02-25"
+    },
+    {
+      "id": "EVT010",
+      "name": "Drake | Its All A Blur Tour",
+      "date": "2026-09-12",
+      "time": "20:30",
+      "venue_id": "VEN009",
+      "status": "presale",
+      "min_price": 79.0,
+      "max_price": 325.0,
+      "segment": "Music",
+      "genre": "Hip-Hop",
+      "sub_genre": "Hip-Hop",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-04-01",
+      "presale_date": "2026-03-15"
+    },
+    {
+      "id": "EVT011",
+      "name": "Adele | Weekends With Adele",
+      "date": "2026-10-03",
+      "time": "20:00",
+      "venue_id": "VEN014",
+      "status": "on_sale",
+      "min_price": 85.0,
+      "max_price": 450.0,
+      "segment": "Music",
+      "genre": "Pop",
+      "sub_genre": "Pop",
+      "ticket_limit": 4,
+      "on_sale_date": "2026-04-15",
+      "presale_date": "2026-04-10"
+    },
+    {
+      "id": "EVT012",
+      "name": "The Weeknd | After Hours Til Dawn Tour",
+      "date": "2026-06-28",
+      "time": "20:00",
+      "venue_id": "VEN009",
+      "status": "on_sale",
+      "min_price": 55.0,
+      "max_price": 295.0,
+      "segment": "Music",
+      "genre": "R&B",
+      "sub_genre": "R&B",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-02-15",
+      "presale_date": "2026-02-10"
+    },
+    {
+      "id": "EVT013",
+      "name": "Morgan Wallen | One Night At A Time Tour",
+      "date": "2026-07-04",
+      "time": "19:00",
+      "venue_id": "VEN006",
+      "status": "on_sale",
+      "min_price": 45.0,
+      "max_price": 199.0,
+      "segment": "Music",
+      "genre": "Country",
+      "sub_genre": "Country",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-02-01",
+      "presale_date": "2026-01-28"
+    },
+    {
+      "id": "EVT014",
+      "name": "Morgan Wallen | One Night At A Time Tour",
+      "date": "2026-07-11",
+      "time": "19:00",
+      "venue_id": "VEN003",
+      "status": "on_sale",
+      "min_price": 55.0,
+      "max_price": 175.0,
+      "segment": "Music",
+      "genre": "Country",
+      "sub_genre": "Country",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-02-01",
+      "presale_date": "2026-01-28"
+    },
+    {
+      "id": "EVT015",
+      "name": "Zach Bryan | The Quittin Time Tour",
+      "date": "2026-05-24",
+      "time": "19:00",
+      "venue_id": "VEN003",
+      "status": "sold_out",
+      "min_price": 49.5,
+      "max_price": 185.0,
+      "segment": "Music",
+      "genre": "Country",
+      "sub_genre": "Country",
+      "ticket_limit": 6,
+      "on_sale_date": "2026-01-10",
+      "presale_date": "2026-01-05"
+    },
+    {
+      "id": "EVT016",
+      "name": "Zach Bryan | The Quittin Time Tour",
+      "date": "2026-06-07",
+      "time": "19:00",
+      "venue_id": "VEN018",
+      "status": "on_sale",
+      "min_price": 49.5,
+      "max_price": 185.0,
+      "segment": "Music",
+      "genre": "Country",
+      "sub_genre": "Country",
+      "ticket_limit": 6,
+      "on_sale_date": "2026-01-10",
+      "presale_date": "2026-01-05"
+    },
+    {
+      "id": "EVT017",
+      "name": "SZA | SOS Tour",
+      "date": "2026-08-15",
+      "time": "20:00",
+      "venue_id": "VEN005",
+      "status": "on_sale",
+      "min_price": 59.0,
+      "max_price": 249.0,
+      "segment": "Music",
+      "genre": "R&B",
+      "sub_genre": "R&B",
+      "ticket_limit": 6,
+      "on_sale_date": "2026-03-10",
+      "presale_date": "2026-03-05"
+    },
+    {
+      "id": "EVT018",
+      "name": "Dua Lipa | Radical Optimism Tour",
+      "date": "2026-09-20",
+      "time": "20:00",
+      "venue_id": "VEN001",
+      "status": "presale",
+      "min_price": 65.0,
+      "max_price": 295.0,
+      "segment": "Music",
+      "genre": "Pop",
+      "sub_genre": "Pop",
+      "ticket_limit": 6,
+      "on_sale_date": "2026-04-20",
+      "presale_date": "2026-03-20"
+    },
+    {
+      "id": "EVT019",
+      "name": "Tyler The Creator | Chromakopia Tour",
+      "date": "2026-04-12",
+      "time": "20:00",
+      "venue_id": "VEN010",
+      "status": "on_sale",
+      "min_price": 55.0,
+      "max_price": 195.0,
+      "segment": "Music",
+      "genre": "Hip-Hop",
+      "sub_genre": "Hip-Hop",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-01-25",
+      "presale_date": "2026-01-20"
+    },
+    {
+      "id": "EVT020",
+      "name": "Sabrina Carpenter | Short N Sweet Tour",
+      "date": "2026-05-03",
+      "time": "19:30",
+      "venue_id": "VEN017",
+      "status": "sold_out",
+      "min_price": 49.5,
+      "max_price": 199.0,
+      "segment": "Music",
+      "genre": "Pop",
+      "sub_genre": "Pop",
+      "ticket_limit": 4,
+      "on_sale_date": "2026-01-05",
+      "presale_date": "2025-12-30"
+    },
+    {
+      "id": "EVT021",
+      "name": "Sabrina Carpenter | Short N Sweet Tour",
+      "date": "2026-05-31",
+      "time": "19:30",
+      "venue_id": "VEN007",
+      "status": "on_sale",
+      "min_price": 49.5,
+      "max_price": 199.0,
+      "segment": "Music",
+      "genre": "Pop",
+      "sub_genre": "Pop",
+      "ticket_limit": 4,
+      "on_sale_date": "2026-01-05",
+      "presale_date": "2025-12-30"
+    },
+    {
+      "id": "EVT022",
+      "name": "Chappell Roan | The Midwest Princess Tour",
+      "date": "2026-06-21",
+      "time": "20:00",
+      "venue_id": "VEN016",
+      "status": "sold_out",
+      "min_price": 45.0,
+      "max_price": 149.0,
+      "segment": "Music",
+      "genre": "Pop",
+      "sub_genre": "Pop",
+      "ticket_limit": 4,
+      "on_sale_date": "2026-01-15",
+      "presale_date": "2026-01-10"
+    },
+    {
+      "id": "EVT023",
+      "name": "Chappell Roan | The Midwest Princess Tour",
+      "date": "2026-07-05",
+      "time": "20:00",
+      "venue_id": "VEN010",
+      "status": "on_sale",
+      "min_price": 45.0,
+      "max_price": 149.0,
+      "segment": "Music",
+      "genre": "Pop",
+      "sub_genre": "Pop",
+      "ticket_limit": 4,
+      "on_sale_date": "2026-01-15",
+      "presale_date": "2026-01-10"
+    },
+    {
+      "id": "EVT024",
+      "name": "Foo Fighters | Everything Or Nothing At All Tour",
+      "date": "2026-08-22",
+      "time": "19:30",
+      "venue_id": "VEN003",
+      "status": "on_sale",
+      "min_price": 59.5,
+      "max_price": 225.0,
+      "segment": "Music",
+      "genre": "Rock",
+      "sub_genre": "Rock",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-03-15",
+      "presale_date": "2026-03-10"
+    },
+    {
+      "id": "EVT025",
+      "name": "Foo Fighters | Everything Or Nothing At All Tour",
+      "date": "2026-08-29",
+      "time": "19:30",
+      "venue_id": "VEN018",
+      "status": "on_sale",
+      "min_price": 59.5,
+      "max_price": 225.0,
+      "segment": "Music",
+      "genre": "Rock",
+      "sub_genre": "Rock",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-03-15",
+      "presale_date": "2026-03-10"
+    },
+    {
+      "id": "EVT026",
+      "name": "Radiohead | In Rainbows Anniversary Tour",
+      "date": "2026-10-10",
+      "time": "20:00",
+      "venue_id": "VEN017",
+      "status": "presale",
+      "min_price": 75.0,
+      "max_price": 250.0,
+      "segment": "Music",
+      "genre": "Rock",
+      "sub_genre": "Rock",
+      "ticket_limit": 4,
+      "on_sale_date": "2026-05-01",
+      "presale_date": "2026-04-15"
+    },
+    {
+      "id": "EVT027",
+      "name": "Red Hot Chili Peppers | Unlimited Love Tour",
+      "date": "2026-07-26",
+      "time": "19:00",
+      "venue_id": "VEN002",
+      "status": "on_sale",
+      "min_price": 65.0,
+      "max_price": 275.0,
+      "segment": "Music",
+      "genre": "Rock",
+      "sub_genre": "Rock",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-03-01",
+      "presale_date": "2026-02-25"
+    },
+    {
+      "id": "EVT028",
+      "name": "Coldplay | Music of the Spheres Tour",
+      "date": "2026-06-06",
+      "time": "19:30",
+      "venue_id": "VEN004",
+      "status": "on_sale",
+      "min_price": 55.0,
+      "max_price": 249.0,
+      "segment": "Music",
+      "genre": "Rock",
+      "sub_genre": "Rock",
+      "ticket_limit": 6,
+      "on_sale_date": "2026-02-01",
+      "presale_date": "2026-01-28"
+    },
+    {
+      "id": "EVT029",
+      "name": "Green Day | The Saviors Tour",
+      "date": "2026-08-08",
+      "time": "19:00",
+      "venue_id": "VEN008",
+      "status": "on_sale",
+      "min_price": 49.5,
+      "max_price": 189.0,
+      "segment": "Music",
+      "genre": "Rock",
+      "sub_genre": "Rock",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-03-20",
+      "presale_date": "2026-03-15"
+    },
+    {
+      "id": "EVT030",
+      "name": "Metallica | M72 World Tour",
+      "date": "2026-09-06",
+      "time": "18:30",
+      "venue_id": "VEN002",
+      "status": "on_sale",
+      "min_price": 89.5,
+      "max_price": 350.0,
+      "segment": "Music",
+      "genre": "Rock",
+      "sub_genre": "Rock",
+      "ticket_limit": 6,
+      "on_sale_date": "2026-04-01",
+      "presale_date": "2026-03-25"
+    },
+    {
+      "id": "EVT031",
+      "name": "Imagine Dragons | Loom World Tour",
+      "date": "2026-05-17",
+      "time": "19:30",
+      "venue_id": "VEN008",
+      "status": "on_sale",
+      "min_price": 45.0,
+      "max_price": 195.0,
+      "segment": "Music",
+      "genre": "Rock",
+      "sub_genre": "Rock",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-02-15",
+      "presale_date": "2026-02-10"
+    },
+    {
+      "id": "EVT032",
+      "name": "The Rolling Stones | Hackney Diamonds Tour",
+      "date": "2026-10-24",
+      "time": "19:00",
+      "venue_id": "VEN001",
+      "status": "presale",
+      "min_price": 99.5,
+      "max_price": 500.0,
+      "segment": "Music",
+      "genre": "Rock",
+      "sub_genre": "Rock",
+      "ticket_limit": 4,
+      "on_sale_date": "2026-06-01",
+      "presale_date": "2026-05-15"
+    },
+    {
+      "id": "EVT033",
+      "name": "Lakers vs Bulls",
+      "date": "2026-03-15",
+      "time": "19:30",
+      "venue_id": "VEN014",
+      "status": "on_sale",
+      "min_price": 45.0,
+      "max_price": 350.0,
+      "segment": "Sports",
+      "genre": "NBA",
+      "sub_genre": "NBA",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-01-10",
+      "presale_date": ""
+    },
+    {
+      "id": "EVT034",
+      "name": "Lakers vs Warriors",
+      "date": "2026-03-22",
+      "time": "19:30",
+      "venue_id": "VEN014",
+      "status": "on_sale",
+      "min_price": 55.0,
+      "max_price": 425.0,
+      "segment": "Sports",
+      "genre": "NBA",
+      "sub_genre": "NBA",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-01-10",
+      "presale_date": ""
+    },
+    {
+      "id": "EVT035",
+      "name": "Lakers vs Heat",
+      "date": "2026-04-05",
+      "time": "17:00",
+      "venue_id": "VEN014",
+      "status": "on_sale",
+      "min_price": 40.0,
+      "max_price": 295.0,
+      "segment": "Sports",
+      "genre": "NBA",
+      "sub_genre": "NBA",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-01-10",
+      "presale_date": ""
+    },
+    {
+      "id": "EVT036",
+      "name": "Bulls vs Lakers",
+      "date": "2026-03-28",
+      "time": "19:00",
+      "venue_id": "VEN005",
+      "status": "on_sale",
+      "min_price": 35.0,
+      "max_price": 275.0,
+      "segment": "Sports",
+      "genre": "NBA",
+      "sub_genre": "NBA",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-01-10",
+      "presale_date": ""
+    },
+    {
+      "id": "EVT037",
+      "name": "Warriors vs Lakers",
+      "date": "2026-04-11",
+      "time": "19:30",
+      "venue_id": "VEN011",
+      "status": "on_sale",
+      "min_price": 50.0,
+      "max_price": 375.0,
+      "segment": "Sports",
+      "genre": "NBA",
+      "sub_genre": "NBA",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-01-10",
+      "presale_date": ""
+    },
+    {
+      "id": "EVT038",
+      "name": "Heat vs Bulls",
+      "date": "2026-04-19",
+      "time": "19:00",
+      "venue_id": "VEN012",
+      "status": "on_sale",
+      "min_price": 30.0,
+      "max_price": 225.0,
+      "segment": "Sports",
+      "genre": "NBA",
+      "sub_genre": "NBA",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-01-10",
+      "presale_date": ""
+    },
+    {
+      "id": "EVT039",
+      "name": "Yankees vs Red Sox",
+      "date": "2026-06-20",
+      "time": "19:05",
+      "venue_id": "VEN001",
+      "status": "on_sale",
+      "min_price": 35.0,
+      "max_price": 250.0,
+      "segment": "Sports",
+      "genre": "MLB",
+      "sub_genre": "MLB",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-02-15",
+      "presale_date": ""
+    },
+    {
+      "id": "EVT040",
+      "name": "Yankees vs Red Sox",
+      "date": "2026-06-21",
+      "time": "13:05",
+      "venue_id": "VEN001",
+      "status": "on_sale",
+      "min_price": 35.0,
+      "max_price": 250.0,
+      "segment": "Sports",
+      "genre": "MLB",
+      "sub_genre": "MLB",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-02-15",
+      "presale_date": ""
+    },
+    {
+      "id": "EVT041",
+      "name": "Red Sox vs Yankees",
+      "date": "2026-07-18",
+      "time": "19:05",
+      "venue_id": "VEN004",
+      "status": "on_sale",
+      "min_price": 30.0,
+      "max_price": 225.0,
+      "segment": "Sports",
+      "genre": "MLB",
+      "sub_genre": "MLB",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-02-15",
+      "presale_date": ""
+    },
+    {
+      "id": "EVT042",
+      "name": "Red Sox vs Yankees",
+      "date": "2026-07-19",
+      "time": "16:05",
+      "venue_id": "VEN004",
+      "status": "on_sale",
+      "min_price": 30.0,
+      "max_price": 225.0,
+      "segment": "Sports",
+      "genre": "MLB",
+      "sub_genre": "MLB",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-02-15",
+      "presale_date": ""
+    },
+    {
+      "id": "EVT043",
+      "name": "Cubs vs Red Sox",
+      "date": "2026-08-01",
+      "time": "14:20",
+      "venue_id": "VEN015",
+      "status": "on_sale",
+      "min_price": 25.0,
+      "max_price": 195.0,
+      "segment": "Sports",
+      "genre": "MLB",
+      "sub_genre": "MLB",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-02-15",
+      "presale_date": ""
+    },
+    {
+      "id": "EVT044",
+      "name": "Astros vs Yankees",
+      "date": "2026-08-15",
+      "time": "19:10",
+      "venue_id": "VEN013",
+      "status": "on_sale",
+      "min_price": 28.0,
+      "max_price": 210.0,
+      "segment": "Sports",
+      "genre": "MLB",
+      "sub_genre": "MLB",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-02-15",
+      "presale_date": ""
+    },
+    {
+      "id": "EVT045",
+      "name": "Packers vs Cowboys",
+      "date": "2026-09-14",
+      "time": "16:25",
+      "venue_id": "VEN002",
+      "status": "on_sale",
+      "min_price": 95.0,
+      "max_price": 550.0,
+      "segment": "Sports",
+      "genre": "NFL",
+      "sub_genre": "NFL",
+      "ticket_limit": 4,
+      "on_sale_date": "2026-05-01",
+      "presale_date": ""
+    },
+    {
+      "id": "EVT046",
+      "name": "Packers vs Bears",
+      "date": "2026-10-18",
+      "time": "12:00",
+      "venue_id": "VEN015",
+      "status": "on_sale",
+      "min_price": 75.0,
+      "max_price": 425.0,
+      "segment": "Sports",
+      "genre": "NFL",
+      "sub_genre": "NFL",
+      "ticket_limit": 4,
+      "on_sale_date": "2026-05-01",
+      "presale_date": ""
+    },
+    {
+      "id": "EVT047",
+      "name": "Cowboys vs Giants",
+      "date": "2026-11-01",
+      "time": "20:15",
+      "venue_id": "VEN001",
+      "status": "presale",
+      "min_price": 85.0,
+      "max_price": 475.0,
+      "segment": "Sports",
+      "genre": "NFL",
+      "sub_genre": "NFL",
+      "ticket_limit": 4,
+      "on_sale_date": "2026-05-15",
+      "presale_date": "2026-05-01"
+    },
+    {
+      "id": "EVT048",
+      "name": "Lakers vs Celtics",
+      "date": "2026-12-25",
+      "time": "17:00",
+      "venue_id": "VEN014",
+      "status": "presale",
+      "min_price": 125.0,
+      "max_price": 650.0,
+      "segment": "Sports",
+      "genre": "NBA",
+      "sub_genre": "NBA",
+      "ticket_limit": 4,
+      "on_sale_date": "2026-08-01",
+      "presale_date": "2026-07-15"
+    },
+    {
+      "id": "EVT049",
+      "name": "Warriors vs Celtics",
+      "date": "2026-11-15",
+      "time": "19:30",
+      "venue_id": "VEN011",
+      "status": "on_sale",
+      "min_price": 55.0,
+      "max_price": 350.0,
+      "segment": "Sports",
+      "genre": "NBA",
+      "sub_genre": "NBA",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-01-10",
+      "presale_date": ""
+    },
+    {
+      "id": "EVT050",
+      "name": "Yankees Home Opener",
+      "date": "2026-04-03",
+      "time": "13:05",
+      "venue_id": "VEN001",
+      "status": "sold_out",
+      "min_price": 45.0,
+      "max_price": 300.0,
+      "segment": "Sports",
+      "genre": "MLB",
+      "sub_genre": "MLB",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-02-15",
+      "presale_date": ""
+    },
+    {
+      "id": "EVT051",
+      "name": "Red Sox Home Opener",
+      "date": "2026-04-07",
+      "time": "14:05",
+      "venue_id": "VEN004",
+      "status": "limited",
+      "min_price": 40.0,
+      "max_price": 275.0,
+      "segment": "Sports",
+      "genre": "MLB",
+      "sub_genre": "MLB",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-02-15",
+      "presale_date": ""
+    },
+    {
+      "id": "EVT052",
+      "name": "Astros vs Cubs",
+      "date": "2026-09-05",
+      "time": "19:10",
+      "venue_id": "VEN013",
+      "status": "on_sale",
+      "min_price": 22.0,
+      "max_price": 175.0,
+      "segment": "Sports",
+      "genre": "MLB",
+      "sub_genre": "MLB",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-02-15",
+      "presale_date": ""
+    },
+    {
+      "id": "EVT053",
+      "name": "Cowboys vs Eagles",
+      "date": "2026-12-07",
+      "time": "16:25",
+      "venue_id": "VEN002",
+      "status": "on_sale",
+      "min_price": 110.0,
+      "max_price": 575.0,
+      "segment": "Sports",
+      "genre": "NFL",
+      "sub_genre": "NFL",
+      "ticket_limit": 4,
+      "on_sale_date": "2026-05-01",
+      "presale_date": ""
+    },
+    {
+      "id": "EVT054",
+      "name": "Packers vs Vikings",
+      "date": "2026-11-22",
+      "time": "12:00",
+      "venue_id": "VEN002",
+      "status": "postponed",
+      "min_price": 80.0,
+      "max_price": 400.0,
+      "segment": "Sports",
+      "genre": "NFL",
+      "sub_genre": "NFL",
+      "ticket_limit": 4,
+      "on_sale_date": "2026-05-01",
+      "presale_date": ""
+    },
+    {
+      "id": "EVT055",
+      "name": "Heat vs Celtics",
+      "date": "2026-05-02",
+      "time": "19:30",
+      "venue_id": "VEN012",
+      "status": "cancelled",
+      "min_price": 45.0,
+      "max_price": 325.0,
+      "segment": "Sports",
+      "genre": "NBA",
+      "sub_genre": "NBA",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-01-10",
+      "presale_date": ""
+    },
+    {
+      "id": "EVT056",
+      "name": "Hamilton",
+      "date": "2026-04-05",
+      "time": "14:00",
+      "venue_id": "VEN017",
+      "status": "on_sale",
+      "min_price": 99.0,
+      "max_price": 399.0,
+      "segment": "Arts & Theater",
+      "genre": "Musical",
+      "sub_genre": "Musical",
+      "ticket_limit": 6,
+      "on_sale_date": "2026-01-15",
+      "presale_date": "2026-01-10"
+    },
+    {
+      "id": "EVT057",
+      "name": "Hamilton",
+      "date": "2026-04-05",
+      "time": "20:00",
+      "venue_id": "VEN017",
+      "status": "on_sale",
+      "min_price": 99.0,
+      "max_price": 399.0,
+      "segment": "Arts & Theater",
+      "genre": "Musical",
+      "sub_genre": "Musical",
+      "ticket_limit": 6,
+      "on_sale_date": "2026-01-15",
+      "presale_date": "2026-01-10"
+    },
+    {
+      "id": "EVT058",
+      "name": "Hamilton",
+      "date": "2026-04-12",
+      "time": "14:00",
+      "venue_id": "VEN017",
+      "status": "on_sale",
+      "min_price": 99.0,
+      "max_price": 399.0,
+      "segment": "Arts & Theater",
+      "genre": "Musical",
+      "sub_genre": "Musical",
+      "ticket_limit": 6,
+      "on_sale_date": "2026-01-15",
+      "presale_date": "2026-01-10"
+    },
+    {
+      "id": "EVT059",
+      "name": "Hamilton",
+      "date": "2026-04-12",
+      "time": "20:00",
+      "venue_id": "VEN017",
+      "status": "limited",
+      "min_price": 99.0,
+      "max_price": 399.0,
+      "segment": "Arts & Theater",
+      "genre": "Musical",
+      "sub_genre": "Musical",
+      "ticket_limit": 6,
+      "on_sale_date": "2026-01-15",
+      "presale_date": "2026-01-10"
+    },
+    {
+      "id": "EVT060",
+      "name": "Wicked",
+      "date": "2026-05-10",
+      "time": "14:00",
+      "venue_id": "VEN007",
+      "status": "on_sale",
+      "min_price": 69.0,
+      "max_price": 299.0,
+      "segment": "Arts & Theater",
+      "genre": "Musical",
+      "sub_genre": "Musical",
+      "ticket_limit": 6,
+      "on_sale_date": "2026-02-01",
+      "presale_date": "2026-01-25"
+    },
+    {
+      "id": "EVT061",
+      "name": "Wicked",
+      "date": "2026-05-10",
+      "time": "19:30",
+      "venue_id": "VEN007",
+      "status": "on_sale",
+      "min_price": 69.0,
+      "max_price": 299.0,
+      "segment": "Arts & Theater",
+      "genre": "Musical",
+      "sub_genre": "Musical",
+      "ticket_limit": 6,
+      "on_sale_date": "2026-02-01",
+      "presale_date": "2026-01-25"
+    },
+    {
+      "id": "EVT062",
+      "name": "Wicked",
+      "date": "2026-06-14",
+      "time": "14:00",
+      "venue_id": "VEN017",
+      "status": "on_sale",
+      "min_price": 79.0,
+      "max_price": 349.0,
+      "segment": "Arts & Theater",
+      "genre": "Musical",
+      "sub_genre": "Musical",
+      "ticket_limit": 6,
+      "on_sale_date": "2026-02-01",
+      "presale_date": "2026-01-25"
+    },
+    {
+      "id": "EVT063",
+      "name": "The Lion King",
+      "date": "2026-05-23",
+      "time": "14:00",
+      "venue_id": "VEN017",
+      "status": "on_sale",
+      "min_price": 79.0,
+      "max_price": 325.0,
+      "segment": "Arts & Theater",
+      "genre": "Musical",
+      "sub_genre": "Musical",
+      "ticket_limit": 6,
+      "on_sale_date": "2026-02-10",
+      "presale_date": "2026-02-05"
+    },
+    {
+      "id": "EVT064",
+      "name": "The Lion King",
+      "date": "2026-05-23",
+      "time": "19:30",
+      "venue_id": "VEN017",
+      "status": "on_sale",
+      "min_price": 79.0,
+      "max_price": 325.0,
+      "segment": "Arts & Theater",
+      "genre": "Musical",
+      "sub_genre": "Musical",
+      "ticket_limit": 6,
+      "on_sale_date": "2026-02-10",
+      "presale_date": "2026-02-05"
+    },
+    {
+      "id": "EVT065",
+      "name": "The Lion King",
+      "date": "2026-06-20",
+      "time": "14:00",
+      "venue_id": "VEN007",
+      "status": "on_sale",
+      "min_price": 69.0,
+      "max_price": 299.0,
+      "segment": "Arts & Theater",
+      "genre": "Musical",
+      "sub_genre": "Musical",
+      "ticket_limit": 6,
+      "on_sale_date": "2026-02-10",
+      "presale_date": "2026-02-05"
+    },
+    {
+      "id": "EVT066",
+      "name": "Six The Musical",
+      "date": "2026-04-19",
+      "time": "14:00",
+      "venue_id": "VEN006",
+      "status": "on_sale",
+      "min_price": 49.0,
+      "max_price": 175.0,
+      "segment": "Arts & Theater",
+      "genre": "Musical",
+      "sub_genre": "Musical",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-01-20",
+      "presale_date": "2026-01-15"
+    },
+    {
+      "id": "EVT067",
+      "name": "Six The Musical",
+      "date": "2026-04-19",
+      "time": "19:30",
+      "venue_id": "VEN006",
+      "status": "on_sale",
+      "min_price": 49.0,
+      "max_price": 175.0,
+      "segment": "Arts & Theater",
+      "genre": "Musical",
+      "sub_genre": "Musical",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-01-20",
+      "presale_date": "2026-01-15"
+    },
+    {
+      "id": "EVT068",
+      "name": "Six The Musical",
+      "date": "2026-05-17",
+      "time": "14:00",
+      "venue_id": "VEN010",
+      "status": "on_sale",
+      "min_price": 55.0,
+      "max_price": 189.0,
+      "segment": "Arts & Theater",
+      "genre": "Musical",
+      "sub_genre": "Musical",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-01-20",
+      "presale_date": "2026-01-15"
+    },
+    {
+      "id": "EVT069",
+      "name": "Hamilton",
+      "date": "2026-08-15",
+      "time": "20:00",
+      "venue_id": "VEN006",
+      "status": "presale",
+      "min_price": 89.0,
+      "max_price": 375.0,
+      "segment": "Arts & Theater",
+      "genre": "Musical",
+      "sub_genre": "Musical",
+      "ticket_limit": 6,
+      "on_sale_date": "2026-04-01",
+      "presale_date": "2026-03-15"
+    },
+    {
+      "id": "EVT070",
+      "name": "Wicked",
+      "date": "2026-09-06",
+      "time": "19:30",
+      "venue_id": "VEN006",
+      "status": "presale",
+      "min_price": 65.0,
+      "max_price": 279.0,
+      "segment": "Arts & Theater",
+      "genre": "Musical",
+      "sub_genre": "Musical",
+      "ticket_limit": 6,
+      "on_sale_date": "2026-04-15",
+      "presale_date": "2026-04-01"
+    },
+    {
+      "id": "EVT071",
+      "name": "John Mulaney | Everybody's In LA",
+      "date": "2026-04-18",
+      "time": "20:00",
+      "venue_id": "VEN017",
+      "status": "on_sale",
+      "min_price": 55.0,
+      "max_price": 149.0,
+      "segment": "Comedy",
+      "genre": "Stand-Up",
+      "sub_genre": "Stand-Up",
+      "ticket_limit": 6,
+      "on_sale_date": "2026-01-25",
+      "presale_date": "2026-01-20"
+    },
+    {
+      "id": "EVT072",
+      "name": "John Mulaney | Everybody's In LA",
+      "date": "2026-04-19",
+      "time": "20:00",
+      "venue_id": "VEN017",
+      "status": "sold_out",
+      "min_price": 55.0,
+      "max_price": 149.0,
+      "segment": "Comedy",
+      "genre": "Stand-Up",
+      "sub_genre": "Stand-Up",
+      "ticket_limit": 6,
+      "on_sale_date": "2026-01-25",
+      "presale_date": "2026-01-20"
+    },
+    {
+      "id": "EVT073",
+      "name": "Trevor Noah | Off The Record Tour",
+      "date": "2026-05-09",
+      "time": "20:00",
+      "venue_id": "VEN010",
+      "status": "on_sale",
+      "min_price": 49.5,
+      "max_price": 135.0,
+      "segment": "Comedy",
+      "genre": "Stand-Up",
+      "sub_genre": "Stand-Up",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-02-01",
+      "presale_date": "2026-01-28"
+    },
+    {
+      "id": "EVT074",
+      "name": "Nate Bargatze | Big Dumb Eyes Tour",
+      "date": "2026-06-13",
+      "time": "19:30",
+      "venue_id": "VEN006",
+      "status": "on_sale",
+      "min_price": 45.0,
+      "max_price": 125.0,
+      "segment": "Comedy",
+      "genre": "Stand-Up",
+      "sub_genre": "Stand-Up",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-02-15",
+      "presale_date": "2026-02-10"
+    },
+    {
+      "id": "EVT075",
+      "name": "Nate Bargatze | Big Dumb Eyes Tour",
+      "date": "2026-06-27",
+      "time": "19:30",
+      "venue_id": "VEN007",
+      "status": "on_sale",
+      "min_price": 45.0,
+      "max_price": 125.0,
+      "segment": "Comedy",
+      "genre": "Stand-Up",
+      "sub_genre": "Stand-Up",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-02-15",
+      "presale_date": "2026-02-10"
+    },
+    {
+      "id": "EVT076",
+      "name": "Matt Rife | ProbleMATTic World Tour",
+      "date": "2026-07-12",
+      "time": "20:00",
+      "venue_id": "VEN008",
+      "status": "on_sale",
+      "min_price": 49.5,
+      "max_price": 175.0,
+      "segment": "Comedy",
+      "genre": "Stand-Up",
+      "sub_genre": "Stand-Up",
+      "ticket_limit": 6,
+      "on_sale_date": "2026-03-01",
+      "presale_date": "2026-02-25"
+    },
+    {
+      "id": "EVT077",
+      "name": "Ali Wong | Single Lady Tour",
+      "date": "2026-08-09",
+      "time": "20:00",
+      "venue_id": "VEN016",
+      "status": "on_sale",
+      "min_price": 59.0,
+      "max_price": 185.0,
+      "segment": "Comedy",
+      "genre": "Stand-Up",
+      "sub_genre": "Stand-Up",
+      "ticket_limit": 6,
+      "on_sale_date": "2026-03-15",
+      "presale_date": "2026-03-10"
+    },
+    {
+      "id": "EVT078",
+      "name": "Shane Gillis | Shane Gillis Live",
+      "date": "2026-09-19",
+      "time": "20:00",
+      "venue_id": "VEN010",
+      "status": "on_sale",
+      "min_price": 45.0,
+      "max_price": 125.0,
+      "segment": "Comedy",
+      "genre": "Stand-Up",
+      "sub_genre": "Stand-Up",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-04-01",
+      "presale_date": "2026-03-25"
+    },
+    {
+      "id": "EVT079",
+      "name": "John Mulaney | Everybody's In LA",
+      "date": "2026-10-11",
+      "time": "20:00",
+      "venue_id": "VEN005",
+      "status": "on_sale",
+      "min_price": 55.0,
+      "max_price": 149.0,
+      "segment": "Comedy",
+      "genre": "Stand-Up",
+      "sub_genre": "Stand-Up",
+      "ticket_limit": 6,
+      "on_sale_date": "2026-05-01",
+      "presale_date": "2026-04-25"
+    },
+    {
+      "id": "EVT080",
+      "name": "Trevor Noah | Off The Record Tour",
+      "date": "2026-11-08",
+      "time": "20:00",
+      "venue_id": "VEN007",
+      "status": "cancelled",
+      "min_price": 49.5,
+      "max_price": 135.0,
+      "segment": "Comedy",
+      "genre": "Stand-Up",
+      "sub_genre": "Stand-Up",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-02-01",
+      "presale_date": "2026-01-28"
+    },
+    {
+      "id": "EVT081",
+      "name": "Disney On Ice | Frozen & Friends",
+      "date": "2026-03-21",
+      "time": "14:00",
+      "venue_id": "VEN005",
+      "status": "on_sale",
+      "min_price": 25.0,
+      "max_price": 95.0,
+      "segment": "Family",
+      "genre": "Show",
+      "sub_genre": "Show",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-01-05",
+      "presale_date": ""
+    },
+    {
+      "id": "EVT082",
+      "name": "Disney On Ice | Frozen & Friends",
+      "date": "2026-03-21",
+      "time": "18:00",
+      "venue_id": "VEN005",
+      "status": "on_sale",
+      "min_price": 25.0,
+      "max_price": 95.0,
+      "segment": "Family",
+      "genre": "Show",
+      "sub_genre": "Show",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-01-05",
+      "presale_date": ""
+    },
+    {
+      "id": "EVT083",
+      "name": "Disney On Ice | Frozen & Friends",
+      "date": "2026-03-22",
+      "time": "11:00",
+      "venue_id": "VEN005",
+      "status": "on_sale",
+      "min_price": 25.0,
+      "max_price": 95.0,
+      "segment": "Family",
+      "genre": "Show",
+      "sub_genre": "Show",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-01-05",
+      "presale_date": ""
+    },
+    {
+      "id": "EVT084",
+      "name": "Cirque du Soleil | Kooza",
+      "date": "2026-04-04",
+      "time": "19:30",
+      "venue_id": "VEN009",
+      "status": "on_sale",
+      "min_price": 69.0,
+      "max_price": 195.0,
+      "segment": "Family",
+      "genre": "Show",
+      "sub_genre": "Show",
+      "ticket_limit": 6,
+      "on_sale_date": "2026-01-15",
+      "presale_date": "2026-01-10"
+    },
+    {
+      "id": "EVT085",
+      "name": "Cirque du Soleil | Kooza",
+      "date": "2026-04-05",
+      "time": "14:00",
+      "venue_id": "VEN009",
+      "status": "on_sale",
+      "min_price": 69.0,
+      "max_price": 195.0,
+      "segment": "Family",
+      "genre": "Show",
+      "sub_genre": "Show",
+      "ticket_limit": 6,
+      "on_sale_date": "2026-01-15",
+      "presale_date": "2026-01-10"
+    },
+    {
+      "id": "EVT086",
+      "name": "Disney On Ice | Moana & Friends",
+      "date": "2026-05-16",
+      "time": "14:00",
+      "venue_id": "VEN012",
+      "status": "on_sale",
+      "min_price": 25.0,
+      "max_price": 89.0,
+      "segment": "Family",
+      "genre": "Show",
+      "sub_genre": "Show",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-02-01",
+      "presale_date": ""
+    },
+    {
+      "id": "EVT087",
+      "name": "Disney On Ice | Moana & Friends",
+      "date": "2026-05-16",
+      "time": "18:00",
+      "venue_id": "VEN012",
+      "status": "limited",
+      "min_price": 25.0,
+      "max_price": 89.0,
+      "segment": "Family",
+      "genre": "Show",
+      "sub_genre": "Show",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-02-01",
+      "presale_date": ""
+    },
+    {
+      "id": "EVT088",
+      "name": "Cirque du Soleil | Alegria",
+      "date": "2026-06-06",
+      "time": "19:30",
+      "venue_id": "VEN017",
+      "status": "on_sale",
+      "min_price": 75.0,
+      "max_price": 225.0,
+      "segment": "Family",
+      "genre": "Show",
+      "sub_genre": "Show",
+      "ticket_limit": 6,
+      "on_sale_date": "2026-02-15",
+      "presale_date": "2026-02-10"
+    },
+    {
+      "id": "EVT089",
+      "name": "Cirque du Soleil | Alegria",
+      "date": "2026-06-07",
+      "time": "14:00",
+      "venue_id": "VEN017",
+      "status": "on_sale",
+      "min_price": 75.0,
+      "max_price": 225.0,
+      "segment": "Family",
+      "genre": "Show",
+      "sub_genre": "Show",
+      "ticket_limit": 6,
+      "on_sale_date": "2026-02-15",
+      "presale_date": "2026-02-10"
+    },
+    {
+      "id": "EVT090",
+      "name": "Disney On Ice | Encanto Adventure",
+      "date": "2026-11-28",
+      "time": "14:00",
+      "venue_id": "VEN013",
+      "status": "postponed",
+      "min_price": 25.0,
+      "max_price": 89.0,
+      "segment": "Family",
+      "genre": "Show",
+      "sub_genre": "Show",
+      "ticket_limit": 8,
+      "on_sale_date": "2026-07-01",
+      "presale_date": ""
+    }
+  ],
+  "event_attractions": [
+    {
+      "event_id": "EVT001",
+      "attraction_id": "ATT001",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT001",
+      "attraction_id": "ATT015",
+      "billing": "support"
+    },
+    {
+      "event_id": "EVT002",
+      "attraction_id": "ATT001",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT002",
+      "attraction_id": "ATT015",
+      "billing": "support"
+    },
+    {
+      "event_id": "EVT003",
+      "attraction_id": "ATT002",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT004",
+      "attraction_id": "ATT002",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT005",
+      "attraction_id": "ATT003",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT005",
+      "attraction_id": "ATT011",
+      "billing": "support"
+    },
+    {
+      "event_id": "EVT006",
+      "attraction_id": "ATT003",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT006",
+      "attraction_id": "ATT011",
+      "billing": "support"
+    },
+    {
+      "event_id": "EVT007",
+      "attraction_id": "ATT004",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT008",
+      "attraction_id": "ATT004",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT009",
+      "attraction_id": "ATT005",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT010",
+      "attraction_id": "ATT006",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT010",
+      "attraction_id": "ATT013",
+      "billing": "support"
+    },
+    {
+      "event_id": "EVT011",
+      "attraction_id": "ATT007",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT012",
+      "attraction_id": "ATT008",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT013",
+      "attraction_id": "ATT009",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT014",
+      "attraction_id": "ATT009",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT015",
+      "attraction_id": "ATT010",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT016",
+      "attraction_id": "ATT010",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT017",
+      "attraction_id": "ATT011",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT018",
+      "attraction_id": "ATT012",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT019",
+      "attraction_id": "ATT013",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT020",
+      "attraction_id": "ATT014",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT021",
+      "attraction_id": "ATT014",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT022",
+      "attraction_id": "ATT015",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT023",
+      "attraction_id": "ATT015",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT024",
+      "attraction_id": "ATT016",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT025",
+      "attraction_id": "ATT016",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT026",
+      "attraction_id": "ATT017",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT027",
+      "attraction_id": "ATT018",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT028",
+      "attraction_id": "ATT019",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT029",
+      "attraction_id": "ATT020",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT030",
+      "attraction_id": "ATT021",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT031",
+      "attraction_id": "ATT022",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT032",
+      "attraction_id": "ATT023",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT033",
+      "attraction_id": "ATT024",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT033",
+      "attraction_id": "ATT026",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT034",
+      "attraction_id": "ATT024",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT034",
+      "attraction_id": "ATT029",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT035",
+      "attraction_id": "ATT024",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT035",
+      "attraction_id": "ATT030",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT036",
+      "attraction_id": "ATT026",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT036",
+      "attraction_id": "ATT024",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT037",
+      "attraction_id": "ATT029",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT037",
+      "attraction_id": "ATT024",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT038",
+      "attraction_id": "ATT030",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT038",
+      "attraction_id": "ATT026",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT039",
+      "attraction_id": "ATT025",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT039",
+      "attraction_id": "ATT028",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT040",
+      "attraction_id": "ATT025",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT040",
+      "attraction_id": "ATT028",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT041",
+      "attraction_id": "ATT028",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT041",
+      "attraction_id": "ATT025",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT042",
+      "attraction_id": "ATT028",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT042",
+      "attraction_id": "ATT025",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT043",
+      "attraction_id": "ATT033",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT043",
+      "attraction_id": "ATT028",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT044",
+      "attraction_id": "ATT032",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT044",
+      "attraction_id": "ATT025",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT045",
+      "attraction_id": "ATT027",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT045",
+      "attraction_id": "ATT031",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT046",
+      "attraction_id": "ATT027",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT047",
+      "attraction_id": "ATT031",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT048",
+      "attraction_id": "ATT024",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT049",
+      "attraction_id": "ATT029",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT050",
+      "attraction_id": "ATT025",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT051",
+      "attraction_id": "ATT028",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT052",
+      "attraction_id": "ATT032",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT052",
+      "attraction_id": "ATT033",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT053",
+      "attraction_id": "ATT031",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT054",
+      "attraction_id": "ATT027",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT055",
+      "attraction_id": "ATT030",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT056",
+      "attraction_id": "ATT040",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT057",
+      "attraction_id": "ATT040",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT058",
+      "attraction_id": "ATT040",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT059",
+      "attraction_id": "ATT040",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT060",
+      "attraction_id": "ATT041",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT061",
+      "attraction_id": "ATT041",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT062",
+      "attraction_id": "ATT041",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT063",
+      "attraction_id": "ATT042",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT064",
+      "attraction_id": "ATT042",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT065",
+      "attraction_id": "ATT042",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT066",
+      "attraction_id": "ATT043",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT067",
+      "attraction_id": "ATT043",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT068",
+      "attraction_id": "ATT043",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT069",
+      "attraction_id": "ATT040",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT070",
+      "attraction_id": "ATT041",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT071",
+      "attraction_id": "ATT034",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT072",
+      "attraction_id": "ATT034",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT073",
+      "attraction_id": "ATT035",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT074",
+      "attraction_id": "ATT036",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT075",
+      "attraction_id": "ATT036",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT076",
+      "attraction_id": "ATT037",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT077",
+      "attraction_id": "ATT038",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT078",
+      "attraction_id": "ATT039",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT079",
+      "attraction_id": "ATT034",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT080",
+      "attraction_id": "ATT035",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT081",
+      "attraction_id": "ATT044",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT082",
+      "attraction_id": "ATT044",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT083",
+      "attraction_id": "ATT044",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT084",
+      "attraction_id": "ATT045",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT085",
+      "attraction_id": "ATT045",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT086",
+      "attraction_id": "ATT044",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT087",
+      "attraction_id": "ATT044",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT088",
+      "attraction_id": "ATT045",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT089",
+      "attraction_id": "ATT045",
+      "billing": "headliner"
+    },
+    {
+      "event_id": "EVT090",
+      "attraction_id": "ATT044",
+      "billing": "headliner"
+    }
+  ],
+  "ticket_types": [
+    {
+      "id": "TKT001",
+      "event_id": "EVT001",
+      "name": "General Admission",
+      "price": 89.5,
+      "quantity_total": 5000,
+      "quantity_available": 1250,
+      "section": "Floor GA"
+    },
+    {
+      "id": "TKT002",
+      "event_id": "EVT001",
+      "name": "Reserved Seating",
+      "price": 179.0,
+      "quantity_total": 8000,
+      "quantity_available": 3200,
+      "section": "Lower Bowl"
+    },
+    {
+      "id": "TKT003",
+      "event_id": "EVT001",
+      "name": "Premium Reserved",
+      "price": 299.0,
+      "quantity_total": 4000,
+      "quantity_available": 1100,
+      "section": "Club Level"
+    },
+    {
+      "id": "TKT004",
+      "event_id": "EVT001",
+      "name": "VIP Package",
+      "price": 449.5,
+      "quantity_total": 1500,
+      "quantity_available": 320,
+      "section": "VIP Suite"
+    },
+    {
+      "id": "TKT005",
+      "event_id": "EVT002",
+      "name": "General Admission",
+      "price": 89.5,
+      "quantity_total": 5000,
+      "quantity_available": 850,
+      "section": "Floor GA"
+    },
+    {
+      "id": "TKT006",
+      "event_id": "EVT002",
+      "name": "Reserved Seating",
+      "price": 179.0,
+      "quantity_total": 8000,
+      "quantity_available": 2100,
+      "section": "Lower Bowl"
+    },
+    {
+      "id": "TKT007",
+      "event_id": "EVT002",
+      "name": "Premium Reserved",
+      "price": 299.0,
+      "quantity_total": 4000,
+      "quantity_available": 600,
+      "section": "Club Level"
+    },
+    {
+      "id": "TKT008",
+      "event_id": "EVT002",
+      "name": "VIP Package",
+      "price": 449.5,
+      "quantity_total": 1500,
+      "quantity_available": 180,
+      "section": "VIP Suite"
+    },
+    {
+      "id": "TKT009",
+      "event_id": "EVT003",
+      "name": "General Admission",
+      "price": 75.0,
+      "quantity_total": 3000,
+      "quantity_available": 1500,
+      "section": "Floor GA"
+    },
+    {
+      "id": "TKT010",
+      "event_id": "EVT003",
+      "name": "Reserved Seating",
+      "price": 149.0,
+      "quantity_total": 6000,
+      "quantity_available": 3200,
+      "section": "Lower Level"
+    },
+    {
+      "id": "TKT011",
+      "event_id": "EVT003",
+      "name": "Premium Reserved",
+      "price": 275.0,
+      "quantity_total": 3500,
+      "quantity_available": 1800,
+      "section": "Club Level"
+    },
+    {
+      "id": "TKT012",
+      "event_id": "EVT003",
+      "name": "VIP Package",
+      "price": 399.0,
+      "quantity_total": 1200,
+      "quantity_available": 450,
+      "section": "VIP Suite"
+    },
+    {
+      "id": "TKT013",
+      "event_id": "EVT004",
+      "name": "General Admission",
+      "price": 75.0,
+      "quantity_total": 3000,
+      "quantity_available": 320,
+      "section": "Floor GA"
+    },
+    {
+      "id": "TKT014",
+      "event_id": "EVT004",
+      "name": "Reserved Seating",
+      "price": 149.0,
+      "quantity_total": 6000,
+      "quantity_available": 680,
+      "section": "Lower Level"
+    },
+    {
+      "id": "TKT015",
+      "event_id": "EVT004",
+      "name": "Premium Reserved",
+      "price": 275.0,
+      "quantity_total": 3500,
+      "quantity_available": 210,
+      "section": "Club Level"
+    },
+    {
+      "id": "TKT016",
+      "event_id": "EVT004",
+      "name": "VIP Package",
+      "price": 399.0,
+      "quantity_total": 1200,
+      "quantity_available": 45,
+      "section": "VIP Suite"
+    },
+    {
+      "id": "TKT017",
+      "event_id": "EVT005",
+      "name": "General Admission",
+      "price": 65.0,
+      "quantity_total": 2500,
+      "quantity_available": 1400,
+      "section": "Floor GA"
+    },
+    {
+      "id": "TKT018",
+      "event_id": "EVT005",
+      "name": "Reserved Seating",
+      "price": 135.0,
+      "quantity_total": 5000,
+      "quantity_available": 2800,
+      "section": "Lower Bowl"
+    },
+    {
+      "id": "TKT019",
+      "event_id": "EVT005",
+      "name": "Premium Reserved",
+      "price": 199.0,
+      "quantity_total": 2500,
+      "quantity_available": 1200,
+      "section": "Club Level"
+    },
+    {
+      "id": "TKT020",
+      "event_id": "EVT005",
+      "name": "VIP Package",
+      "price": 275.0,
+      "quantity_total": 800,
+      "quantity_available": 350,
+      "section": "VIP Suite"
+    },
+    {
+      "id": "TKT021",
+      "event_id": "EVT006",
+      "name": "General Admission",
+      "price": 65.0,
+      "quantity_total": 3000,
+      "quantity_available": 1800,
+      "section": "Floor GA"
+    },
+    {
+      "id": "TKT022",
+      "event_id": "EVT006",
+      "name": "Reserved Seating",
+      "price": 135.0,
+      "quantity_total": 6000,
+      "quantity_available": 3500,
+      "section": "Lower Bowl"
+    },
+    {
+      "id": "TKT023",
+      "event_id": "EVT006",
+      "name": "Premium Reserved",
+      "price": 199.0,
+      "quantity_total": 3000,
+      "quantity_available": 1600,
+      "section": "Club Level"
+    },
+    {
+      "id": "TKT024",
+      "event_id": "EVT006",
+      "name": "VIP Package",
+      "price": 275.0,
+      "quantity_total": 1000,
+      "quantity_available": 480,
+      "section": "VIP Suite"
+    },
+    {
+      "id": "TKT025",
+      "event_id": "EVT007",
+      "name": "General Admission",
+      "price": 59.5,
+      "quantity_total": 3000,
+      "quantity_available": 1200,
+      "section": "Floor GA"
+    },
+    {
+      "id": "TKT026",
+      "event_id": "EVT007",
+      "name": "Reserved Seating",
+      "price": 129.0,
+      "quantity_total": 6000,
+      "quantity_available": 3000,
+      "section": "Lower Level"
+    },
+    {
+      "id": "TKT027",
+      "event_id": "EVT007",
+      "name": "Premium Reserved",
+      "price": 179.0,
+      "quantity_total": 3500,
+      "quantity_available": 1800,
+      "section": "Club Level"
+    },
+    {
+      "id": "TKT028",
+      "event_id": "EVT007",
+      "name": "VIP Package",
+      "price": 225.0,
+      "quantity_total": 1200,
+      "quantity_available": 500,
+      "section": "VIP Suite"
+    },
+    {
+      "id": "TKT029",
+      "event_id": "EVT008",
+      "name": "General Admission",
+      "price": 59.5,
+      "quantity_total": 3000,
+      "quantity_available": 350,
+      "section": "Floor GA"
+    },
+    {
+      "id": "TKT030",
+      "event_id": "EVT008",
+      "name": "Reserved Seating",
+      "price": 129.0,
+      "quantity_total": 6000,
+      "quantity_available": 800,
+      "section": "Lower Level"
+    },
+    {
+      "id": "TKT031",
+      "event_id": "EVT008",
+      "name": "Premium Reserved",
+      "price": 179.0,
+      "quantity_total": 3500,
+      "quantity_available": 250,
+      "section": "Club Level"
+    },
+    {
+      "id": "TKT032",
+      "event_id": "EVT008",
+      "name": "VIP Package",
+      "price": 225.0,
+      "quantity_total": 1200,
+      "quantity_available": 60,
+      "section": "VIP Suite"
+    },
+    {
+      "id": "TKT033",
+      "event_id": "EVT009",
+      "name": "General Admission",
+      "price": 69.0,
+      "quantity_total": 2800,
+      "quantity_available": 1600,
+      "section": "Floor GA"
+    },
+    {
+      "id": "TKT034",
+      "event_id": "EVT009",
+      "name": "Reserved Seating",
+      "price": 145.0,
+      "quantity_total": 5500,
+      "quantity_available": 3200,
+      "section": "Lower Bowl"
+    },
+    {
+      "id": "TKT035",
+      "event_id": "EVT009",
+      "name": "Premium Reserved",
+      "price": 249.0,
+      "quantity_total": 3000,
+      "quantity_available": 1800,
+      "section": "Club Level"
+    },
+    {
+      "id": "TKT036",
+      "event_id": "EVT009",
+      "name": "VIP Package",
+      "price": 350.0,
+      "quantity_total": 1000,
+      "quantity_available": 520,
+      "section": "VIP Suite"
+    },
+    {
+      "id": "TKT037",
+      "event_id": "EVT010",
+      "name": "General Admission",
+      "price": 79.0,
+      "quantity_total": 3000,
+      "quantity_available": 3000,
+      "section": "Floor GA"
+    },
+    {
+      "id": "TKT038",
+      "event_id": "EVT010",
+      "name": "Reserved Seating",
+      "price": 165.0,
+      "quantity_total": 6000,
+      "quantity_available": 6000,
+      "section": "Lower Bowl"
+    },
+    {
+      "id": "TKT039",
+      "event_id": "EVT010",
+      "name": "Premium Reserved",
+      "price": 245.0,
+      "quantity_total": 3000,
+      "quantity_available": 3000,
+      "section": "Club Level"
+    },
+    {
+      "id": "TKT040",
+      "event_id": "EVT010",
+      "name": "VIP Package",
+      "price": 325.0,
+      "quantity_total": 1000,
+      "quantity_available": 1000,
+      "section": "VIP Suite"
+    },
+    {
+      "id": "TKT041",
+      "event_id": "EVT011",
+      "name": "General Admission",
+      "price": 85.0,
+      "quantity_total": 2500,
+      "quantity_available": 1200,
+      "section": "Floor GA"
+    },
+    {
+      "id": "TKT042",
+      "event_id": "EVT011",
+      "name": "Reserved Seating",
+      "price": 195.0,
+      "quantity_total": 5500,
+      "quantity_available": 2800,
+      "section": "Lower Level"
+    },
+    {
+      "id": "TKT043",
+      "event_id": "EVT011",
+      "name": "Premium Reserved",
+      "price": 325.0,
+      "quantity_total": 3000,
+      "quantity_available": 1500,
+      "section": "Club Level"
+    },
+    {
+      "id": "TKT044",
+      "event_id": "EVT011",
+      "name": "VIP Package",
+      "price": 450.0,
+      "quantity_total": 1000,
+      "quantity_available": 380,
+      "section": "VIP Suite"
+    },
+    {
+      "id": "TKT045",
+      "event_id": "EVT012",
+      "name": "General Admission",
+      "price": 55.0,
+      "quantity_total": 3000,
+      "quantity_available": 1800,
+      "section": "Floor GA"
+    },
+    {
+      "id": "TKT046",
+      "event_id": "EVT012",
+      "name": "Reserved Seating",
+      "price": 135.0,
+      "quantity_total": 6000,
+      "quantity_available": 3600,
+      "section": "Lower Bowl"
+    },
+    {
+      "id": "TKT047",
+      "event_id": "EVT012",
+      "name": "Premium Reserved",
+      "price": 215.0,
+      "quantity_total": 3000,
+      "quantity_available": 1700,
+      "section": "Club Level"
+    },
+    {
+      "id": "TKT048",
+      "event_id": "EVT012",
+      "name": "VIP Package",
+      "price": 295.0,
+      "quantity_total": 1000,
+      "quantity_available": 520,
+      "section": "VIP Suite"
+    },
+    {
+      "id": "TKT049",
+      "event_id": "EVT013",
+      "name": "General Admission",
+      "price": 45.0,
+      "quantity_total": 400,
+      "quantity_available": 220,
+      "section": "Floor GA"
+    },
+    {
+      "id": "TKT050",
+      "event_id": "EVT013",
+      "name": "Reserved Seating",
+      "price": 95.0,
+      "quantity_total": 800,
+      "quantity_available": 450,
+      "section": "Orchestra"
+    },
+    {
+      "id": "TKT051",
+      "event_id": "EVT013",
+      "name": "Premium Reserved",
+      "price": 149.0,
+      "quantity_total": 500,
+      "quantity_available": 280,
+      "section": "Mezzanine"
+    },
+    {
+      "id": "TKT052",
+      "event_id": "EVT013",
+      "name": "VIP Package",
+      "price": 199.0,
+      "quantity_total": 200,
+      "quantity_available": 85,
+      "section": "VIP Box"
+    },
+    {
+      "id": "TKT053",
+      "event_id": "EVT014",
+      "name": "General Admission",
+      "price": 55.0,
+      "quantity_total": 2000,
+      "quantity_available": 1200,
+      "section": "Amphitheater GA"
+    },
+    {
+      "id": "TKT054",
+      "event_id": "EVT014",
+      "name": "Reserved Seating",
+      "price": 105.0,
+      "quantity_total": 3500,
+      "quantity_available": 2100,
+      "section": "Reserved Rows"
+    },
+    {
+      "id": "TKT055",
+      "event_id": "EVT014",
+      "name": "Premium Reserved",
+      "price": 145.0,
+      "quantity_total": 2000,
+      "quantity_available": 1100,
+      "section": "Premium Rows"
+    },
+    {
+      "id": "TKT056",
+      "event_id": "EVT014",
+      "name": "VIP Package",
+      "price": 175.0,
+      "quantity_total": 500,
+      "quantity_available": 250,
+      "section": "VIP Terrace"
+    },
+    {
+      "id": "TKT057",
+      "event_id": "EVT015",
+      "name": "General Admission",
+      "price": 49.5,
+      "quantity_total": 2000,
+      "quantity_available": 0,
+      "section": "Amphitheater GA"
+    },
+    {
+      "id": "TKT058",
+      "event_id": "EVT015",
+      "name": "Reserved Seating",
+      "price": 99.0,
+      "quantity_total": 3500,
+      "quantity_available": 0,
+      "section": "Reserved Rows"
+    },
+    {
+      "id": "TKT059",
+      "event_id": "EVT015",
+      "name": "Premium Reserved",
+      "price": 145.0,
+      "quantity_total": 2000,
+      "quantity_available": 0,
+      "section": "Premium Rows"
+    },
+    {
+      "id": "TKT060",
+      "event_id": "EVT015",
+      "name": "VIP Package",
+      "price": 185.0,
+      "quantity_total": 500,
+      "quantity_available": 0,
+      "section": "VIP Terrace"
+    },
+    {
+      "id": "TKT061",
+      "event_id": "EVT016",
+      "name": "General Admission",
+      "price": 49.5,
+      "quantity_total": 4000,
+      "quantity_available": 2200,
+      "section": "Amphitheater GA"
+    },
+    {
+      "id": "TKT062",
+      "event_id": "EVT016",
+      "name": "Reserved Seating",
+      "price": 99.0,
+      "quantity_total": 8000,
+      "quantity_available": 4800,
+      "section": "Reserved Rows"
+    },
+    {
+      "id": "TKT063",
+      "event_id": "EVT016",
+      "name": "Premium Reserved",
+      "price": 145.0,
+      "quantity_total": 4000,
+      "quantity_available": 2100,
+      "section": "Premium Rows"
+    },
+    {
+      "id": "TKT064",
+      "event_id": "EVT016",
+      "name": "VIP Package",
+      "price": 185.0,
+      "quantity_total": 1000,
+      "quantity_available": 520,
+      "section": "VIP Terrace"
+    },
+    {
+      "id": "TKT065",
+      "event_id": "EVT017",
+      "name": "General Admission",
+      "price": 59.0,
+      "quantity_total": 3000,
+      "quantity_available": 1700,
+      "section": "Floor GA"
+    },
+    {
+      "id": "TKT066",
+      "event_id": "EVT017",
+      "name": "Reserved Seating",
+      "price": 129.0,
+      "quantity_total": 6000,
+      "quantity_available": 3500,
+      "section": "Lower Bowl"
+    },
+    {
+      "id": "TKT067",
+      "event_id": "EVT017",
+      "name": "Premium Reserved",
+      "price": 189.0,
+      "quantity_total": 3000,
+      "quantity_available": 1600,
+      "section": "Club Level"
+    },
+    {
+      "id": "TKT068",
+      "event_id": "EVT017",
+      "name": "VIP Package",
+      "price": 249.0,
+      "quantity_total": 1000,
+      "quantity_available": 450,
+      "section": "VIP Suite"
+    },
+    {
+      "id": "TKT069",
+      "event_id": "EVT018",
+      "name": "General Admission",
+      "price": 65.0,
+      "quantity_total": 3000,
+      "quantity_available": 3000,
+      "section": "Floor GA"
+    },
+    {
+      "id": "TKT070",
+      "event_id": "EVT018",
+      "name": "Reserved Seating",
+      "price": 145.0,
+      "quantity_total": 6000,
+      "quantity_available": 6000,
+      "section": "Lower Level"
+    },
+    {
+      "id": "TKT071",
+      "event_id": "EVT018",
+      "name": "Premium Reserved",
+      "price": 225.0,
+      "quantity_total": 3500,
+      "quantity_available": 3500,
+      "section": "Club Level"
+    },
+    {
+      "id": "TKT072",
+      "event_id": "EVT018",
+      "name": "VIP Package",
+      "price": 295.0,
+      "quantity_total": 1200,
+      "quantity_available": 1200,
+      "section": "VIP Suite"
+    },
+    {
+      "id": "TKT073",
+      "event_id": "EVT019",
+      "name": "General Admission",
+      "price": 55.0,
+      "quantity_total": 1000,
+      "quantity_available": 580,
+      "section": "Floor GA"
+    },
+    {
+      "id": "TKT074",
+      "event_id": "EVT019",
+      "name": "Reserved Seating",
+      "price": 115.0,
+      "quantity_total": 2000,
+      "quantity_available": 1200,
+      "section": "Orchestra"
+    },
+    {
+      "id": "TKT075",
+      "event_id": "EVT019",
+      "name": "Premium Reserved",
+      "price": 159.0,
+      "quantity_total": 1200,
+      "quantity_available": 650,
+      "section": "Mezzanine"
+    },
+    {
+      "id": "TKT076",
+      "event_id": "EVT019",
+      "name": "VIP Package",
+      "price": 195.0,
+      "quantity_total": 400,
+      "quantity_available": 180,
+      "section": "VIP Lounge"
+    },
+    {
+      "id": "TKT077",
+      "event_id": "EVT020",
+      "name": "General Admission",
+      "price": 49.5,
+      "quantity_total": 1000,
+      "quantity_available": 0,
+      "section": "Floor Standing"
+    },
+    {
+      "id": "TKT078",
+      "event_id": "EVT020",
+      "name": "Reserved Seating",
+      "price": 109.0,
+      "quantity_total": 2000,
+      "quantity_available": 0,
+      "section": "Orchestra"
+    },
+    {
+      "id": "TKT079",
+      "event_id": "EVT020",
+      "name": "Premium Reserved",
+      "price": 159.0,
+      "quantity_total": 1200,
+      "quantity_available": 0,
+      "section": "Mezzanine"
+    },
+    {
+      "id": "TKT080",
+      "event_id": "EVT020",
+      "name": "VIP Package",
+      "price": 199.0,
+      "quantity_total": 500,
+      "quantity_available": 0,
+      "section": "VIP Suite"
+    },
+    {
+      "id": "TKT081",
+      "event_id": "EVT021",
+      "name": "General Admission",
+      "price": 49.5,
+      "quantity_total": 800,
+      "quantity_available": 450,
+      "section": "Floor GA"
+    },
+    {
+      "id": "TKT082",
+      "event_id": "EVT021",
+      "name": "Reserved Seating",
+      "price": 109.0,
+      "quantity_total": 1500,
+      "quantity_available": 850,
+      "section": "Orchestra"
+    },
+    {
+      "id": "TKT083",
+      "event_id": "EVT021",
+      "name": "Premium Reserved",
+      "price": 159.0,
+      "quantity_total": 1000,
+      "quantity_available": 520,
+      "section": "Mezzanine"
+    },
+    {
+      "id": "TKT084",
+      "event_id": "EVT021",
+      "name": "VIP Package",
+      "price": 199.0,
+      "quantity_total": 400,
+      "quantity_available": 180,
+      "section": "VIP Box"
+    },
+    {
+      "id": "TKT085",
+      "event_id": "EVT022",
+      "name": "General Admission",
+      "price": 45.0,
+      "quantity_total": 400,
+      "quantity_available": 0,
+      "section": "Floor Standing"
+    },
+    {
+      "id": "TKT086",
+      "event_id": "EVT022",
+      "name": "Reserved Seating",
+      "price": 89.0,
+      "quantity_total": 600,
+      "quantity_available": 0,
+      "section": "Balcony"
+    },
+    {
+      "id": "TKT087",
+      "event_id": "EVT022",
+      "name": "VIP Package",
+      "price": 149.0,
+      "quantity_total": 200,
+      "quantity_available": 0,
+      "section": "VIP Lounge"
+    },
+    {
+      "id": "TKT088",
+      "event_id": "EVT023",
+      "name": "General Admission",
+      "price": 45.0,
+      "quantity_total": 1000,
+      "quantity_available": 580,
+      "section": "Floor GA"
+    },
+    {
+      "id": "TKT089",
+      "event_id": "EVT023",
+      "name": "Reserved Seating",
+      "price": 89.0,
+      "quantity_total": 2000,
+      "quantity_available": 1200,
+      "section": "Orchestra"
+    },
+    {
+      "id": "TKT090",
+      "event_id": "EVT023",
+      "name": "VIP Package",
+      "price": 149.0,
+      "quantity_total": 400,
+      "quantity_available": 200,
+      "section": "VIP Lounge"
+    },
+    {
+      "id": "TKT091",
+      "event_id": "EVT024",
+      "name": "General Admission",
+      "price": 59.5,
+      "quantity_total": 2000,
+      "quantity_available": 1200,
+      "section": "Amphitheater GA"
+    },
+    {
+      "id": "TKT092",
+      "event_id": "EVT024",
+      "name": "Reserved Seating",
+      "price": 119.0,
+      "quantity_total": 3500,
+      "quantity_available": 2100,
+      "section": "Reserved Rows"
+    },
+    {
+      "id": "TKT093",
+      "event_id": "EVT024",
+      "name": "Premium Reserved",
+      "price": 179.0,
+      "quantity_total": 2000,
+      "quantity_available": 1100,
+      "section": "Premium Rows"
+    },
+    {
+      "id": "TKT094",
+      "event_id": "EVT024",
+      "name": "VIP Package",
+      "price": 225.0,
+      "quantity_total": 500,
+      "quantity_available": 250,
+      "section": "VIP Terrace"
+    },
+    {
+      "id": "TKT095",
+      "event_id": "EVT025",
+      "name": "General Admission",
+      "price": 59.5,
+      "quantity_total": 4000,
+      "quantity_available": 2500,
+      "section": "Amphitheater GA"
+    },
+    {
+      "id": "TKT096",
+      "event_id": "EVT025",
+      "name": "Reserved Seating",
+      "price": 119.0,
+      "quantity_total": 8000,
+      "quantity_available": 5200,
+      "section": "Reserved Rows"
+    },
+    {
+      "id": "TKT097",
+      "event_id": "EVT025",
+      "name": "Premium Reserved",
+      "price": 179.0,
+      "quantity_total": 4000,
+      "quantity_available": 2400,
+      "section": "Premium Rows"
+    },
+    {
+      "id": "TKT098",
+      "event_id": "EVT025",
+      "name": "VIP Package",
+      "price": 225.0,
+      "quantity_total": 1000,
+      "quantity_available": 580,
+      "section": "VIP Terrace"
+    },
+    {
+      "id": "TKT099",
+      "event_id": "EVT026",
+      "name": "General Admission",
+      "price": 75.0,
+      "quantity_total": 1000,
+      "quantity_available": 1000,
+      "section": "Floor Standing"
+    },
+    {
+      "id": "TKT100",
+      "event_id": "EVT026",
+      "name": "Reserved Seating",
+      "price": 149.0,
+      "quantity_total": 2000,
+      "quantity_available": 2000,
+      "section": "Orchestra"
+    },
+    {
+      "id": "TKT101",
+      "event_id": "EVT026",
+      "name": "Premium Reserved",
+      "price": 199.0,
+      "quantity_total": 1200,
+      "quantity_available": 1200,
+      "section": "Mezzanine"
+    },
+    {
+      "id": "TKT102",
+      "event_id": "EVT026",
+      "name": "VIP Package",
+      "price": 250.0,
+      "quantity_total": 500,
+      "quantity_available": 500,
+      "section": "VIP Suite"
+    },
+    {
+      "id": "TKT103",
+      "event_id": "EVT027",
+      "name": "General Admission",
+      "price": 65.0,
+      "quantity_total": 5000,
+      "quantity_available": 2800,
+      "section": "Floor GA"
+    },
+    {
+      "id": "TKT104",
+      "event_id": "EVT027",
+      "name": "Reserved Seating",
+      "price": 139.0,
+      "quantity_total": 8000,
+      "quantity_available": 4500,
+      "section": "Lower Bowl"
+    },
+    {
+      "id": "TKT105",
+      "event_id": "EVT027",
+      "name": "Premium Reserved",
+      "price": 215.0,
+      "quantity_total": 4000,
+      "quantity_available": 2200,
+      "section": "Club Level"
+    },
+    {
+      "id": "TKT106",
+      "event_id": "EVT027",
+      "name": "VIP Package",
+      "price": 275.0,
+      "quantity_total": 1500,
+      "quantity_available": 750,
+      "section": "VIP Suite"
+    },
+    {
+      "id": "TKT107",
+      "event_id": "EVT028",
+      "name": "General Admission",
+      "price": 55.0,
+      "quantity_total": 5000,
+      "quantity_available": 2800,
+      "section": "Bleachers"
+    },
+    {
+      "id": "TKT108",
+      "event_id": "EVT028",
+      "name": "Reserved Seating",
+      "price": 125.0,
+      "quantity_total": 10000,
+      "quantity_available": 5500,
+      "section": "Grandstand"
+    },
+    {
+      "id": "TKT109",
+      "event_id": "EVT028",
+      "name": "Premium Reserved",
+      "price": 189.0,
+      "quantity_total": 5000,
+      "quantity_available": 2600,
+      "section": "Pavilion Box"
+    },
+    {
+      "id": "TKT110",
+      "event_id": "EVT028",
+      "name": "VIP Package",
+      "price": 249.0,
+      "quantity_total": 2000,
+      "quantity_available": 950,
+      "section": "Monster Seats"
+    },
+    {
+      "id": "TKT111",
+      "event_id": "EVT029",
+      "name": "General Admission",
+      "price": 49.5,
+      "quantity_total": 2000,
+      "quantity_available": 1200,
+      "section": "Floor GA"
+    },
+    {
+      "id": "TKT112",
+      "event_id": "EVT029",
+      "name": "Reserved Seating",
+      "price": 99.0,
+      "quantity_total": 4000,
+      "quantity_available": 2500,
+      "section": "Lower Bowl"
+    },
+    {
+      "id": "TKT113",
+      "event_id": "EVT029",
+      "name": "Premium Reserved",
+      "price": 149.0,
+      "quantity_total": 2500,
+      "quantity_available": 1500,
+      "section": "Club Level"
+    },
+    {
+      "id": "TKT114",
+      "event_id": "EVT029",
+      "name": "VIP Package",
+      "price": 189.0,
+      "quantity_total": 800,
+      "quantity_available": 400,
+      "section": "VIP Suite"
+    },
+    {
+      "id": "TKT115",
+      "event_id": "EVT030",
+      "name": "General Admission",
+      "price": 89.5,
+      "quantity_total": 5000,
+      "quantity_available": 2500,
+      "section": "Floor GA"
+    },
+    {
+      "id": "TKT116",
+      "event_id": "EVT030",
+      "name": "Reserved Seating",
+      "price": 175.0,
+      "quantity_total": 8000,
+      "quantity_available": 4000,
+      "section": "Lower Bowl"
+    },
+    {
+      "id": "TKT117",
+      "event_id": "EVT030",
+      "name": "Premium Reserved",
+      "price": 265.0,
+      "quantity_total": 4000,
+      "quantity_available": 1800,
+      "section": "Club Level"
+    },
+    {
+      "id": "TKT118",
+      "event_id": "EVT030",
+      "name": "VIP Package",
+      "price": 350.0,
+      "quantity_total": 1500,
+      "quantity_available": 650,
+      "section": "VIP Suite"
+    },
+    {
+      "id": "TKT119",
+      "event_id": "EVT031",
+      "name": "General Admission",
+      "price": 45.0,
+      "quantity_total": 2000,
+      "quantity_available": 1200,
+      "section": "Floor GA"
+    },
+    {
+      "id": "TKT120",
+      "event_id": "EVT031",
+      "name": "Reserved Seating",
+      "price": 99.0,
+      "quantity_total": 4000,
+      "quantity_available": 2600,
+      "section": "Lower Bowl"
+    },
+    {
+      "id": "TKT121",
+      "event_id": "EVT031",
+      "name": "Premium Reserved",
+      "price": 149.0,
+      "quantity_total": 2500,
+      "quantity_available": 1500,
+      "section": "Club Level"
+    },
+    {
+      "id": "TKT122",
+      "event_id": "EVT031",
+      "name": "VIP Package",
+      "price": 195.0,
+      "quantity_total": 800,
+      "quantity_available": 400,
+      "section": "VIP Suite"
+    },
+    {
+      "id": "TKT123",
+      "event_id": "EVT032",
+      "name": "General Admission",
+      "price": 99.5,
+      "quantity_total": 3000,
+      "quantity_available": 3000,
+      "section": "Floor GA"
+    },
+    {
+      "id": "TKT124",
+      "event_id": "EVT032",
+      "name": "Reserved Seating",
+      "price": 225.0,
+      "quantity_total": 6000,
+      "quantity_available": 6000,
+      "section": "Lower Level"
+    },
+    {
+      "id": "TKT125",
+      "event_id": "EVT032",
+      "name": "Premium Reserved",
+      "price": 375.0,
+      "quantity_total": 3500,
+      "quantity_available": 3500,
+      "section": "Club Level"
+    },
+    {
+      "id": "TKT126",
+      "event_id": "EVT032",
+      "name": "VIP Package",
+      "price": 500.0,
+      "quantity_total": 1200,
+      "quantity_available": 1200,
+      "section": "VIP Suite"
+    },
+    {
+      "id": "TKT127",
+      "event_id": "EVT033",
+      "name": "Reserved Seating",
+      "price": 45.0,
+      "quantity_total": 4000,
+      "quantity_available": 2200,
+      "section": "Upper Level"
+    },
+    {
+      "id": "TKT128",
+      "event_id": "EVT033",
+      "name": "Reserved Seating",
+      "price": 125.0,
+      "quantity_total": 5000,
+      "quantity_available": 2800,
+      "section": "Lower Level"
+    },
+    {
+      "id": "TKT129",
+      "event_id": "EVT033",
+      "name": "Premium Reserved",
+      "price": 225.0,
+      "quantity_total": 2500,
+      "quantity_available": 1200,
+      "section": "Premier Seats"
+    },
+    {
+      "id": "TKT130",
+      "event_id": "EVT033",
+      "name": "VIP Package",
+      "price": 350.0,
+      "quantity_total": 800,
+      "quantity_available": 350,
+      "section": "Courtside Club"
+    },
+    {
+      "id": "TKT131",
+      "event_id": "EVT034",
+      "name": "Reserved Seating",
+      "price": 55.0,
+      "quantity_total": 4000,
+      "quantity_available": 2000,
+      "section": "Upper Level"
+    },
+    {
+      "id": "TKT132",
+      "event_id": "EVT034",
+      "name": "Reserved Seating",
+      "price": 145.0,
+      "quantity_total": 5000,
+      "quantity_available": 2500,
+      "section": "Lower Level"
+    },
+    {
+      "id": "TKT133",
+      "event_id": "EVT034",
+      "name": "Premium Reserved",
+      "price": 275.0,
+      "quantity_total": 2500,
+      "quantity_available": 1100,
+      "section": "Premier Seats"
+    },
+    {
+      "id": "TKT134",
+      "event_id": "EVT034",
+      "name": "VIP Package",
+      "price": 425.0,
+      "quantity_total": 800,
+      "quantity_available": 300,
+      "section": "Courtside Club"
+    },
+    {
+      "id": "TKT135",
+      "event_id": "EVT035",
+      "name": "Reserved Seating",
+      "price": 40.0,
+      "quantity_total": 4000,
+      "quantity_available": 2500,
+      "section": "Upper Level"
+    },
+    {
+      "id": "TKT136",
+      "event_id": "EVT035",
+      "name": "Reserved Seating",
+      "price": 115.0,
+      "quantity_total": 5000,
+      "quantity_available": 3000,
+      "section": "Lower Level"
+    },
+    {
+      "id": "TKT137",
+      "event_id": "EVT035",
+      "name": "Premium Reserved",
+      "price": 195.0,
+      "quantity_total": 2500,
+      "quantity_available": 1400,
+      "section": "Premier Seats"
+    },
+    {
+      "id": "TKT138",
+      "event_id": "EVT035",
+      "name": "VIP Package",
+      "price": 295.0,
+      "quantity_total": 800,
+      "quantity_available": 400,
+      "section": "Courtside Club"
+    },
+    {
+      "id": "TKT139",
+      "event_id": "EVT036",
+      "name": "Reserved Seating",
+      "price": 35.0,
+      "quantity_total": 4000,
+      "quantity_available": 2500,
+      "section": "Upper Level"
+    },
+    {
+      "id": "TKT140",
+      "event_id": "EVT036",
+      "name": "Reserved Seating",
+      "price": 105.0,
+      "quantity_total": 5000,
+      "quantity_available": 3200,
+      "section": "Lower Level"
+    },
+    {
+      "id": "TKT141",
+      "event_id": "EVT036",
+      "name": "Premium Reserved",
+      "price": 185.0,
+      "quantity_total": 2500,
+      "quantity_available": 1500,
+      "section": "Premier Seats"
+    },
+    {
+      "id": "TKT142",
+      "event_id": "EVT036",
+      "name": "VIP Package",
+      "price": 275.0,
+      "quantity_total": 800,
+      "quantity_available": 400,
+      "section": "Courtside Club"
+    },
+    {
+      "id": "TKT143",
+      "event_id": "EVT037",
+      "name": "Reserved Seating",
+      "price": 50.0,
+      "quantity_total": 3000,
+      "quantity_available": 1800,
+      "section": "Upper Level"
+    },
+    {
+      "id": "TKT144",
+      "event_id": "EVT037",
+      "name": "Reserved Seating",
+      "price": 135.0,
+      "quantity_total": 4500,
+      "quantity_available": 2500,
+      "section": "Lower Level"
+    },
+    {
+      "id": "TKT145",
+      "event_id": "EVT037",
+      "name": "Premium Reserved",
+      "price": 245.0,
+      "quantity_total": 2000,
+      "quantity_available": 1000,
+      "section": "Premier Seats"
+    },
+    {
+      "id": "TKT146",
+      "event_id": "EVT037",
+      "name": "VIP Package",
+      "price": 375.0,
+      "quantity_total": 600,
+      "quantity_available": 280,
+      "section": "Courtside Club"
+    },
+    {
+      "id": "TKT147",
+      "event_id": "EVT038",
+      "name": "Reserved Seating",
+      "price": 30.0,
+      "quantity_total": 3500,
+      "quantity_available": 2200,
+      "section": "Upper Level"
+    },
+    {
+      "id": "TKT148",
+      "event_id": "EVT038",
+      "name": "Reserved Seating",
+      "price": 95.0,
+      "quantity_total": 5000,
+      "quantity_available": 3200,
+      "section": "Lower Level"
+    },
+    {
+      "id": "TKT149",
+      "event_id": "EVT038",
+      "name": "Premium Reserved",
+      "price": 165.0,
+      "quantity_total": 2500,
+      "quantity_available": 1500,
+      "section": "Premier Seats"
+    },
+    {
+      "id": "TKT150",
+      "event_id": "EVT038",
+      "name": "VIP Package",
+      "price": 225.0,
+      "quantity_total": 800,
+      "quantity_available": 420,
+      "section": "Courtside Club"
+    },
+    {
+      "id": "TKT151",
+      "event_id": "EVT039",
+      "name": "Reserved Seating",
+      "price": 35.0,
+      "quantity_total": 4000,
+      "quantity_available": 2200,
+      "section": "Upper Deck"
+    },
+    {
+      "id": "TKT152",
+      "event_id": "EVT039",
+      "name": "Reserved Seating",
+      "price": 110.0,
+      "quantity_total": 5000,
+      "quantity_available": 2800,
+      "section": "Field Level"
+    },
+    {
+      "id": "TKT153",
+      "event_id": "EVT039",
+      "name": "Premium Reserved",
+      "price": 185.0,
+      "quantity_total": 2500,
+      "quantity_available": 1400,
+      "section": "Champions Suite"
+    },
+    {
+      "id": "TKT154",
+      "event_id": "EVT039",
+      "name": "VIP Package",
+      "price": 250.0,
+      "quantity_total": 1000,
+      "quantity_available": 520,
+      "section": "Legends Seats"
+    },
+    {
+      "id": "TKT155",
+      "event_id": "EVT040",
+      "name": "Reserved Seating",
+      "price": 35.0,
+      "quantity_total": 4000,
+      "quantity_available": 2400,
+      "section": "Upper Deck"
+    },
+    {
+      "id": "TKT156",
+      "event_id": "EVT040",
+      "name": "Reserved Seating",
+      "price": 110.0,
+      "quantity_total": 5000,
+      "quantity_available": 3000,
+      "section": "Field Level"
+    },
+    {
+      "id": "TKT157",
+      "event_id": "EVT040",
+      "name": "Premium Reserved",
+      "price": 185.0,
+      "quantity_total": 2500,
+      "quantity_available": 1500,
+      "section": "Champions Suite"
+    },
+    {
+      "id": "TKT158",
+      "event_id": "EVT040",
+      "name": "VIP Package",
+      "price": 250.0,
+      "quantity_total": 1000,
+      "quantity_available": 550,
+      "section": "Legends Seats"
+    },
+    {
+      "id": "TKT159",
+      "event_id": "EVT041",
+      "name": "Reserved Seating",
+      "price": 30.0,
+      "quantity_total": 5000,
+      "quantity_available": 3000,
+      "section": "Upper Deck"
+    },
+    {
+      "id": "TKT160",
+      "event_id": "EVT041",
+      "name": "Reserved Seating",
+      "price": 95.0,
+      "quantity_total": 8000,
+      "quantity_available": 4800,
+      "section": "Grandstand"
+    },
+    {
+      "id": "TKT161",
+      "event_id": "EVT041",
+      "name": "Premium Reserved",
+      "price": 165.0,
+      "quantity_total": 3000,
+      "quantity_available": 1800,
+      "section": "Pavilion Box"
+    },
+    {
+      "id": "TKT162",
+      "event_id": "EVT041",
+      "name": "VIP Package",
+      "price": 225.0,
+      "quantity_total": 1500,
+      "quantity_available": 850,
+      "section": "Monster Seats"
+    },
+    {
+      "id": "TKT163",
+      "event_id": "EVT042",
+      "name": "Reserved Seating",
+      "price": 30.0,
+      "quantity_total": 5000,
+      "quantity_available": 3200,
+      "section": "Upper Deck"
+    },
+    {
+      "id": "TKT164",
+      "event_id": "EVT042",
+      "name": "Reserved Seating",
+      "price": 95.0,
+      "quantity_total": 8000,
+      "quantity_available": 5000,
+      "section": "Grandstand"
+    },
+    {
+      "id": "TKT165",
+      "event_id": "EVT042",
+      "name": "Premium Reserved",
+      "price": 165.0,
+      "quantity_total": 3000,
+      "quantity_available": 1900,
+      "section": "Pavilion Box"
+    },
+    {
+      "id": "TKT166",
+      "event_id": "EVT042",
+      "name": "VIP Package",
+      "price": 225.0,
+      "quantity_total": 1500,
+      "quantity_available": 900,
+      "section": "Monster Seats"
+    },
+    {
+      "id": "TKT167",
+      "event_id": "EVT043",
+      "name": "Reserved Seating",
+      "price": 25.0,
+      "quantity_total": 6000,
+      "quantity_available": 3800,
+      "section": "Upper Deck"
+    },
+    {
+      "id": "TKT168",
+      "event_id": "EVT043",
+      "name": "Reserved Seating",
+      "price": 85.0,
+      "quantity_total": 10000,
+      "quantity_available": 6200,
+      "section": "Lower Level"
+    },
+    {
+      "id": "TKT169",
+      "event_id": "EVT043",
+      "name": "Premium Reserved",
+      "price": 145.0,
+      "quantity_total": 4000,
+      "quantity_available": 2500,
+      "section": "Terrace Reserved"
+    },
+    {
+      "id": "TKT170",
+      "event_id": "EVT043",
+      "name": "VIP Package",
+      "price": 195.0,
+      "quantity_total": 1500,
+      "quantity_available": 900,
+      "section": "Wrigley Suite"
+    },
+    {
+      "id": "TKT171",
+      "event_id": "EVT044",
+      "name": "Reserved Seating",
+      "price": 28.0,
+      "quantity_total": 3000,
+      "quantity_available": 1800,
+      "section": "Upper Deck"
+    },
+    {
+      "id": "TKT172",
+      "event_id": "EVT044",
+      "name": "Reserved Seating",
+      "price": 95.0,
+      "quantity_total": 5000,
+      "quantity_available": 3000,
+      "section": "Lower Level"
+    },
+    {
+      "id": "TKT173",
+      "event_id": "EVT044",
+      "name": "Premium Reserved",
+      "price": 155.0,
+      "quantity_total": 2500,
+      "quantity_available": 1500,
+      "section": "Club Level"
+    },
+    {
+      "id": "TKT174",
+      "event_id": "EVT044",
+      "name": "VIP Package",
+      "price": 210.0,
+      "quantity_total": 1000,
+      "quantity_available": 580,
+      "section": "Crawford Boxes"
+    },
+    {
+      "id": "TKT175",
+      "event_id": "EVT045",
+      "name": "Reserved Seating",
+      "price": 95.0,
+      "quantity_total": 8000,
+      "quantity_available": 4200,
+      "section": "Upper Level"
+    },
+    {
+      "id": "TKT176",
+      "event_id": "EVT045",
+      "name": "Reserved Seating",
+      "price": 225.0,
+      "quantity_total": 12000,
+      "quantity_available": 6000,
+      "section": "Lower Level"
+    },
+    {
+      "id": "TKT177",
+      "event_id": "EVT045",
+      "name": "Premium Reserved",
+      "price": 375.0,
+      "quantity_total": 5000,
+      "quantity_available": 2200,
+      "section": "Club Level"
+    },
+    {
+      "id": "TKT178",
+      "event_id": "EVT045",
+      "name": "VIP Package",
+      "price": 550.0,
+      "quantity_total": 2000,
+      "quantity_available": 800,
+      "section": "Suite Level"
+    },
+    {
+      "id": "TKT179",
+      "event_id": "EVT046",
+      "name": "Reserved Seating",
+      "price": 75.0,
+      "quantity_total": 6000,
+      "quantity_available": 3500,
+      "section": "Upper Deck"
+    },
+    {
+      "id": "TKT180",
+      "event_id": "EVT046",
+      "name": "Reserved Seating",
+      "price": 195.0,
+      "quantity_total": 10000,
+      "quantity_available": 5800,
+      "section": "Lower Level"
+    },
+    {
+      "id": "TKT181",
+      "event_id": "EVT046",
+      "name": "Premium Reserved",
+      "price": 325.0,
+      "quantity_total": 4000,
+      "quantity_available": 2100,
+      "section": "Terrace Reserved"
+    },
+    {
+      "id": "TKT182",
+      "event_id": "EVT046",
+      "name": "VIP Package",
+      "price": 425.0,
+      "quantity_total": 1500,
+      "quantity_available": 700,
+      "section": "Wrigley Suite"
+    },
+    {
+      "id": "TKT183",
+      "event_id": "EVT047",
+      "name": "Reserved Seating",
+      "price": 85.0,
+      "quantity_total": 4000,
+      "quantity_available": 4000,
+      "section": "Upper Deck"
+    },
+    {
+      "id": "TKT184",
+      "event_id": "EVT047",
+      "name": "Reserved Seating",
+      "price": 215.0,
+      "quantity_total": 5000,
+      "quantity_available": 5000,
+      "section": "Field Level"
+    },
+    {
+      "id": "TKT185",
+      "event_id": "EVT047",
+      "name": "Premium Reserved",
+      "price": 345.0,
+      "quantity_total": 2500,
+      "quantity_available": 2500,
+      "section": "Champions Suite"
+    },
+    {
+      "id": "TKT186",
+      "event_id": "EVT047",
+      "name": "VIP Package",
+      "price": 475.0,
+      "quantity_total": 1000,
+      "quantity_available": 1000,
+      "section": "Legends Seats"
+    },
+    {
+      "id": "TKT187",
+      "event_id": "EVT048",
+      "name": "Reserved Seating",
+      "price": 125.0,
+      "quantity_total": 4000,
+      "quantity_available": 4000,
+      "section": "Upper Level"
+    },
+    {
+      "id": "TKT188",
+      "event_id": "EVT048",
+      "name": "Reserved Seating",
+      "price": 285.0,
+      "quantity_total": 5000,
+      "quantity_available": 5000,
+      "section": "Lower Level"
+    },
+    {
+      "id": "TKT189",
+      "event_id": "EVT048",
+      "name": "Premium Reserved",
+      "price": 450.0,
+      "quantity_total": 2500,
+      "quantity_available": 2500,
+      "section": "Premier Seats"
+    },
+    {
+      "id": "TKT190",
+      "event_id": "EVT048",
+      "name": "VIP Package",
+      "price": 650.0,
+      "quantity_total": 800,
+      "quantity_available": 800,
+      "section": "Courtside Club"
+    },
+    {
+      "id": "TKT191",
+      "event_id": "EVT049",
+      "name": "Reserved Seating",
+      "price": 55.0,
+      "quantity_total": 3000,
+      "quantity_available": 1800,
+      "section": "Upper Level"
+    },
+    {
+      "id": "TKT192",
+      "event_id": "EVT049",
+      "name": "Reserved Seating",
+      "price": 135.0,
+      "quantity_total": 4500,
+      "quantity_available": 2500,
+      "section": "Lower Level"
+    },
+    {
+      "id": "TKT193",
+      "event_id": "EVT049",
+      "name": "Premium Reserved",
+      "price": 235.0,
+      "quantity_total": 2000,
+      "quantity_available": 1100,
+      "section": "Premier Seats"
+    },
+    {
+      "id": "TKT194",
+      "event_id": "EVT049",
+      "name": "VIP Package",
+      "price": 350.0,
+      "quantity_total": 600,
+      "quantity_available": 300,
+      "section": "Courtside Club"
+    },
+    {
+      "id": "TKT195",
+      "event_id": "EVT050",
+      "name": "Reserved Seating",
+      "price": 45.0,
+      "quantity_total": 4000,
+      "quantity_available": 0,
+      "section": "Upper Deck"
+    },
+    {
+      "id": "TKT196",
+      "event_id": "EVT050",
+      "name": "Reserved Seating",
+      "price": 130.0,
+      "quantity_total": 5000,
+      "quantity_available": 0,
+      "section": "Field Level"
+    },
+    {
+      "id": "TKT197",
+      "event_id": "EVT050",
+      "name": "Premium Reserved",
+      "price": 210.0,
+      "quantity_total": 2500,
+      "quantity_available": 0,
+      "section": "Champions Suite"
+    },
+    {
+      "id": "TKT198",
+      "event_id": "EVT050",
+      "name": "VIP Package",
+      "price": 300.0,
+      "quantity_total": 1000,
+      "quantity_available": 0,
+      "section": "Legends Seats"
+    },
+    {
+      "id": "TKT199",
+      "event_id": "EVT051",
+      "name": "Reserved Seating",
+      "price": 40.0,
+      "quantity_total": 5000,
+      "quantity_available": 380,
+      "section": "Upper Deck"
+    },
+    {
+      "id": "TKT200",
+      "event_id": "EVT051",
+      "name": "Reserved Seating",
+      "price": 110.0,
+      "quantity_total": 8000,
+      "quantity_available": 520,
+      "section": "Grandstand"
+    },
+    {
+      "id": "TKT201",
+      "event_id": "EVT051",
+      "name": "Premium Reserved",
+      "price": 195.0,
+      "quantity_total": 3000,
+      "quantity_available": 150,
+      "section": "Pavilion Box"
+    },
+    {
+      "id": "TKT202",
+      "event_id": "EVT051",
+      "name": "VIP Package",
+      "price": 275.0,
+      "quantity_total": 1500,
+      "quantity_available": 60,
+      "section": "Monster Seats"
+    },
+    {
+      "id": "TKT203",
+      "event_id": "EVT052",
+      "name": "Reserved Seating",
+      "price": 22.0,
+      "quantity_total": 3000,
+      "quantity_available": 2000,
+      "section": "Upper Deck"
+    },
+    {
+      "id": "TKT204",
+      "event_id": "EVT052",
+      "name": "Reserved Seating",
+      "price": 75.0,
+      "quantity_total": 5000,
+      "quantity_available": 3500,
+      "section": "Lower Level"
+    },
+    {
+      "id": "TKT205",
+      "event_id": "EVT052",
+      "name": "Premium Reserved",
+      "price": 125.0,
+      "quantity_total": 2500,
+      "quantity_available": 1800,
+      "section": "Club Level"
+    },
+    {
+      "id": "TKT206",
+      "event_id": "EVT052",
+      "name": "VIP Package",
+      "price": 175.0,
+      "quantity_total": 1000,
+      "quantity_available": 680,
+      "section": "Crawford Boxes"
+    },
+    {
+      "id": "TKT207",
+      "event_id": "EVT053",
+      "name": "Reserved Seating",
+      "price": 110.0,
+      "quantity_total": 8000,
+      "quantity_available": 4500,
+      "section": "Upper Level"
+    },
+    {
+      "id": "TKT208",
+      "event_id": "EVT053",
+      "name": "Reserved Seating",
+      "price": 250.0,
+      "quantity_total": 12000,
+      "quantity_available": 6800,
+      "section": "Lower Level"
+    },
+    {
+      "id": "TKT209",
+      "event_id": "EVT053",
+      "name": "Premium Reserved",
+      "price": 400.0,
+      "quantity_total": 5000,
+      "quantity_available": 2600,
+      "section": "Club Level"
+    },
+    {
+      "id": "TKT210",
+      "event_id": "EVT053",
+      "name": "VIP Package",
+      "price": 575.0,
+      "quantity_total": 2000,
+      "quantity_available": 950,
+      "section": "Suite Level"
+    },
+    {
+      "id": "TKT211",
+      "event_id": "EVT054",
+      "name": "Reserved Seating",
+      "price": 80.0,
+      "quantity_total": 8000,
+      "quantity_available": 8000,
+      "section": "Upper Level"
+    },
+    {
+      "id": "TKT212",
+      "event_id": "EVT054",
+      "name": "Reserved Seating",
+      "price": 185.0,
+      "quantity_total": 12000,
+      "quantity_available": 12000,
+      "section": "Lower Level"
+    },
+    {
+      "id": "TKT213",
+      "event_id": "EVT054",
+      "name": "Premium Reserved",
+      "price": 300.0,
+      "quantity_total": 5000,
+      "quantity_available": 5000,
+      "section": "Club Level"
+    },
+    {
+      "id": "TKT214",
+      "event_id": "EVT054",
+      "name": "VIP Package",
+      "price": 400.0,
+      "quantity_total": 2000,
+      "quantity_available": 2000,
+      "section": "Suite Level"
+    },
+    {
+      "id": "TKT215",
+      "event_id": "EVT055",
+      "name": "Reserved Seating",
+      "price": 45.0,
+      "quantity_total": 3500,
+      "quantity_available": 3500,
+      "section": "Upper Level"
+    },
+    {
+      "id": "TKT216",
+      "event_id": "EVT055",
+      "name": "Reserved Seating",
+      "price": 125.0,
+      "quantity_total": 5000,
+      "quantity_available": 5000,
+      "section": "Lower Level"
+    },
+    {
+      "id": "TKT217",
+      "event_id": "EVT055",
+      "name": "Premium Reserved",
+      "price": 225.0,
+      "quantity_total": 2500,
+      "quantity_available": 2500,
+      "section": "Premier Seats"
+    },
+    {
+      "id": "TKT218",
+      "event_id": "EVT055",
+      "name": "VIP Package",
+      "price": 325.0,
+      "quantity_total": 800,
+      "quantity_available": 800,
+      "section": "Courtside Club"
+    },
+    {
+      "id": "TKT219",
+      "event_id": "EVT056",
+      "name": "Orchestra",
+      "price": 149.0,
+      "quantity_total": 1200,
+      "quantity_available": 650,
+      "section": "Orchestra"
+    },
+    {
+      "id": "TKT220",
+      "event_id": "EVT056",
+      "name": "Mezzanine",
+      "price": 199.0,
+      "quantity_total": 1000,
+      "quantity_available": 520,
+      "section": "Front Mezzanine"
+    },
+    {
+      "id": "TKT221",
+      "event_id": "EVT056",
+      "name": "Premium Reserved",
+      "price": 299.0,
+      "quantity_total": 800,
+      "quantity_available": 380,
+      "section": "Rear Mezzanine"
+    },
+    {
+      "id": "TKT222",
+      "event_id": "EVT056",
+      "name": "VIP Package",
+      "price": 399.0,
+      "quantity_total": 400,
+      "quantity_available": 150,
+      "section": "VIP Box"
+    },
+    {
+      "id": "TKT223",
+      "event_id": "EVT057",
+      "name": "Orchestra",
+      "price": 149.0,
+      "quantity_total": 1200,
+      "quantity_available": 580,
+      "section": "Orchestra"
+    },
+    {
+      "id": "TKT224",
+      "event_id": "EVT057",
+      "name": "Mezzanine",
+      "price": 199.0,
+      "quantity_total": 1000,
+      "quantity_available": 450,
+      "section": "Front Mezzanine"
+    },
+    {
+      "id": "TKT225",
+      "event_id": "EVT057",
+      "name": "Premium Reserved",
+      "price": 299.0,
+      "quantity_total": 800,
+      "quantity_available": 350,
+      "section": "Rear Mezzanine"
+    },
+    {
+      "id": "TKT226",
+      "event_id": "EVT057",
+      "name": "VIP Package",
+      "price": 399.0,
+      "quantity_total": 400,
+      "quantity_available": 120,
+      "section": "VIP Box"
+    },
+    {
+      "id": "TKT227",
+      "event_id": "EVT058",
+      "name": "Orchestra",
+      "price": 149.0,
+      "quantity_total": 1200,
+      "quantity_available": 700,
+      "section": "Orchestra"
+    },
+    {
+      "id": "TKT228",
+      "event_id": "EVT058",
+      "name": "Mezzanine",
+      "price": 199.0,
+      "quantity_total": 1000,
+      "quantity_available": 580,
+      "section": "Front Mezzanine"
+    },
+    {
+      "id": "TKT229",
+      "event_id": "EVT058",
+      "name": "Premium Reserved",
+      "price": 299.0,
+      "quantity_total": 800,
+      "quantity_available": 420,
+      "section": "Rear Mezzanine"
+    },
+    {
+      "id": "TKT230",
+      "event_id": "EVT058",
+      "name": "VIP Package",
+      "price": 399.0,
+      "quantity_total": 400,
+      "quantity_available": 180,
+      "section": "VIP Box"
+    },
+    {
+      "id": "TKT231",
+      "event_id": "EVT059",
+      "name": "Orchestra",
+      "price": 149.0,
+      "quantity_total": 1200,
+      "quantity_available": 180,
+      "section": "Orchestra"
+    },
+    {
+      "id": "TKT232",
+      "event_id": "EVT059",
+      "name": "Mezzanine",
+      "price": 199.0,
+      "quantity_total": 1000,
+      "quantity_available": 120,
+      "section": "Front Mezzanine"
+    },
+    {
+      "id": "TKT233",
+      "event_id": "EVT059",
+      "name": "Premium Reserved",
+      "price": 299.0,
+      "quantity_total": 800,
+      "quantity_available": 65,
+      "section": "Rear Mezzanine"
+    },
+    {
+      "id": "TKT234",
+      "event_id": "EVT059",
+      "name": "VIP Package",
+      "price": 399.0,
+      "quantity_total": 400,
+      "quantity_available": 20,
+      "section": "VIP Box"
+    },
+    {
+      "id": "TKT235",
+      "event_id": "EVT060",
+      "name": "Orchestra",
+      "price": 69.0,
+      "quantity_total": 800,
+      "quantity_available": 450,
+      "section": "Orchestra"
+    },
+    {
+      "id": "TKT236",
+      "event_id": "EVT060",
+      "name": "Mezzanine",
+      "price": 129.0,
+      "quantity_total": 700,
+      "quantity_available": 400,
+      "section": "Front Mezzanine"
+    },
+    {
+      "id": "TKT237",
+      "event_id": "EVT060",
+      "name": "Premium Reserved",
+      "price": 219.0,
+      "quantity_total": 500,
+      "quantity_available": 280,
+      "section": "Rear Mezzanine"
+    },
+    {
+      "id": "TKT238",
+      "event_id": "EVT060",
+      "name": "VIP Package",
+      "price": 299.0,
+      "quantity_total": 250,
+      "quantity_available": 120,
+      "section": "VIP Box"
+    },
+    {
+      "id": "TKT239",
+      "event_id": "EVT061",
+      "name": "Orchestra",
+      "price": 69.0,
+      "quantity_total": 800,
+      "quantity_available": 420,
+      "section": "Orchestra"
+    },
+    {
+      "id": "TKT240",
+      "event_id": "EVT061",
+      "name": "Mezzanine",
+      "price": 129.0,
+      "quantity_total": 700,
+      "quantity_available": 380,
+      "section": "Front Mezzanine"
+    },
+    {
+      "id": "TKT241",
+      "event_id": "EVT061",
+      "name": "Premium Reserved",
+      "price": 219.0,
+      "quantity_total": 500,
+      "quantity_available": 260,
+      "section": "Rear Mezzanine"
+    },
+    {
+      "id": "TKT242",
+      "event_id": "EVT061",
+      "name": "VIP Package",
+      "price": 299.0,
+      "quantity_total": 250,
+      "quantity_available": 100,
+      "section": "VIP Box"
+    },
+    {
+      "id": "TKT243",
+      "event_id": "EVT062",
+      "name": "Orchestra",
+      "price": 79.0,
+      "quantity_total": 1200,
+      "quantity_available": 680,
+      "section": "Orchestra"
+    },
+    {
+      "id": "TKT244",
+      "event_id": "EVT062",
+      "name": "Mezzanine",
+      "price": 149.0,
+      "quantity_total": 1000,
+      "quantity_available": 580,
+      "section": "Front Mezzanine"
+    },
+    {
+      "id": "TKT245",
+      "event_id": "EVT062",
+      "name": "Premium Reserved",
+      "price": 249.0,
+      "quantity_total": 800,
+      "quantity_available": 450,
+      "section": "Rear Mezzanine"
+    },
+    {
+      "id": "TKT246",
+      "event_id": "EVT062",
+      "name": "VIP Package",
+      "price": 349.0,
+      "quantity_total": 400,
+      "quantity_available": 200,
+      "section": "VIP Box"
+    },
+    {
+      "id": "TKT247",
+      "event_id": "EVT063",
+      "name": "Orchestra",
+      "price": 79.0,
+      "quantity_total": 1200,
+      "quantity_available": 700,
+      "section": "Orchestra"
+    },
+    {
+      "id": "TKT248",
+      "event_id": "EVT063",
+      "name": "Mezzanine",
+      "price": 149.0,
+      "quantity_total": 1000,
+      "quantity_available": 600,
+      "section": "Front Mezzanine"
+    },
+    {
+      "id": "TKT249",
+      "event_id": "EVT063",
+      "name": "Premium Reserved",
+      "price": 245.0,
+      "quantity_total": 800,
+      "quantity_available": 450,
+      "section": "Rear Mezzanine"
+    },
+    {
+      "id": "TKT250",
+      "event_id": "EVT063",
+      "name": "VIP Package",
+      "price": 325.0,
+      "quantity_total": 400,
+      "quantity_available": 200,
+      "section": "VIP Box"
+    },
+    {
+      "id": "TKT251",
+      "event_id": "EVT064",
+      "name": "Orchestra",
+      "price": 79.0,
+      "quantity_total": 1200,
+      "quantity_available": 650,
+      "section": "Orchestra"
+    },
+    {
+      "id": "TKT252",
+      "event_id": "EVT064",
+      "name": "Mezzanine",
+      "price": 149.0,
+      "quantity_total": 1000,
+      "quantity_available": 550,
+      "section": "Front Mezzanine"
+    },
+    {
+      "id": "TKT253",
+      "event_id": "EVT064",
+      "name": "Premium Reserved",
+      "price": 245.0,
+      "quantity_total": 800,
+      "quantity_available": 420,
+      "section": "Rear Mezzanine"
+    },
+    {
+      "id": "TKT254",
+      "event_id": "EVT064",
+      "name": "VIP Package",
+      "price": 325.0,
+      "quantity_total": 400,
+      "quantity_available": 180,
+      "section": "VIP Box"
+    },
+    {
+      "id": "TKT255",
+      "event_id": "EVT065",
+      "name": "Orchestra",
+      "price": 69.0,
+      "quantity_total": 800,
+      "quantity_available": 480,
+      "section": "Orchestra"
+    },
+    {
+      "id": "TKT256",
+      "event_id": "EVT065",
+      "name": "Mezzanine",
+      "price": 129.0,
+      "quantity_total": 700,
+      "quantity_available": 420,
+      "section": "Front Mezzanine"
+    },
+    {
+      "id": "TKT257",
+      "event_id": "EVT065",
+      "name": "Premium Reserved",
+      "price": 219.0,
+      "quantity_total": 500,
+      "quantity_available": 300,
+      "section": "Rear Mezzanine"
+    },
+    {
+      "id": "TKT258",
+      "event_id": "EVT065",
+      "name": "VIP Package",
+      "price": 299.0,
+      "quantity_total": 250,
+      "quantity_available": 130,
+      "section": "VIP Box"
+    },
+    {
+      "id": "TKT259",
+      "event_id": "EVT066",
+      "name": "Orchestra",
+      "price": 49.0,
+      "quantity_total": 500,
+      "quantity_available": 280,
+      "section": "Orchestra"
+    },
+    {
+      "id": "TKT260",
+      "event_id": "EVT066",
+      "name": "Mezzanine",
+      "price": 89.0,
+      "quantity_total": 400,
+      "quantity_available": 220,
+      "section": "Balcony"
+    },
+    {
+      "id": "TKT261",
+      "event_id": "EVT066",
+      "name": "VIP Package",
+      "price": 175.0,
+      "quantity_total": 200,
+      "quantity_available": 90,
+      "section": "VIP Box"
+    },
+    {
+      "id": "TKT262",
+      "event_id": "EVT067",
+      "name": "Orchestra",
+      "price": 49.0,
+      "quantity_total": 500,
+      "quantity_available": 250,
+      "section": "Orchestra"
+    },
+    {
+      "id": "TKT263",
+      "event_id": "EVT067",
+      "name": "Mezzanine",
+      "price": 89.0,
+      "quantity_total": 400,
+      "quantity_available": 200,
+      "section": "Balcony"
+    },
+    {
+      "id": "TKT264",
+      "event_id": "EVT067",
+      "name": "VIP Package",
+      "price": 175.0,
+      "quantity_total": 200,
+      "quantity_available": 80,
+      "section": "VIP Box"
+    },
+    {
+      "id": "TKT265",
+      "event_id": "EVT068",
+      "name": "Orchestra",
+      "price": 55.0,
+      "quantity_total": 1000,
+      "quantity_available": 600,
+      "section": "Orchestra"
+    },
+    {
+      "id": "TKT266",
+      "event_id": "EVT068",
+      "name": "Mezzanine",
+      "price": 99.0,
+      "quantity_total": 800,
+      "quantity_available": 480,
+      "section": "Mezzanine"
+    },
+    {
+      "id": "TKT267",
+      "event_id": "EVT068",
+      "name": "VIP Package",
+      "price": 189.0,
+      "quantity_total": 400,
+      "quantity_available": 200,
+      "section": "VIP Lounge"
+    },
+    {
+      "id": "TKT268",
+      "event_id": "EVT069",
+      "name": "Orchestra",
+      "price": 89.0,
+      "quantity_total": 500,
+      "quantity_available": 500,
+      "section": "Orchestra"
+    },
+    {
+      "id": "TKT269",
+      "event_id": "EVT069",
+      "name": "Mezzanine",
+      "price": 169.0,
+      "quantity_total": 400,
+      "quantity_available": 400,
+      "section": "Balcony"
+    },
+    {
+      "id": "TKT270",
+      "event_id": "EVT069",
+      "name": "VIP Package",
+      "price": 375.0,
+      "quantity_total": 200,
+      "quantity_available": 200,
+      "section": "VIP Box"
+    },
+    {
+      "id": "TKT271",
+      "event_id": "EVT070",
+      "name": "Orchestra",
+      "price": 65.0,
+      "quantity_total": 500,
+      "quantity_available": 500,
+      "section": "Orchestra"
+    },
+    {
+      "id": "TKT272",
+      "event_id": "EVT070",
+      "name": "Mezzanine",
+      "price": 129.0,
+      "quantity_total": 400,
+      "quantity_available": 400,
+      "section": "Balcony"
+    },
+    {
+      "id": "TKT273",
+      "event_id": "EVT070",
+      "name": "VIP Package",
+      "price": 279.0,
+      "quantity_total": 200,
+      "quantity_available": 200,
+      "section": "VIP Box"
+    },
+    {
+      "id": "TKT274",
+      "event_id": "EVT071",
+      "name": "Orchestra",
+      "price": 55.0,
+      "quantity_total": 1200,
+      "quantity_available": 680,
+      "section": "Orchestra"
+    },
+    {
+      "id": "TKT275",
+      "event_id": "EVT071",
+      "name": "Mezzanine",
+      "price": 99.0,
+      "quantity_total": 1000,
+      "quantity_available": 550,
+      "section": "Mezzanine"
+    },
+    {
+      "id": "TKT276",
+      "event_id": "EVT071",
+      "name": "VIP Package",
+      "price": 149.0,
+      "quantity_total": 500,
+      "quantity_available": 250,
+      "section": "VIP Suite"
+    },
+    {
+      "id": "TKT277",
+      "event_id": "EVT072",
+      "name": "Orchestra",
+      "price": 55.0,
+      "quantity_total": 1200,
+      "quantity_available": 0,
+      "section": "Orchestra"
+    },
+    {
+      "id": "TKT278",
+      "event_id": "EVT072",
+      "name": "Mezzanine",
+      "price": 99.0,
+      "quantity_total": 1000,
+      "quantity_available": 0,
+      "section": "Mezzanine"
+    },
+    {
+      "id": "TKT279",
+      "event_id": "EVT072",
+      "name": "VIP Package",
+      "price": 149.0,
+      "quantity_total": 500,
+      "quantity_available": 0,
+      "section": "VIP Suite"
+    },
+    {
+      "id": "TKT280",
+      "event_id": "EVT073",
+      "name": "General Admission",
+      "price": 49.5,
+      "quantity_total": 1000,
+      "quantity_available": 580,
+      "section": "Floor GA"
+    },
+    {
+      "id": "TKT281",
+      "event_id": "EVT073",
+      "name": "Reserved Seating",
+      "price": 89.0,
+      "quantity_total": 2000,
+      "quantity_available": 1200,
+      "section": "Orchestra"
+    },
+    {
+      "id": "TKT282",
+      "event_id": "EVT073",
+      "name": "VIP Package",
+      "price": 135.0,
+      "quantity_total": 400,
+      "quantity_available": 200,
+      "section": "VIP Lounge"
+    },
+    {
+      "id": "TKT283",
+      "event_id": "EVT074",
+      "name": "Orchestra",
+      "price": 45.0,
+      "quantity_total": 500,
+      "quantity_available": 300,
+      "section": "Orchestra"
+    },
+    {
+      "id": "TKT284",
+      "event_id": "EVT074",
+      "name": "Mezzanine",
+      "price": 79.0,
+      "quantity_total": 400,
+      "quantity_available": 250,
+      "section": "Balcony"
+    },
+    {
+      "id": "TKT285",
+      "event_id": "EVT074",
+      "name": "VIP Package",
+      "price": 125.0,
+      "quantity_total": 200,
+      "quantity_available": 100,
+      "section": "VIP Box"
+    },
+    {
+      "id": "TKT286",
+      "event_id": "EVT075",
+      "name": "Orchestra",
+      "price": 45.0,
+      "quantity_total": 800,
+      "quantity_available": 500,
+      "section": "Orchestra"
+    },
+    {
+      "id": "TKT287",
+      "event_id": "EVT075",
+      "name": "Mezzanine",
+      "price": 79.0,
+      "quantity_total": 700,
+      "quantity_available": 420,
+      "section": "Mezzanine"
+    },
+    {
+      "id": "TKT288",
+      "event_id": "EVT075",
+      "name": "VIP Package",
+      "price": 125.0,
+      "quantity_total": 350,
+      "quantity_available": 180,
+      "section": "VIP Box"
+    },
+    {
+      "id": "TKT289",
+      "event_id": "EVT076",
+      "name": "General Admission",
+      "price": 49.5,
+      "quantity_total": 2000,
+      "quantity_available": 1200,
+      "section": "Floor GA"
+    },
+    {
+      "id": "TKT290",
+      "event_id": "EVT076",
+      "name": "Reserved Seating",
+      "price": 99.0,
+      "quantity_total": 4000,
+      "quantity_available": 2500,
+      "section": "Lower Bowl"
+    },
+    {
+      "id": "TKT291",
+      "event_id": "EVT076",
+      "name": "VIP Package",
+      "price": 175.0,
+      "quantity_total": 800,
+      "quantity_available": 400,
+      "section": "VIP Suite"
+    },
+    {
+      "id": "TKT292",
+      "event_id": "EVT077",
+      "name": "General Admission",
+      "price": 59.0,
+      "quantity_total": 400,
+      "quantity_available": 220,
+      "section": "Floor Standing"
+    },
+    {
+      "id": "TKT293",
+      "event_id": "EVT077",
+      "name": "Reserved Seating",
+      "price": 115.0,
+      "quantity_total": 600,
+      "quantity_available": 350,
+      "section": "Balcony"
+    },
+    {
+      "id": "TKT294",
+      "event_id": "EVT077",
+      "name": "VIP Package",
+      "price": 185.0,
+      "quantity_total": 200,
+      "quantity_available": 100,
+      "section": "VIP Lounge"
+    },
+    {
+      "id": "TKT295",
+      "event_id": "EVT078",
+      "name": "General Admission",
+      "price": 45.0,
+      "quantity_total": 1000,
+      "quantity_available": 600,
+      "section": "Floor GA"
+    },
+    {
+      "id": "TKT296",
+      "event_id": "EVT078",
+      "name": "Reserved Seating",
+      "price": 85.0,
+      "quantity_total": 2000,
+      "quantity_available": 1300,
+      "section": "Orchestra"
+    },
+    {
+      "id": "TKT297",
+      "event_id": "EVT078",
+      "name": "VIP Package",
+      "price": 125.0,
+      "quantity_total": 400,
+      "quantity_available": 220,
+      "section": "VIP Lounge"
+    },
+    {
+      "id": "TKT298",
+      "event_id": "EVT079",
+      "name": "General Admission",
+      "price": 55.0,
+      "quantity_total": 3000,
+      "quantity_available": 1800,
+      "section": "Floor GA"
+    },
+    {
+      "id": "TKT299",
+      "event_id": "EVT079",
+      "name": "Reserved Seating",
+      "price": 99.0,
+      "quantity_total": 6000,
+      "quantity_available": 3800,
+      "section": "Lower Bowl"
+    },
+    {
+      "id": "TKT300",
+      "event_id": "EVT079",
+      "name": "VIP Package",
+      "price": 149.0,
+      "quantity_total": 1000,
+      "quantity_available": 550,
+      "section": "VIP Suite"
+    },
+    {
+      "id": "TKT301",
+      "event_id": "EVT080",
+      "name": "General Admission",
+      "price": 49.5,
+      "quantity_total": 800,
+      "quantity_available": 800,
+      "section": "Floor GA"
+    },
+    {
+      "id": "TKT302",
+      "event_id": "EVT080",
+      "name": "Reserved Seating",
+      "price": 89.0,
+      "quantity_total": 1500,
+      "quantity_available": 1500,
+      "section": "Orchestra"
+    },
+    {
+      "id": "TKT303",
+      "event_id": "EVT080",
+      "name": "VIP Package",
+      "price": 135.0,
+      "quantity_total": 400,
+      "quantity_available": 400,
+      "section": "VIP Box"
+    },
+    {
+      "id": "TKT304",
+      "event_id": "EVT081",
+      "name": "General Admission",
+      "price": 25.0,
+      "quantity_total": 3000,
+      "quantity_available": 1800,
+      "section": "General Seating"
+    },
+    {
+      "id": "TKT305",
+      "event_id": "EVT081",
+      "name": "Reserved Seating",
+      "price": 55.0,
+      "quantity_total": 6000,
+      "quantity_available": 3500,
+      "section": "Lower Level"
+    },
+    {
+      "id": "TKT306",
+      "event_id": "EVT081",
+      "name": "Premium Reserved",
+      "price": 79.0,
+      "quantity_total": 2000,
+      "quantity_available": 1100,
+      "section": "Floor Seats"
+    },
+    {
+      "id": "TKT307",
+      "event_id": "EVT081",
+      "name": "VIP Package",
+      "price": 95.0,
+      "quantity_total": 800,
+      "quantity_available": 400,
+      "section": "VIP Experience"
+    },
+    {
+      "id": "TKT308",
+      "event_id": "EVT082",
+      "name": "General Admission",
+      "price": 25.0,
+      "quantity_total": 3000,
+      "quantity_available": 1600,
+      "section": "General Seating"
+    },
+    {
+      "id": "TKT309",
+      "event_id": "EVT082",
+      "name": "Reserved Seating",
+      "price": 55.0,
+      "quantity_total": 6000,
+      "quantity_available": 3200,
+      "section": "Lower Level"
+    },
+    {
+      "id": "TKT310",
+      "event_id": "EVT082",
+      "name": "Premium Reserved",
+      "price": 79.0,
+      "quantity_total": 2000,
+      "quantity_available": 1000,
+      "section": "Floor Seats"
+    },
+    {
+      "id": "TKT311",
+      "event_id": "EVT082",
+      "name": "VIP Package",
+      "price": 95.0,
+      "quantity_total": 800,
+      "quantity_available": 350,
+      "section": "VIP Experience"
+    },
+    {
+      "id": "TKT312",
+      "event_id": "EVT083",
+      "name": "General Admission",
+      "price": 25.0,
+      "quantity_total": 3000,
+      "quantity_available": 2000,
+      "section": "General Seating"
+    },
+    {
+      "id": "TKT313",
+      "event_id": "EVT083",
+      "name": "Reserved Seating",
+      "price": 55.0,
+      "quantity_total": 6000,
+      "quantity_available": 3800,
+      "section": "Lower Level"
+    },
+    {
+      "id": "TKT314",
+      "event_id": "EVT083",
+      "name": "Premium Reserved",
+      "price": 79.0,
+      "quantity_total": 2000,
+      "quantity_available": 1200,
+      "section": "Floor Seats"
+    },
+    {
+      "id": "TKT315",
+      "event_id": "EVT083",
+      "name": "VIP Package",
+      "price": 95.0,
+      "quantity_total": 800,
+      "quantity_available": 450,
+      "section": "VIP Experience"
+    },
+    {
+      "id": "TKT316",
+      "event_id": "EVT084",
+      "name": "Reserved Seating",
+      "price": 69.0,
+      "quantity_total": 3000,
+      "quantity_available": 1800,
+      "section": "Standard"
+    },
+    {
+      "id": "TKT317",
+      "event_id": "EVT084",
+      "name": "Premium Reserved",
+      "price": 129.0,
+      "quantity_total": 2000,
+      "quantity_available": 1100,
+      "section": "Premium"
+    },
+    {
+      "id": "TKT318",
+      "event_id": "EVT084",
+      "name": "VIP Package",
+      "price": 195.0,
+      "quantity_total": 800,
+      "quantity_available": 400,
+      "section": "VIP Experience"
+    },
+    {
+      "id": "TKT319",
+      "event_id": "EVT085",
+      "name": "Reserved Seating",
+      "price": 69.0,
+      "quantity_total": 3000,
+      "quantity_available": 2000,
+      "section": "Standard"
+    },
+    {
+      "id": "TKT320",
+      "event_id": "EVT085",
+      "name": "Premium Reserved",
+      "price": 129.0,
+      "quantity_total": 2000,
+      "quantity_available": 1200,
+      "section": "Premium"
+    },
+    {
+      "id": "TKT321",
+      "event_id": "EVT085",
+      "name": "VIP Package",
+      "price": 195.0,
+      "quantity_total": 800,
+      "quantity_available": 450,
+      "section": "VIP Experience"
+    },
+    {
+      "id": "TKT322",
+      "event_id": "EVT086",
+      "name": "General Admission",
+      "price": 25.0,
+      "quantity_total": 3000,
+      "quantity_available": 1800,
+      "section": "General Seating"
+    },
+    {
+      "id": "TKT323",
+      "event_id": "EVT086",
+      "name": "Reserved Seating",
+      "price": 49.0,
+      "quantity_total": 5000,
+      "quantity_available": 3000,
+      "section": "Lower Level"
+    },
+    {
+      "id": "TKT324",
+      "event_id": "EVT086",
+      "name": "Premium Reserved",
+      "price": 69.0,
+      "quantity_total": 2000,
+      "quantity_available": 1200,
+      "section": "Floor Seats"
+    },
+    {
+      "id": "TKT325",
+      "event_id": "EVT086",
+      "name": "VIP Package",
+      "price": 89.0,
+      "quantity_total": 800,
+      "quantity_available": 420,
+      "section": "VIP Experience"
+    },
+    {
+      "id": "TKT326",
+      "event_id": "EVT087",
+      "name": "General Admission",
+      "price": 25.0,
+      "quantity_total": 3000,
+      "quantity_available": 450,
+      "section": "General Seating"
+    },
+    {
+      "id": "TKT327",
+      "event_id": "EVT087",
+      "name": "Reserved Seating",
+      "price": 49.0,
+      "quantity_total": 5000,
+      "quantity_available": 620,
+      "section": "Lower Level"
+    },
+    {
+      "id": "TKT328",
+      "event_id": "EVT087",
+      "name": "Premium Reserved",
+      "price": 69.0,
+      "quantity_total": 2000,
+      "quantity_available": 180,
+      "section": "Floor Seats"
+    },
+    {
+      "id": "TKT329",
+      "event_id": "EVT087",
+      "name": "VIP Package",
+      "price": 89.0,
+      "quantity_total": 800,
+      "quantity_available": 55,
+      "section": "VIP Experience"
+    },
+    {
+      "id": "TKT330",
+      "event_id": "EVT088",
+      "name": "Reserved Seating",
+      "price": 75.0,
+      "quantity_total": 1200,
+      "quantity_available": 700,
+      "section": "Orchestra"
+    },
+    {
+      "id": "TKT331",
+      "event_id": "EVT088",
+      "name": "Premium Reserved",
+      "price": 145.0,
+      "quantity_total": 1000,
+      "quantity_available": 580,
+      "section": "Front Mezzanine"
+    },
+    {
+      "id": "TKT332",
+      "event_id": "EVT088",
+      "name": "VIP Package",
+      "price": 225.0,
+      "quantity_total": 500,
+      "quantity_available": 280,
+      "section": "VIP Suite"
+    },
+    {
+      "id": "TKT333",
+      "event_id": "EVT089",
+      "name": "Reserved Seating",
+      "price": 75.0,
+      "quantity_total": 1200,
+      "quantity_available": 750,
+      "section": "Orchestra"
+    },
+    {
+      "id": "TKT334",
+      "event_id": "EVT089",
+      "name": "Premium Reserved",
+      "price": 145.0,
+      "quantity_total": 1000,
+      "quantity_available": 620,
+      "section": "Front Mezzanine"
+    },
+    {
+      "id": "TKT335",
+      "event_id": "EVT089",
+      "name": "VIP Package",
+      "price": 225.0,
+      "quantity_total": 500,
+      "quantity_available": 300,
+      "section": "VIP Suite"
+    },
+    {
+      "id": "TKT336",
+      "event_id": "EVT090",
+      "name": "General Admission",
+      "price": 25.0,
+      "quantity_total": 3000,
+      "quantity_available": 3000,
+      "section": "General Seating"
+    },
+    {
+      "id": "TKT337",
+      "event_id": "EVT090",
+      "name": "Reserved Seating",
+      "price": 49.0,
+      "quantity_total": 5000,
+      "quantity_available": 5000,
+      "section": "Lower Level"
+    },
+    {
+      "id": "TKT338",
+      "event_id": "EVT090",
+      "name": "Premium Reserved",
+      "price": 69.0,
+      "quantity_total": 2000,
+      "quantity_available": 2000,
+      "section": "Floor Seats"
+    },
+    {
+      "id": "TKT339",
+      "event_id": "EVT090",
+      "name": "VIP Package",
+      "price": 89.0,
+      "quantity_total": 800,
+      "quantity_available": 800,
+      "section": "VIP Experience"
+    }
+  ],
+  "orders": [
+    {
+      "id": "ORD001",
+      "user_id": "persona_001",
+      "event_id": "EVT007",
+      "ticket_type_id": "TKT026",
+      "quantity": 2,
+      "subtotal": 258.0,
+      "service_fee": 64.5,
+      "order_processing_fee": 5.95,
+      "total_price": 328.45,
+      "confirmation_code": "TM-A7B3K9",
+      "purchased_at": "2026-01-22T14:30:00"
+    },
+    {
+      "id": "ORD002",
+      "user_id": "persona_001",
+      "event_id": "EVT033",
+      "ticket_type_id": "TKT128",
+      "quantity": 4,
+      "subtotal": 500.0,
+      "service_fee": 125.0,
+      "order_processing_fee": 5.95,
+      "total_price": 630.95,
+      "confirmation_code": "TM-C2D8F1",
+      "purchased_at": "2026-01-15T10:15:00"
+    },
+    {
+      "id": "ORD003",
+      "user_id": "persona_001",
+      "event_id": "EVT056",
+      "ticket_type_id": "TKT219",
+      "quantity": 2,
+      "subtotal": 298.0,
+      "service_fee": 74.5,
+      "order_processing_fee": 5.95,
+      "total_price": 378.45,
+      "confirmation_code": "TM-E4G6H2",
+      "purchased_at": "2026-01-20T09:45:00"
+    },
+    {
+      "id": "ORD004",
+      "user_id": "persona_001",
+      "event_id": "EVT081",
+      "ticket_type_id": "TKT305",
+      "quantity": 3,
+      "subtotal": 165.0,
+      "service_fee": 41.25,
+      "order_processing_fee": 5.95,
+      "total_price": 212.2,
+      "confirmation_code": "TM-J8K1L3",
+      "purchased_at": "2026-01-10T16:20:00"
+    },
+    {
+      "id": "ORD005",
+      "user_id": "persona_001",
+      "event_id": "EVT071",
+      "ticket_type_id": "TKT274",
+      "quantity": 2,
+      "subtotal": 110.0,
+      "service_fee": 27.5,
+      "order_processing_fee": 5.95,
+      "total_price": 143.45,
+      "confirmation_code": "TM-M5N9P4",
+      "purchased_at": "2026-02-01T11:30:00"
+    },
+    {
+      "id": "ORD006",
+      "user_id": "persona_001",
+      "event_id": "EVT024",
+      "ticket_type_id": "TKT092",
+      "quantity": 2,
+      "subtotal": 238.0,
+      "service_fee": 59.5,
+      "order_processing_fee": 5.95,
+      "total_price": 303.45,
+      "confirmation_code": "TM-Q3R7S5",
+      "purchased_at": "2026-03-01T08:00:00"
+    },
+    {
+      "id": "ORD007",
+      "user_id": "persona_001",
+      "event_id": "EVT013",
+      "ticket_type_id": "TKT050",
+      "quantity": 2,
+      "subtotal": 190.0,
+      "service_fee": 47.5,
+      "order_processing_fee": 5.95,
+      "total_price": 243.45,
+      "confirmation_code": "TM-T6U2V8",
+      "purchased_at": "2026-02-05T13:45:00"
+    },
+    {
+      "id": "ORD008",
+      "user_id": "persona_001",
+      "event_id": "EVT039",
+      "ticket_type_id": "TKT153",
+      "quantity": 2,
+      "subtotal": 370.0,
+      "service_fee": 92.5,
+      "order_processing_fee": 5.95,
+      "total_price": 468.45,
+      "confirmation_code": "TM-W1X5Y6",
+      "purchased_at": "2026-02-20T15:00:00"
+    },
+    {
+      "id": "ORD009",
+      "user_id": "persona_001",
+      "event_id": "EVT084",
+      "ticket_type_id": "TKT317",
+      "quantity": 2,
+      "subtotal": 258.0,
+      "service_fee": 64.5,
+      "order_processing_fee": 5.95,
+      "total_price": 328.45,
+      "confirmation_code": "TM-Z9A4B7",
+      "purchased_at": "2026-01-18T12:00:00"
+    },
+    {
+      "id": "ORD010",
+      "user_id": "persona_001",
+      "event_id": "EVT017",
+      "ticket_type_id": "TKT066",
+      "quantity": 3,
+      "subtotal": 387.0,
+      "service_fee": 96.75,
+      "order_processing_fee": 5.95,
+      "total_price": 489.7,
+      "confirmation_code": "TM-D3E8F2",
+      "purchased_at": "2026-03-02T09:30:00"
+    },
+    {
+      "id": "ORD011",
+      "user_id": "persona_001",
+      "event_id": "EVT028",
+      "ticket_type_id": "TKT109",
+      "quantity": 2,
+      "subtotal": 250.0,
+      "service_fee": 62.5,
+      "order_processing_fee": 5.95,
+      "total_price": 318.45,
+      "confirmation_code": "TM-G6H1J9",
+      "purchased_at": "2026-02-10T17:15:00"
+    },
+    {
+      "id": "ORD012",
+      "user_id": "persona_001",
+      "event_id": "EVT074",
+      "ticket_type_id": "TKT283",
+      "quantity": 2,
+      "subtotal": 90.0,
+      "service_fee": 22.5,
+      "order_processing_fee": 5.95,
+      "total_price": 118.45,
+      "confirmation_code": "TM-K4L8M3",
+      "purchased_at": "2026-02-18T14:00:00"
+    },
+    {
+      "id": "ORD013",
+      "user_id": "persona_002",
+      "event_id": "EVT005",
+      "ticket_type_id": "TKT019",
+      "quantity": 2,
+      "subtotal": 398.0,
+      "service_fee": 99.5,
+      "order_processing_fee": 5.95,
+      "total_price": 503.45,
+      "confirmation_code": "TM-MJ01K2",
+      "purchased_at": "2026-02-12T10:30:00"
+    },
+    {
+      "id": "ORD014",
+      "user_id": "persona_002",
+      "event_id": "EVT031",
+      "ticket_type_id": "TKT120",
+      "quantity": 2,
+      "subtotal": 198.0,
+      "service_fee": 49.5,
+      "order_processing_fee": 5.95,
+      "total_price": 253.45,
+      "confirmation_code": "TM-MJ02L4",
+      "purchased_at": "2026-02-18T14:00:00"
+    },
+    {
+      "id": "ORD015",
+      "user_id": "persona_002",
+      "event_id": "EVT037",
+      "ticket_type_id": "TKT144",
+      "quantity": 2,
+      "subtotal": 270.0,
+      "service_fee": 67.5,
+      "order_processing_fee": 5.95,
+      "total_price": 343.45,
+      "confirmation_code": "TM-MJ03M6",
+      "purchased_at": "2026-01-12T09:15:00"
+    },
+    {
+      "id": "ORD016",
+      "user_id": "persona_002",
+      "event_id": "EVT019",
+      "ticket_type_id": "TKT074",
+      "quantity": 2,
+      "subtotal": 230.0,
+      "service_fee": 57.5,
+      "order_processing_fee": 5.95,
+      "total_price": 293.45,
+      "confirmation_code": "TM-MJ04N8",
+      "purchased_at": "2026-01-28T16:45:00"
+    },
+    {
+      "id": "ORD017",
+      "user_id": "persona_009",
+      "event_id": "EVT038",
+      "ticket_type_id": "TKT148",
+      "quantity": 4,
+      "subtotal": 380.0,
+      "service_fee": 95.0,
+      "order_processing_fee": 5.95,
+      "total_price": 480.95,
+      "confirmation_code": "TM-WT01P3",
+      "purchased_at": "2026-01-15T11:00:00"
+    },
+    {
+      "id": "ORD018",
+      "user_id": "persona_009",
+      "event_id": "EVT086",
+      "ticket_type_id": "TKT323",
+      "quantity": 4,
+      "subtotal": 196.0,
+      "service_fee": 49.0,
+      "order_processing_fee": 5.95,
+      "total_price": 250.95,
+      "confirmation_code": "TM-WT02Q5",
+      "purchased_at": "2026-02-05T10:30:00"
+    },
+    {
+      "id": "ORD019",
+      "user_id": "persona_009",
+      "event_id": "EVT074",
+      "ticket_type_id": "TKT284",
+      "quantity": 2,
+      "subtotal": 158.0,
+      "service_fee": 39.5,
+      "order_processing_fee": 5.95,
+      "total_price": 203.45,
+      "confirmation_code": "TM-WT03R7",
+      "purchased_at": "2026-02-20T13:15:00"
+    },
+    {
+      "id": "ORD020",
+      "user_id": "persona_009",
+      "event_id": "EVT045",
+      "ticket_type_id": "TKT176",
+      "quantity": 2,
+      "subtotal": 450.0,
+      "service_fee": 112.5,
+      "order_processing_fee": 5.95,
+      "total_price": 568.45,
+      "confirmation_code": "TM-WT04S9",
+      "purchased_at": "2026-05-05T08:00:00"
+    },
+    {
+      "id": "ORD021",
+      "user_id": "persona_010",
+      "event_id": "EVT003",
+      "ticket_type_id": "TKT011",
+      "quantity": 2,
+      "subtotal": 550.0,
+      "service_fee": 137.5,
+      "order_processing_fee": 5.95,
+      "total_price": 693.45,
+      "confirmation_code": "TM-SL01T2",
+      "purchased_at": "2026-02-03T12:00:00"
+    },
+    {
+      "id": "ORD022",
+      "user_id": "persona_010",
+      "event_id": "EVT060",
+      "ticket_type_id": "TKT236",
+      "quantity": 2,
+      "subtotal": 258.0,
+      "service_fee": 64.5,
+      "order_processing_fee": 5.95,
+      "total_price": 328.45,
+      "confirmation_code": "TM-SL02U4",
+      "purchased_at": "2026-02-08T15:30:00"
+    },
+    {
+      "id": "ORD023",
+      "user_id": "persona_010",
+      "event_id": "EVT077",
+      "ticket_type_id": "TKT293",
+      "quantity": 2,
+      "subtotal": 230.0,
+      "service_fee": 57.5,
+      "order_processing_fee": 5.95,
+      "total_price": 293.45,
+      "confirmation_code": "TM-SL03V6",
+      "purchased_at": "2026-03-18T09:00:00"
+    },
+    {
+      "id": "ORD024",
+      "user_id": "persona_010",
+      "event_id": "EVT088",
+      "ticket_type_id": "TKT331",
+      "quantity": 2,
+      "subtotal": 290.0,
+      "service_fee": 72.5,
+      "order_processing_fee": 5.95,
+      "total_price": 368.45,
+      "confirmation_code": "TM-SL04W8",
+      "purchased_at": "2026-02-20T14:00:00"
+    },
+    {
+      "id": "ORD025",
+      "user_id": "persona_013",
+      "event_id": "EVT038",
+      "ticket_type_id": "TKT149",
+      "quantity": 4,
+      "subtotal": 660.0,
+      "service_fee": 165.0,
+      "order_processing_fee": 5.95,
+      "total_price": 830.95,
+      "confirmation_code": "TM-CM01X1",
+      "purchased_at": "2026-01-14T10:00:00"
+    },
+    {
+      "id": "ORD026",
+      "user_id": "persona_013",
+      "event_id": "EVT009",
+      "ticket_type_id": "TKT034",
+      "quantity": 2,
+      "subtotal": 290.0,
+      "service_fee": 72.5,
+      "order_processing_fee": 5.95,
+      "total_price": 368.45,
+      "confirmation_code": "TM-CM02Y3",
+      "purchased_at": "2026-03-02T11:30:00"
+    },
+    {
+      "id": "ORD027",
+      "user_id": "persona_013",
+      "event_id": "EVT084",
+      "ticket_type_id": "TKT317",
+      "quantity": 2,
+      "subtotal": 258.0,
+      "service_fee": 64.5,
+      "order_processing_fee": 5.95,
+      "total_price": 328.45,
+      "confirmation_code": "TM-CM03Z5",
+      "purchased_at": "2026-01-20T16:00:00"
+    },
+    {
+      "id": "ORD028",
+      "user_id": "persona_013",
+      "event_id": "EVT035",
+      "ticket_type_id": "TKT136",
+      "quantity": 4,
+      "subtotal": 460.0,
+      "service_fee": 115.0,
+      "order_processing_fee": 5.95,
+      "total_price": 580.95,
+      "confirmation_code": "TM-CM04A7",
+      "purchased_at": "2026-01-12T08:45:00"
+    },
+    {
+      "id": "ORD029",
+      "user_id": "persona_013",
+      "event_id": "EVT076",
+      "ticket_type_id": "TKT290",
+      "quantity": 2,
+      "subtotal": 198.0,
+      "service_fee": 49.5,
+      "order_processing_fee": 5.95,
+      "total_price": 253.45,
+      "confirmation_code": "TM-CM05B9",
+      "purchased_at": "2026-03-05T13:00:00"
+    },
+    {
+      "id": "ORD030",
+      "user_id": "persona_014",
+      "event_id": "EVT001",
+      "ticket_type_id": "TKT003",
+      "quantity": 2,
+      "subtotal": 598.0,
+      "service_fee": 149.5,
+      "order_processing_fee": 5.95,
+      "total_price": 753.45,
+      "confirmation_code": "TM-LP01C2",
+      "purchased_at": "2026-01-18T09:00:00"
+    },
+    {
+      "id": "ORD031",
+      "user_id": "persona_014",
+      "event_id": "EVT007",
+      "ticket_type_id": "TKT027",
+      "quantity": 2,
+      "subtotal": 358.0,
+      "service_fee": 89.5,
+      "order_processing_fee": 5.95,
+      "total_price": 453.45,
+      "confirmation_code": "TM-LP02D4",
+      "purchased_at": "2026-01-22T10:30:00"
+    },
+    {
+      "id": "ORD032",
+      "user_id": "persona_014",
+      "event_id": "EVT066",
+      "ticket_type_id": "TKT260",
+      "quantity": 2,
+      "subtotal": 178.0,
+      "service_fee": 44.5,
+      "order_processing_fee": 5.95,
+      "total_price": 228.45,
+      "confirmation_code": "TM-LP03E6",
+      "purchased_at": "2026-01-25T14:00:00"
+    },
+    {
+      "id": "ORD033",
+      "user_id": "persona_014",
+      "event_id": "EVT004",
+      "ticket_type_id": "TKT015",
+      "quantity": 2,
+      "subtotal": 550.0,
+      "service_fee": 137.5,
+      "order_processing_fee": 5.95,
+      "total_price": 693.45,
+      "confirmation_code": "TM-LP04F8",
+      "purchased_at": "2026-02-05T11:15:00"
+    },
+    {
+      "id": "ORD034",
+      "user_id": "persona_016",
+      "event_id": "EVT029",
+      "ticket_type_id": "TKT112",
+      "quantity": 2,
+      "subtotal": 198.0,
+      "service_fee": 49.5,
+      "order_processing_fee": 5.95,
+      "total_price": 253.45,
+      "confirmation_code": "TM-PS01G1",
+      "purchased_at": "2026-03-22T10:00:00"
+    },
+    {
+      "id": "ORD035",
+      "user_id": "persona_016",
+      "event_id": "EVT031",
+      "ticket_type_id": "TKT121",
+      "quantity": 2,
+      "subtotal": 298.0,
+      "service_fee": 74.5,
+      "order_processing_fee": 5.95,
+      "total_price": 378.45,
+      "confirmation_code": "TM-PS02H3",
+      "purchased_at": "2026-02-18T12:30:00"
+    },
+    {
+      "id": "ORD036",
+      "user_id": "persona_016",
+      "event_id": "EVT073",
+      "ticket_type_id": "TKT281",
+      "quantity": 2,
+      "subtotal": 178.0,
+      "service_fee": 44.5,
+      "order_processing_fee": 5.95,
+      "total_price": 228.45,
+      "confirmation_code": "TM-PS03J5",
+      "purchased_at": "2026-02-05T16:00:00"
+    },
+    {
+      "id": "ORD037",
+      "user_id": "persona_016",
+      "event_id": "EVT063",
+      "ticket_type_id": "TKT248",
+      "quantity": 2,
+      "subtotal": 298.0,
+      "service_fee": 74.5,
+      "order_processing_fee": 5.95,
+      "total_price": 378.45,
+      "confirmation_code": "TM-PS04K7",
+      "purchased_at": "2026-02-15T09:45:00"
+    },
+    {
+      "id": "ORD038",
+      "user_id": "persona_022",
+      "event_id": "EVT036",
+      "ticket_type_id": "TKT140",
+      "quantity": 2,
+      "subtotal": 210.0,
+      "service_fee": 52.5,
+      "order_processing_fee": 5.95,
+      "total_price": 268.45,
+      "confirmation_code": "TM-AK01L2",
+      "purchased_at": "2026-01-15T11:00:00"
+    },
+    {
+      "id": "ORD039",
+      "user_id": "persona_022",
+      "event_id": "EVT081",
+      "ticket_type_id": "TKT305",
+      "quantity": 3,
+      "subtotal": 165.0,
+      "service_fee": 41.25,
+      "order_processing_fee": 5.95,
+      "total_price": 212.2,
+      "confirmation_code": "TM-AK02M4",
+      "purchased_at": "2026-01-08T10:00:00"
+    },
+    {
+      "id": "ORD040",
+      "user_id": "persona_022",
+      "event_id": "EVT006",
+      "ticket_type_id": "TKT022",
+      "quantity": 2,
+      "subtotal": 270.0,
+      "service_fee": 67.5,
+      "order_processing_fee": 5.95,
+      "total_price": 343.45,
+      "confirmation_code": "TM-AK03N6",
+      "purchased_at": "2026-02-12T14:30:00"
+    },
+    {
+      "id": "ORD041",
+      "user_id": "persona_022",
+      "event_id": "EVT079",
+      "ticket_type_id": "TKT299",
+      "quantity": 2,
+      "subtotal": 198.0,
+      "service_fee": 49.5,
+      "order_processing_fee": 5.95,
+      "total_price": 253.45,
+      "confirmation_code": "TM-AK04P8",
+      "purchased_at": "2026-05-05T09:00:00"
+    },
+    {
+      "id": "ORD042",
+      "user_id": "persona_023",
+      "event_id": "EVT041",
+      "ticket_type_id": "TKT160",
+      "quantity": 2,
+      "subtotal": 190.0,
+      "service_fee": 47.5,
+      "order_processing_fee": 5.95,
+      "total_price": 243.45,
+      "confirmation_code": "TM-JW01Q1",
+      "purchased_at": "2026-02-18T11:00:00"
+    },
+    {
+      "id": "ORD043",
+      "user_id": "persona_023",
+      "event_id": "EVT005",
+      "ticket_type_id": "TKT017",
+      "quantity": 2,
+      "subtotal": 130.0,
+      "service_fee": 32.5,
+      "order_processing_fee": 5.95,
+      "total_price": 168.45,
+      "confirmation_code": "TM-JW02R3",
+      "purchased_at": "2026-02-12T15:30:00"
+    },
+    {
+      "id": "ORD044",
+      "user_id": "persona_023",
+      "event_id": "EVT028",
+      "ticket_type_id": "TKT107",
+      "quantity": 2,
+      "subtotal": 110.0,
+      "service_fee": 27.5,
+      "order_processing_fee": 5.95,
+      "total_price": 143.45,
+      "confirmation_code": "TM-JW03S5",
+      "purchased_at": "2026-02-05T10:00:00"
+    },
+    {
+      "id": "ORD045",
+      "user_id": "persona_023",
+      "event_id": "EVT073",
+      "ticket_type_id": "TKT280",
+      "quantity": 2,
+      "subtotal": 99.0,
+      "service_fee": 24.75,
+      "order_processing_fee": 5.95,
+      "total_price": 129.7,
+      "confirmation_code": "TM-JW04T7",
+      "purchased_at": "2026-02-03T16:00:00"
+    },
+    {
+      "id": "ORD046",
+      "user_id": "persona_027",
+      "event_id": "EVT041",
+      "ticket_type_id": "TKT161",
+      "quantity": 2,
+      "subtotal": 330.0,
+      "service_fee": 82.5,
+      "order_processing_fee": 5.95,
+      "total_price": 418.45,
+      "confirmation_code": "TM-PM01U2",
+      "purchased_at": "2026-02-20T09:00:00"
+    },
+    {
+      "id": "ORD047",
+      "user_id": "persona_027",
+      "event_id": "EVT042",
+      "ticket_type_id": "TKT165",
+      "quantity": 2,
+      "subtotal": 330.0,
+      "service_fee": 82.5,
+      "order_processing_fee": 5.95,
+      "total_price": 418.45,
+      "confirmation_code": "TM-PM02V4",
+      "purchased_at": "2026-02-20T09:05:00"
+    },
+    {
+      "id": "ORD048",
+      "user_id": "persona_027",
+      "event_id": "EVT028",
+      "ticket_type_id": "TKT109",
+      "quantity": 2,
+      "subtotal": 378.0,
+      "service_fee": 94.5,
+      "order_processing_fee": 5.95,
+      "total_price": 478.45,
+      "confirmation_code": "TM-PM03W6",
+      "purchased_at": "2026-02-03T11:30:00"
+    },
+    {
+      "id": "ORD049",
+      "user_id": "persona_027",
+      "event_id": "EVT046",
+      "ticket_type_id": "TKT180",
+      "quantity": 2,
+      "subtotal": 390.0,
+      "service_fee": 97.5,
+      "order_processing_fee": 5.95,
+      "total_price": 493.45,
+      "confirmation_code": "TM-PM04X8",
+      "purchased_at": "2026-05-05T14:00:00"
+    },
+    {
+      "id": "ORD050",
+      "user_id": "persona_027",
+      "event_id": "EVT075",
+      "ticket_type_id": "TKT287",
+      "quantity": 2,
+      "subtotal": 158.0,
+      "service_fee": 39.5,
+      "order_processing_fee": 5.95,
+      "total_price": 203.45,
+      "confirmation_code": "TM-PM05Y9",
+      "purchased_at": "2026-02-18T13:00:00"
+    },
+    {
+      "id": "ORD051",
+      "user_id": "persona_031",
+      "event_id": "EVT081",
+      "ticket_type_id": "TKT306",
+      "quantity": 4,
+      "subtotal": 316.0,
+      "service_fee": 79.0,
+      "order_processing_fee": 5.95,
+      "total_price": 400.95,
+      "confirmation_code": "TM-JM01Z1",
+      "purchased_at": "2026-01-08T10:30:00"
+    },
+    {
+      "id": "ORD052",
+      "user_id": "persona_031",
+      "event_id": "EVT063",
+      "ticket_type_id": "TKT247",
+      "quantity": 4,
+      "subtotal": 316.0,
+      "service_fee": 79.0,
+      "order_processing_fee": 5.95,
+      "total_price": 400.95,
+      "confirmation_code": "TM-JM02A3",
+      "purchased_at": "2026-02-12T09:00:00"
+    },
+    {
+      "id": "ORD053",
+      "user_id": "persona_031",
+      "event_id": "EVT060",
+      "ticket_type_id": "TKT235",
+      "quantity": 2,
+      "subtotal": 138.0,
+      "service_fee": 34.5,
+      "order_processing_fee": 5.95,
+      "total_price": 178.45,
+      "confirmation_code": "TM-JM03B5",
+      "purchased_at": "2026-02-05T14:15:00"
+    },
+    {
+      "id": "ORD054",
+      "user_id": "persona_031",
+      "event_id": "EVT085",
+      "ticket_type_id": "TKT320",
+      "quantity": 4,
+      "subtotal": 516.0,
+      "service_fee": 129.0,
+      "order_processing_fee": 5.95,
+      "total_price": 650.95,
+      "confirmation_code": "TM-JM04C7",
+      "purchased_at": "2026-01-18T11:00:00"
+    },
+    {
+      "id": "ORD055",
+      "user_id": "persona_031",
+      "event_id": "EVT074",
+      "ticket_type_id": "TKT283",
+      "quantity": 2,
+      "subtotal": 90.0,
+      "service_fee": 22.5,
+      "order_processing_fee": 5.95,
+      "total_price": 118.45,
+      "confirmation_code": "TM-JM05D9",
+      "purchased_at": "2026-02-18T16:30:00"
+    }
+  ]
+}
