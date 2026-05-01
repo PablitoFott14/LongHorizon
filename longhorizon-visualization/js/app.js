@@ -209,9 +209,10 @@ function buildServiceCard(pid, key) {
     '</div>'
   ).join('');
 
-  const spark = sum.sparkValues && sum.sparkValues.length >= 2
-    ? '<div class="svc-spark">'+sparkline(sum.sparkValues, sm.color)+'</div>'
-    : '';
+  const chart = sum.chart ? trendChart(sum.chart, 'card') :
+    (sum.sparkValues && sum.sparkValues.length >= 2
+      ? '<div class="svc-spark">'+sparkline(sum.sparkValues, sm.color)+'</div>'
+      : '');
 
   return '<div class="svc-card" onclick="openServiceModal(\''+pid+'\',\''+key+'\')">' +
     '<div class="svc-card-hdr">' +
@@ -220,7 +221,7 @@ function buildServiceCard(pid, key) {
       '<span class="svc-card-arrow">›</span>' +
     '</div>' +
     '<div class="svc-metrics">'+metrics+'</div>' +
-    spark +
+    chart +
   '</div>';
 }
 
@@ -238,7 +239,9 @@ function getCardSummary(pid, key) {
         {l:'Avg steps',    v:avgSteps.toLocaleString()},
         {l:'Avg calories', v:avgCal.toLocaleString()+' kcal'},
         {l:'Last record',  v:rows[rows.length-1].date},
-      ], sparkValues: rows.slice(-14).map(d=>d.steps||0) };
+      ], chart: lineChartConfig('Steps by day', [
+        {label:'Steps', color:'#22c55e', points:rows.slice(-14).map(d=>({x:d.date, y:d.steps||0}))},
+      ]) };
     }
     case 'whoop': {
       const rec = (D.whoop?.recovery || []).filter(r=>r.persona_id===pid)
@@ -253,7 +256,10 @@ function getCardSummary(pid, key) {
         {l:'Avg recovery',v:avgRec+'%'},
         {l:'Avg HRV',     v:avgHRV+' ms'},
         {l:'Latest',      v:last.recovery_score+'%', accent:col},
-      ], sparkValues: rec.slice(-14).map(r=>r.recovery_score||0) };
+      ], chart: lineChartConfig('Recovery and HRV by day', [
+        {label:'Recovery', color:'#22c55e', points:rec.slice(-14).map(r=>({x:(r.timestamp||'').slice(0,10), y:r.recovery_score||0}))},
+        {label:'HRV', color:'#818cf8', points:rec.slice(-14).map(r=>({x:(r.timestamp||'').slice(0,10), y:r.hrv_rmssd||0}))},
+      ]) };
     }
     case 'apple-health': {
       const ah    = D['apple-health']||{};
@@ -285,9 +291,11 @@ function getCardSummary(pid, key) {
       if (wkts.length)         metrics.push({l:'Workouts',           v:wkts.length});
       if (!metrics.length) return null;
 
-      /* Sparkline: last 14 days of daily steps */
-      const sparkValues = steps.slice(-14).map(r=>r.total_steps||0);
-      return { metrics, sparkValues };
+      const series = [];
+      if (steps.length) series.push({label:'Steps', color:'#ff375f', points:steps.slice(-14).map(r=>({x:r.date, y:r.total_steps||0}))});
+      if (rhr.length) series.push({label:'RHR', color:'#f87171', points:rhr.slice(-14).map(r=>({x:(r.date||'').slice(0,10), y:r.value||0}))});
+      if (hrv.length) series.push({label:'HRV', color:'#818cf8', points:hrv.slice(-14).map(r=>({x:(r.date||'').slice(0,10), y:r.value||0}))});
+      return { metrics, chart: lineChartConfig('Steps, RHR, HRV by day', series) };
     }
     case 'fitbit': {
       const rows = (D.fitbit?.daily_stats||[]).filter(d=>d.user_id===pid)
@@ -300,7 +308,9 @@ function getCardSummary(pid, key) {
         {l:'Avg steps',      v:avgSteps.toLocaleString()},
         {l:'Avg active min', v:avgMin+' min'},
         {l:'Last record',    v:rows[rows.length-1].date||'—'},
-      ], sparkValues: rows.slice(-14).map(d=>d.steps||0) };
+      ], chart: lineChartConfig('Steps by day', [
+        {label:'Steps', color:'#00b0b9', points:rows.slice(-14).map(d=>({x:d.date||'', y:d.steps||0}))},
+      ]) };
     }
     case 'eight-sleep': {
       const sess = (D['eight-sleep']?.sleep_sessions||[]).filter(s=>s.persona_id===pid)
@@ -315,7 +325,9 @@ function getCardSummary(pid, key) {
         {l:'Avg sleep score',v:avg!=null?avg:'—'},
         {l:'Avg HRV',        v:avgHRV!=null?avgHRV+' ms':'—'},
         {l:'Last session',   v:(sess[sess.length-1].start_time||'').slice(0,10)},
-      ], sparkValues: scores.slice(-14) };
+      ], chart: lineChartConfig('Sleep score by day', [
+        {label:'Sleep score', color:'#818cf8', points:sess.slice(-14).map(s=>({x:(s.start_time||s.session_date||'').slice(0,10), y:s.sleep_fitness_score??s.sleep_score}))},
+      ]) };
     }
     case 'strava': {
       const acts = (D.strava?.activities||[]).filter(a=>a.user_id===pid);
@@ -323,12 +335,15 @@ function getCardSummary(pid, key) {
       const totalKm = (acts.reduce((s,a)=>s+(a.distance||0),0)/1000).toFixed(1);
       const types   = [...new Set(acts.map(a=>a.type).filter(Boolean))].join(', ');
       const ath     = (D.strava?.athletes||[]).find(a=>a.user_id===pid);
+      const sortedActs = acts.slice().sort((a,b)=>(a.start_date||'').localeCompare(b.start_date||''));
       return { metrics:[
         {l:'Activities',  v:acts.length},
         {l:'Total km',    v:Number(totalKm).toLocaleString()+' km'},
         {l:'Types',       v:types||'—', wide:true},
         ...(ath?.ftp ? [{l:'FTP',v:ath.ftp+' W'}] : []),
-      ]};
+      ], chart: lineChartConfig('Distance by activity', [
+        {label:'Distance km', color:'#fc4c02', points:sortedActs.slice(-14).map(a=>({x:(a.start_date||'').slice(0,10), y:(a.distance||0)/1000}))},
+      ]) };
     }
     case 'myfitnesspal': {
       const prof = (D.myfitnesspal?.user_profiles||[]).find(u=>u.persona_id===pid);
@@ -349,7 +364,9 @@ function getCardSummary(pid, key) {
         {l:'Days logged',   v:days.length},
         {l:'Avg daily cal', v:avgCal!=null?avgCal.toLocaleString()+' kcal':'—'},
         ...(prof?.calorie_goal?[{l:'Daily goal',v:prof.calorie_goal+' kcal'}]:[]),
-      ], sparkValues: days.slice(-14).map(d=>Math.round(byDate[d])) };
+      ], chart: lineChartConfig('Food calories by day', [
+        {label:'Calories', color:'#4ca2cd', points:days.slice(-14).map(d=>({x:d, y:Math.round(byDate[d])}))},
+      ]) };
     }
     case 'renpho': {
       const rows = (D.renpho?.measurements||[]).filter(m=>m.persona_id===pid)
@@ -361,7 +378,9 @@ function getCardSummary(pid, key) {
         {l:'Latest weight',v:last.weight!=null?last.weight+' kg':'—'},
         {l:'BMI',          v:nvl(last.bmi)},
         {l:'Body fat',     v:last.body_fat!=null?last.body_fat+'%':'—'},
-      ], sparkValues: rows.map(r=>r.weight).filter(v=>v!=null) };
+      ], chart: lineChartConfig('Weight by date', [
+        {label:'Weight', color:'#34d399', points:rows.slice(-14).map(r=>({x:(r.timestamp||'').slice(0,10), y:r.weight}))},
+      ]) };
     }
     /* Shopping — all 6 share same logic */
     case 'amazon': case 'walmart': case 'target':
@@ -376,7 +395,9 @@ function getCardSummary(pid, key) {
         {l:'Total spend', v:'$'+Math.round(total).toLocaleString()},
         {l:'Avg order',   v:'$'+(total/orders.length).toFixed(2)},
         {l:'Last order',  v:(last.created_at||'').slice(0,10)},
-      ], sparkValues: orders.slice(-12).map(o=>o.total??o.total_amount??o.subtotal??0) };
+      ], chart: lineChartConfig('Order total by date', [
+        {label:'Order total', color:SVCMETA[key].color, points:orders.slice(-12).map(o=>({x:(o.created_at||'').slice(0,10), y:o.total??o.total_amount??o.subtotal??0}))},
+      ]) };
     }
     case 'ticketmaster': {
       const orders = (D.ticketmaster?.orders||[]).filter(o=>o.user_id===pid);
@@ -488,6 +509,43 @@ function sparkline(vals, color) {
 }
 
 /* ════ MODAL CONTENT ROUTER ════ */
+function lineChartConfig(title, series) {
+  const cleaned = (series||[]).map(s => ({
+    label: s.label,
+    color: s.color,
+    points: (s.points||[]).filter(p => p && p.y != null && Number.isFinite(Number(p.y)))
+  })).filter(s => s.points.length >= 2);
+  return cleaned.length ? { title, series: cleaned } : null;
+}
+
+function trendChart(chart, size) {
+  if (!chart || !chart.series || !chart.series.length) return '';
+  const W = 180, H = size === 'modal' ? 70 : 48;
+  const pad = 4;
+  const paths = chart.series.map(series => {
+    const values = series.points.map(p => Number(p.y));
+    const max = Math.max(...values), min = Math.min(...values), range = max - min || 1;
+    const pts = series.points.map((p, i) => {
+      const x = pad + (i / (series.points.length - 1)) * (W - pad * 2);
+      const y = H - pad - ((Number(p.y) - min) / range) * (H - pad * 2);
+      return { x, y, raw: p.y, label: p.x };
+    });
+    const d = pts.map(p => p.x.toFixed(1)+','+p.y.toFixed(1)).join(' ');
+    const dots = size === 'modal' ? pts.map(p =>
+      '<circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="2" fill="'+series.color+'"><title>'+esc(series.label+' - '+p.label+': '+p.raw)+'</title></circle>'
+    ).join('') : '';
+    return '<polyline points="'+d+'" fill="none" stroke="'+series.color+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><title>'+esc(series.label)+'</title></polyline>'+dots;
+  }).join('');
+  const legend = chart.series.map(s =>
+    '<span style="--legend-color:'+s.color+'">'+esc(s.label)+'</span>'
+  ).join('');
+  return '<div class="trend-chart '+(size === 'modal' ? 'modal-chart' : '')+'">' +
+    '<div class="trend-chart-title">'+esc(chart.title)+'</div>' +
+    '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none">'+paths+'</svg>' +
+    (size === 'modal' && chart.series.length > 1 ? '<div class="trend-chart-legend">'+legend+'</div>' : '') +
+  '</div>';
+}
+
 function buildModalContent(pid, key) {
   const sm = SVCMETA[key]||{};
   const sum = getCardSummary(pid, key);
@@ -498,9 +556,10 @@ function buildModalContent(pid, key) {
         '<div class="modal-stat-lbl">'+m.l+'</div>' +
       '</div>'
     ).join('') +
-    (sum.sparkValues && sum.sparkValues.length >= 2
-      ? '<div style="flex:1;min-width:160px;display:flex;align-items:center;padding:0 4px">'+sparkline(sum.sparkValues, sm.color)+'</div>'
-      : '') +
+    (sum.chart ? trendChart(sum.chart, 'modal') :
+      (sum.sparkValues && sum.sparkValues.length >= 2
+        ? '<div style="flex:1;min-width:160px;display:flex;align-items:center;padding:0 4px">'+sparkline(sum.sparkValues, sm.color)+'</div>'
+        : '')) +
   '</div>' : '';
 
   let detail = '';

@@ -68,7 +68,10 @@ body { background: var(--bg); color: var(--text); font-family: var(--font); min-
   border-radius: var(--radius); padding: 16px; cursor: pointer;
   transition: border-color .15s, transform .12s;
 }
-.persona-card:hover { border-color: var(--teal); transform: translateY(-2px); }
+.persona-card:hover {
+  border-color: var(--teal);
+  box-shadow: inset 0 0 0 1px var(--teal);
+}
 .persona-card-top { display: flex; align-items: center; gap: 11px; margin-bottom: 10px; }
 .avatar {
   width: 38px; height: 38px; border-radius: var(--rsm);
@@ -127,12 +130,12 @@ body { background: var(--bg); color: var(--text); font-family: var(--font); min-
   flex: 0 0 200px;
   background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
   padding: 14px; cursor: pointer;
-  transition: border-color .15s, transform .12s, box-shadow .15s;
+  transition: border-color .15s, box-shadow .15s;
   display: flex; flex-direction: column;
 }
 .svc-card:hover {
-  border-color: var(--teal); transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0,0,0,.3);
+  border-color: var(--teal);
+  box-shadow: inset 0 0 0 1px var(--teal), 0 8px 24px rgba(0,0,0,.24);
 }
 .svc-card-hdr {
   display: flex; align-items: center; gap: 8px;
@@ -148,6 +151,49 @@ body { background: var(--bg); color: var(--text); font-family: var(--font); min-
 .svc-metric.wide { grid-column: 1 / -1; }
 .svc-spark { margin-top: 10px; border-top: 1px solid var(--border); padding-top: 8px; }
 .svc-spark svg { display: block; width: 100%; height: 40px; }
+.trend-chart {
+  margin-top: 10px;
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+}
+.trend-chart-title {
+  color: var(--text3);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.trend-chart svg {
+  display: block;
+  width: 100%;
+  height: 48px;
+}
+.trend-chart.modal-chart {
+  flex: 1 1 260px;
+  min-width: 240px;
+  margin-top: 0;
+  border-top: 0;
+  padding: 0 4px;
+}
+.trend-chart.modal-chart svg { height: 72px; }
+.trend-chart-legend {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 5px;
+  color: var(--text3);
+  font-size: 9px;
+}
+.trend-chart-legend span::before {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--legend-color);
+  margin-right: 4px;
+}
 
 /* ── MODAL ── */
 .modal-overlay {
