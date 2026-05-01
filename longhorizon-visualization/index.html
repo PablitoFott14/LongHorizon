@@ -3,44 +3,70 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LongHorizon Persona Visualizer</title>
+  <title>LongHorizon Personas</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <main class="container">
-    <header class="page-header">
-      <h1>LongHorizon Persona Visualizer</h1>
-      <p>Single-source mapping from all service JSON files.</p>
-    </header>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="./">OC <span>OpenClaw Data Visualiser</span></a>
+      <nav class="topnav" aria-label="Primary">
+        <a href="#personas">Personas</a>
+        <a href="#unmapped">Unmapped</a>
+      </nav>
+    </div>
+  </header>
 
-    <section class="summary" id="summary">
-      <div class="metric">
-        <span class="metric-label">Personas</span>
-        <strong id="metric-personas">0</strong>
+  <main class="shell">
+    <div class="breadcrumb"><a href="./">Home</a><span>/</span><span>Personas</span></div>
+
+    <section class="hero">
+      <div>
+        <h1>Personas</h1>
+        <p>Persona-first view of the LongHorizon universe, built directly from the service JSON files.</p>
       </div>
-      <div class="metric">
-        <span class="metric-label">Services</span>
-        <strong id="metric-services">0</strong>
-      </div>
-      <div class="metric">
-        <span class="metric-label">Mapped Records</span>
-        <strong id="metric-mapped">0</strong>
-      </div>
-      <div class="metric">
-        <span class="metric-label">Unmapped Records</span>
-        <strong id="metric-unmapped">0</strong>
-      </div>
+      <div id="load-state" class="load-state">Loading data...</div>
     </section>
 
-    <section>
-      <h2>All Personas</h2>
-      <div id="personas-root" class="persona-list"></div>
+    <section class="summary" aria-label="Universe summary">
+      <div class="metric"><strong id="metric-personas">0</strong><span>Personas</span></div>
+      <div class="metric"><strong id="metric-orders">0</strong><span>Total Orders</span></div>
+      <div class="metric"><strong id="metric-services">0</strong><span>Services</span></div>
+      <div class="metric"><strong id="metric-unmapped">0</strong><span>Unmapped</span></div>
     </section>
 
-    <section>
-      <h2>Unmapped Data</h2>
-      <p class="section-note">Records that cannot be linked to a specific persona with strict ID-based mapping.</p>
-      <div id="unmapped-root" class="unmapped-list"></div>
+    <section class="overview-grid" aria-label="Data distribution">
+      <article class="panel">
+        <h2>Records by Category</h2>
+        <div id="category-bars" class="bar-list"></div>
+      </article>
+      <article class="panel">
+        <h2>Persona Coverage</h2>
+        <div id="coverage-bars" class="bar-list"></div>
+      </article>
+    </section>
+
+    <div class="content-layout">
+      <aside class="side-panel" aria-label="Persona navigation">
+        <h2>All Personas</h2>
+        <div id="persona-nav" class="persona-nav"></div>
+      </aside>
+
+      <section id="personas" class="personas-section">
+        <div class="section-head">
+          <h2>All Personas</h2>
+          <p>Each card shows only records mapped by persona IDs or by strict foreign-key joins from persona-owned records.</p>
+        </div>
+        <div id="personas-root" class="persona-list"></div>
+      </section>
+    </div>
+
+    <section id="unmapped" class="unmapped-section">
+      <div class="section-head">
+        <h2>Unmapped and Shared Data</h2>
+        <p>Reference catalogs are kept separate from records that should map to a persona but do not.</p>
+      </div>
+      <div id="unmapped-root" class="unmapped-grid"></div>
     </section>
   </main>
 
