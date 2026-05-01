@@ -1,58 +1,64 @@
 const BASE = "../openclaw-long_horizon-universe/openclaw-long_horizon-universe-2frtws95/services";
 
 const SERVICES = {
-  amazon: { label: "Amazon", category: "shopping", path: `${BASE}/amazon/data.json` },
-  "amazon-fresh": { label: "Amazon Fresh", category: "shopping", path: `${BASE}/amazon-fresh/data.json` },
   "apple-health": { label: "Apple Health", category: "health", path: `${BASE}/apple-health/data.json` },
+  "amazon": { label: "Amazon", category: "shopping", path: `${BASE}/amazon/data.json` },
+  "amazon-fresh": { label: "Amazon Fresh", category: "shopping", path: `${BASE}/amazon-fresh/data.json` },
   "eight-sleep": { label: "Eight Sleep", category: "health", path: `${BASE}/eight-sleep/data.json` },
-  fitbit: { label: "Fitbit", category: "health", path: `${BASE}/fitbit/data.json` },
+  "fitbit": { label: "Fitbit", category: "health", path: `${BASE}/fitbit/data.json` },
   "fresh-direct": { label: "FreshDirect", category: "shopping", path: `${BASE}/fresh-direct/data.json` },
   "garmin-connect": { label: "Garmin", category: "health", path: `${BASE}/garmin-connect/data.json` },
-  instacart: { label: "Instacart", category: "shopping", path: `${BASE}/instacart/data.json` },
+  "instacart": { label: "Instacart", category: "shopping", path: `${BASE}/instacart/data.json` },
   "logistics-tracking": { label: "Logistics", category: "lifestyle", path: `${BASE}/logistics-tracking/data.json` },
-  myfitnesspal: { label: "MyFitnessPal", category: "health", path: `${BASE}/myfitnesspal/data.json` },
-  obsidian: { label: "Obsidian", category: "lifestyle", path: `${BASE}/obsidian/data.json` },
-  renpho: { label: "Renpho", category: "health", path: `${BASE}/renpho/data.json` },
-  sonos: { label: "Sonos", category: "lifestyle", path: `${BASE}/sonos/data.json` },
-  strava: { label: "Strava", category: "health", path: `${BASE}/strava/data.json` },
-  target: { label: "Target", category: "shopping", path: `${BASE}/target/data.json` },
-  ticketmaster: { label: "Ticketmaster", category: "lifestyle", path: `${BASE}/ticketmaster/data.json` },
-  walmart: { label: "Walmart", category: "shopping", path: `${BASE}/walmart/data.json` },
-  whoop: { label: "Whoop", category: "health", path: `${BASE}/whoop/data.json` },
-  zillow: { label: "Zillow", category: "lifestyle", path: `${BASE}/zillow/data.json` },
+  "myfitnesspal": { label: "MyFitnessPal", category: "health", path: `${BASE}/myfitnesspal/data.json` },
+  "obsidian": { label: "Obsidian", category: "lifestyle", path: `${BASE}/obsidian/data.json` },
+  "renpho": { label: "Renpho", category: "health", path: `${BASE}/renpho/data.json` },
+  "sonos": { label: "Sonos", category: "lifestyle", path: `${BASE}/sonos/data.json` },
+  "strava": { label: "Strava", category: "health", path: `${BASE}/strava/data.json` },
+  "target": { label: "Target", category: "shopping", path: `${BASE}/target/data.json` },
+  "ticketmaster": { label: "Ticketmaster", category: "lifestyle", path: `${BASE}/ticketmaster/data.json` },
+  "walmart": { label: "Walmart", category: "shopping", path: `${BASE}/walmart/data.json` },
+  "whoop": { label: "Whoop", category: "health", path: `${BASE}/whoop/data.json` },
+  "zillow": { label: "Zillow", category: "lifestyle", path: `${BASE}/zillow/data.json` },
 };
 
-const CATEGORY_LABELS = { health: "Health", shopping: "Shopping", lifestyle: "Lifestyle" };
-const PERSONA_ID_PATTERN = /^persona_\d+$/;
-const SHOPPING_SERVICES = Object.keys(SERVICES).filter((key) => SERVICES[key].category === "shopping");
-
-const SHARED_DATASETS = new Set([
-  "products", "product_variants", "policies", "faqs", "cart_items", "carts", "cart_lines",
-  "venues", "attractions", "events", "event_attractions", "ticket_types",
-  "properties", "market_data", "search_history",
-  "foods", "exercises", "segments", "clubs",
+const PERSONA_ID = /^persona_\d+$/;
+const CATALOG_DATASETS = new Set([
+  "products", "product_variants", "policies", "faqs", "carts", "cart_lines", "cart_items",
+  "foods", "exercises", "segments", "clubs", "venues", "attractions", "events",
+  "event_attractions", "ticket_types", "properties", "market_data", "search_history",
 ]);
 
+const RELATIONS = {
+  amazon: [{ from: "orders", to: "order_items", parentKey: "order_id", childKey: "order_id" }],
+  walmart: [{ from: "orders", to: "order_items", parentKey: "order_id", childKey: "order_id" }],
+  target: [{ from: "orders", to: "order_items", parentKey: "order_id", childKey: "order_id" }],
+  instacart: [{ from: "orders", to: "order_items", parentKey: "id", childKey: "order_id" }],
+  "fresh-direct": [{ from: "orders", to: "order_items", parentKey: "id", childKey: "order_id" }],
+  "amazon-fresh": [{ from: "orders", to: "order_items", parentKey: "id", childKey: "order_id" }],
+  sonos: [{ from: "favorites", to: "favorite_tracks", parentKey: "favorite_id", childKey: "favorite_id" }],
+  "logistics-tracking": [{ from: "shipments", to: "tracking_events", parentKey: "tracking_number", childKey: "tracking_number" }],
+};
+
 document.addEventListener("DOMContentLoaded", () => {
-  initialize().catch((error) => {
+  main().catch((error) => {
     console.error(error);
-    setText("load-state", `Failed to load data: ${error.message}`);
-    document.getElementById("personas-root").innerHTML =
-      `<div class="empty">Failed to load data: ${escapeHtml(error.message)}</div>`;
+    setText("load-state", `Failed: ${error.message}`);
+    document.getElementById("personas-root").innerHTML = `<p class="empty">Failed to load JSON data.</p>`;
   });
 });
 
-async function initialize() {
-  const data = await loadAllData();
+async function main() {
+  const data = await loadServices();
   const model = buildModel(data);
   render(model);
   setText("load-state", "Loaded from source JSON");
 }
 
-async function loadAllData() {
+async function loadServices() {
   const entries = await Promise.all(Object.entries(SERVICES).map(async ([key, service]) => {
     const response = await fetch(service.path);
-    if (!response.ok) throw new Error(`${service.label}: HTTP ${response.status}`);
+    if (!response.ok) throw new Error(`${service.label} returned ${response.status}`);
     return [key, await response.json()];
   }));
   return Object.fromEntries(entries);
@@ -61,385 +67,558 @@ async function loadAllData() {
 function buildModel(data) {
   const personas = buildPersonaIndex(data);
   const personaIds = new Set(Object.keys(personas));
-  const distribution = seedDistribution(personas);
-  const unmapped = {};
   const shared = {};
-  const categoryTotals = { health: 0, shopping: 0, lifestyle: 0 };
-  let mappedRecords = 0;
-  let unmappedRecords = 0;
+  const unmapped = {};
 
   for (const [serviceKey, serviceData] of Object.entries(data)) {
-    const arrays = Object.entries(serviceData)
-      .filter(([, value]) => Array.isArray(value))
-      .map(([datasetKey, rows]) => [datasetKey, rows.filter(isObjectRecord)]);
-
-    const personaSetsByDataset = inferPersonaSets(arrays);
+    const arrays = arrayDatasets(serviceData);
+    const personaSets = inferServiceOwnership(serviceKey, arrays, personaIds);
 
     for (const [datasetKey, rows] of arrays) {
-      if (SHARED_DATASETS.has(datasetKey)) {
+      if (CATALOG_DATASETS.has(datasetKey)) {
         addDatasetCount(shared, serviceKey, datasetKey, rows.length);
         continue;
       }
 
-      rows.forEach((row, index) => {
-        const linked = Array.from(personaSetsByDataset[datasetKey][index]).filter((pid) => personaIds.has(pid));
-        if (!linked.length) {
+      for (const row of rows) {
+        const owners = [...(personaSets.get(row) || [])].filter((id) => personaIds.has(id));
+        if (!owners.length) {
           addDatasetCount(unmapped, serviceKey, datasetKey, 1);
-          unmappedRecords += 1;
-          return;
+          continue;
         }
-
-        mappedRecords += 1;
-        linked.forEach((personaId) => {
-          addPersonaRecord(distribution[personaId], serviceKey, datasetKey, row);
-          categoryTotals[SERVICES[serviceKey].category] += 1;
-        });
-      });
+        for (const personaId of owners) {
+          addRecord(personas[personaId], serviceKey, datasetKey, row);
+        }
+      }
     }
   }
 
-  const personaRows = Object.values(distribution)
+  const personaList = Object.values(personas)
     .map(finalizePersona)
     .sort((a, b) => a.name.localeCompare(b.name));
 
   return {
-    personas: personaRows,
-    categoryTotals,
-    totalOrders: personaRows.reduce((sum, p) => sum + p.ordersCount, 0),
-    mappedRecords,
-    unmappedRecords,
-    unmapped,
+    personas: personaList,
     shared,
+    unmapped,
+    totals: {
+      personas: personaList.length,
+      services: Object.keys(SERVICES).length,
+      mapped: sum(personaList.map((p) => p.totalRecords)),
+      unmapped: sumNestedCounts(unmapped),
+      shared: sumNestedCounts(shared),
+      orders: sum(personaList.map((p) => p.summary.orderCount)),
+      spend: sum(personaList.map((p) => p.summary.spend)),
+    },
   };
 }
 
 function buildPersonaIndex(data) {
   const personas = {};
-
-  Object.values(data).forEach((serviceData) => {
-    Object.values(serviceData).forEach((rows) => {
-      if (!Array.isArray(rows)) return;
-      rows.filter(isObjectRecord).forEach((record) => {
-        const id = getPersonaId(record);
-        if (!id) return;
-        if (!personas[id]) personas[id] = { id, name: id, email: "", location: "", interests: "" };
-        mergePersonaMetadata(personas[id], record);
-      });
-    });
-  });
-
-  const homeNotes = data.obsidian?.notes?.filter((note) => note.title === "Home") || [];
-  homeNotes.forEach((note) => {
-    const persona = personas[note.user_id];
-    if (persona) persona.interests = extractInterests(note.content);
-  });
-
+  for (const [serviceKey, serviceData] of Object.entries(data)) {
+    for (const [, rows] of arrayDatasets(serviceData)) {
+      for (const row of rows) {
+        const id = directPersonaId(row);
+        if (!id) continue;
+        if (!personas[id]) personas[id] = createPersona(id);
+        mergeIdentity(personas[id], serviceKey, row);
+      }
+    }
+  }
   return personas;
 }
 
-function mergePersonaMetadata(persona, record) {
-  const name = firstPresent(record.name, record.full_name, record.display_name);
-  const email = firstPresent(record.email);
-  const location = joinLocation(record.city, firstPresent(record.state, record.region));
+function inferServiceOwnership(serviceKey, arrays, personaIds) {
+  const rowOwners = new Map();
+  const byDataset = new Map(arrays);
 
-  if (name && persona.name === persona.id) persona.name = normalizeName(name);
-  if (email && !persona.email) persona.email = email;
-  if (location) persona.location = location;
+  for (const [, rows] of arrays) {
+    for (const row of rows) {
+      const id = directPersonaId(row);
+      if (!id || !personaIds.has(id)) continue;
+      setOwner(rowOwners, row, id);
+    }
+  }
+
+  for (const relation of RELATIONS[serviceKey] || []) {
+    const parents = byDataset.get(relation.from) || [];
+    const children = byDataset.get(relation.to) || [];
+    const ownersByParentValue = new Map();
+    for (const parent of parents) {
+      const value = parent[relation.parentKey];
+      if (value === null || value === undefined) continue;
+      const owners = rowOwners.get(parent);
+      if (!owners?.size) continue;
+      if (!ownersByParentValue.has(String(value))) ownersByParentValue.set(String(value), new Set());
+      for (const owner of owners) ownersByParentValue.get(String(value)).add(owner);
+    }
+    for (const child of children) {
+      const value = child[relation.childKey];
+      const owners = ownersByParentValue.get(String(value));
+      if (!owners?.size) continue;
+      for (const owner of owners) setOwner(rowOwners, child, owner);
+    }
+  }
+
+  if (serviceKey === "obsidian") {
+    const notes = byDataset.get("notes") || [];
+    const tags = byDataset.get("tags") || [];
+    const ownersByNote = new Map();
+    for (const note of notes) {
+      const owners = rowOwners.get(note);
+      if (!owners?.size) continue;
+      ownersByNote.set(String(note.note_id), new Set(owners));
+    }
+    for (const tag of tags) {
+      const owners = ownersByNote.get(String(tag.note_id));
+      if (!owners?.size) continue;
+      for (const owner of owners) {
+        if (directPersonaId(tag) === owner || !directPersonaId(tag)) setOwner(rowOwners, tag, owner);
+      }
+    }
+  }
+  return rowOwners;
 }
 
-function seedDistribution(personas) {
-  return Object.fromEntries(Object.values(personas).map((persona) => [
-    persona.id,
-    {
-      ...persona,
-      serviceCounts: {},
-      categoryCounts: { health: 0, shopping: 0, lifestyle: 0 },
-      serviceSet: new Set(),
-      healthServiceSet: new Set(),
-      ordersCount: 0,
-      totalSpend: 0,
-      notesCount: 0,
-      latestOrderDate: "",
-      latestNoteDate: "",
-      recordsCount: 0,
+function createPersona(id) {
+  return {
+    id,
+    name: humanize(id),
+    email: "",
+    location: "",
+    sources: new Set(),
+    records: {},
+    datasetCounts: {},
+    totalRecords: 0,
+    summary: {
+      orderCount: 0,
+      spend: 0,
+      healthRecords: 0,
+      activityCount: 0,
+      sleepRecords: 0,
+      notes: 0,
+      shipments: 0,
     },
-  ]));
+  };
 }
 
-function inferPersonaSets(arrays) {
-  const personaSetsByDataset = {};
-
-  arrays.forEach(([datasetKey, rows]) => {
-    personaSetsByDataset[datasetKey] = rows.map((row) => {
-      const direct = getPersonaId(row);
-      return direct ? new Set([direct]) : new Set();
-    });
-  });
-
-  let changed = true;
-  while (changed) {
-    changed = false;
-    const idToPersonas = new Map();
-
-    arrays.forEach(([datasetKey, rows]) => {
-      rows.forEach((row, index) => {
-        const personas = personaSetsByDataset[datasetKey][index];
-        if (!personas.size) return;
-        getIdentifierPairs(datasetKey, row).forEach(([idKey, idValue]) => {
-          const key = `${idKey}::${String(idValue)}`;
-          if (!idToPersonas.has(key)) idToPersonas.set(key, new Set());
-          personas.forEach((pid) => idToPersonas.get(key).add(pid));
-        });
-      });
-    });
-
-    arrays.forEach(([datasetKey, rows]) => {
-      rows.forEach((row, index) => {
-        if (personaSetsByDataset[datasetKey][index].size) return;
-        const inferred = new Set();
-        getIdentifierPairs(datasetKey, row).forEach(([idKey, idValue]) => {
-          const source = idToPersonas.get(`${idKey}::${String(idValue)}`);
-          if (source) source.forEach((pid) => inferred.add(pid));
-        });
-        if (inferred.size) {
-          personaSetsByDataset[datasetKey][index] = inferred;
-          changed = true;
-        }
-      });
-    });
+function mergeIdentity(persona, serviceKey, row) {
+  persona.sources.add(serviceKey);
+  const name = row.name || row.full_name || row.display_name || joinName(row.first_name, row.last_name);
+  if (name && persona.name === humanize(persona.id)) persona.name = name;
+  if (!persona.email && row.email) persona.email = row.email;
+  if (!persona.location && row.city && (row.state || row.region)) {
+    persona.location = `${row.city}, ${row.state || row.region}`;
   }
-
-  return personaSetsByDataset;
 }
 
-function addPersonaRecord(persona, serviceKey, datasetKey, row) {
-  const category = SERVICES[serviceKey].category;
-  persona.recordsCount += 1;
-  persona.categoryCounts[category] += 1;
-  persona.serviceCounts[serviceKey] = (persona.serviceCounts[serviceKey] || 0) + 1;
-  persona.serviceSet.add(serviceKey);
-  if (category === "health") persona.healthServiceSet.add(serviceKey);
+function addRecord(persona, serviceKey, datasetKey, row) {
+  if (!persona.records[serviceKey]) persona.records[serviceKey] = {};
+  if (!persona.records[serviceKey][datasetKey]) persona.records[serviceKey][datasetKey] = [];
+  persona.records[serviceKey][datasetKey].push(row);
 
-  if (datasetKey === "orders" && SHOPPING_SERVICES.includes(serviceKey)) {
-    persona.ordersCount += 1;
-    persona.totalSpend += getOrderTotal(row);
-    const orderDate = getOrderDate(row);
-    if (orderDate > persona.latestOrderDate) persona.latestOrderDate = orderDate;
-  }
+  if (!persona.datasetCounts[serviceKey]) persona.datasetCounts[serviceKey] = {};
+  persona.datasetCounts[serviceKey][datasetKey] = (persona.datasetCounts[serviceKey][datasetKey] || 0) + 1;
+  persona.totalRecords += 1;
 
-  if (serviceKey === "obsidian" && datasetKey === "notes") {
-    persona.notesCount += 1;
-    const noteDate = firstPresent(row.modified_at, row.created_at);
-    if (noteDate > persona.latestNoteDate) persona.latestNoteDate = noteDate;
+  const service = SERVICES[serviceKey];
+  if (service.category === "health") persona.summary.healthRecords += 1;
+  if (datasetKey.includes("sleep")) persona.summary.sleepRecords += 1;
+  if (datasetKey.includes("activit") || datasetKey.includes("workout") || datasetKey === "exercise_logs") persona.summary.activityCount += 1;
+  if (datasetKey === "notes") persona.summary.notes += 1;
+  if (datasetKey === "shipments") persona.summary.shipments += 1;
+  if (datasetKey === "orders") {
+    persona.summary.orderCount += 1;
+    persona.summary.spend += Number(row.total ?? row.total_price ?? 0);
   }
 }
 
 function finalizePersona(persona) {
+  persona.sources = [...persona.sources].sort((a, b) => SERVICES[a].label.localeCompare(SERVICES[b].label));
+  persona.sections = buildPersonaSections(persona);
+  return persona;
+}
+
+function buildPersonaSections(persona) {
   return {
-    ...persona,
-    linkedServices: persona.serviceSet.size,
-    healthSources: persona.healthServiceSet.size,
-    serviceCounts: Object.entries(persona.serviceCounts)
-      .sort((a, b) => b[1] - a[1])
-      .map(([serviceKey, count]) => ({ serviceKey, count })),
+    health: healthSection(persona.records),
+    shopping: shoppingSection(persona.records),
+    lifestyle: lifestyleSection(persona.records),
+    datasets: datasetRows(persona.datasetCounts),
   };
 }
 
-function render(model) {
-  setText("metric-personas", model.personas.length.toLocaleString());
-  setText("metric-orders", model.totalOrders.toLocaleString());
-  setText("metric-services", Object.keys(SERVICES).length.toLocaleString());
-  setText("metric-unmapped", model.unmappedRecords.toLocaleString());
+function healthSection(records) {
+  const rows = [];
+  addHealthRow(rows, "Apple Health", records["apple-health"], [
+    ["Steps", "step_records", "total_steps", "sum"],
+    ["Workouts", "workout_records", "duration_minutes", "count"],
+    ["Sleep stages", "sleep_records", "stage", "count"],
+    ["Latest body mass", "body_mass_records", "value", "latest"],
+  ]);
+  addHealthRow(rows, "Garmin", records["garmin-connect"], [
+    ["Steps", "daily_stats", "steps", "sum"],
+    ["Activities", "activities", "distance_meters", "sumDistanceM"],
+    ["Sleep", "sleep", "sleep_score", "avg"],
+    ["Body comp", "body_composition", "weight_kg", "latest"],
+  ]);
+  addHealthRow(rows, "Fitbit", records.fitbit, [
+    ["Steps", "daily_stats", "steps", "sum"],
+    ["Activities", "activities", "duration_minutes", "count"],
+    ["Sleep", "sleep_logs", "efficiency", "avg"],
+    ["Food logs", "food_logs", "calories", "sum"],
+  ]);
+  addHealthRow(rows, "Whoop", records.whoop, [
+    ["Cycles", "cycles", "strain", "avg"],
+    ["Recovery", "recovery", "recovery_score", "avg"],
+    ["Sleep", "sleep", "score_sleep_performance", "avg"],
+    ["Workouts", "workouts", "score_strain", "count"],
+  ]);
+  addHealthRow(rows, "Eight Sleep", records["eight-sleep"], [
+    ["Sleep sessions", "sleep_sessions", "avg_sleep_quality_score", "count"],
+    ["Alarms", "alarms", "alarm_id", "count"],
+    ["Schedules", "temperature_schedules", "schedule_id", "count"],
+  ]);
+  addHealthRow(rows, "Renpho", records.renpho, [
+    ["Measurements", "measurements", "weight", "count"],
+    ["Latest weight", "measurements", "weight", "latest"],
+    ["Latest BMI", "measurements", "bmi", "latest"],
+  ]);
+  addHealthRow(rows, "MyFitnessPal", records.myfitnesspal, [
+    ["Food logs", "food_logs", "servings", "count"],
+    ["Exercise logs", "exercise_logs", "calories_burned", "sum"],
+    ["Water", "water_logs", "amount_ml", "sumMl"],
+  ]);
+  addHealthRow(rows, "Strava", records.strava, [
+    ["Activities", "activities", "distance", "sumDistanceM"],
+    ["Personal records", "personal_records", "value", "count"],
+    ["Routes", "routes", "distance", "sumDistanceM"],
+  ]);
+  return rows;
+}
 
-  renderCategoryBars(model);
-  renderCoverageBars(model.personas);
+function addHealthRow(rows, label, serviceRecords, metrics) {
+  if (!serviceRecords) return;
+  const facts = metrics.map(([name, dataset, field, mode]) => {
+    const values = serviceRecords[dataset] || [];
+    return { name, value: metricValue(values, field, mode) };
+  });
+  rows.push({ label, count: countServiceRecords(serviceRecords), facts });
+}
+
+function shoppingSection(records) {
+  const serviceKeys = ["amazon", "walmart", "target", "instacart", "fresh-direct", "amazon-fresh"];
+  return serviceKeys.map((serviceKey) => {
+    const serviceRecords = records[serviceKey] || {};
+    const orders = serviceRecords.orders || [];
+    const items = serviceRecords.order_items || [];
+    return {
+      label: SERVICES[serviceKey].label,
+      orders: orders.length,
+      items: items.length,
+      spend: sum(orders.map((order) => Number(order.total || 0))),
+      recent: recentRows(orders, (row) => row.created_at || row.delivery_date, 4).map((order) => ({
+        id: order.order_id || order.id,
+        date: shortDate(order.created_at || order.delivery_date),
+        status: order.status || "unknown",
+        total: money(order.total),
+      })),
+    };
+  }).filter((row) => row.orders || row.items);
+}
+
+function lifestyleSection(records) {
+  return [
+    {
+      label: "Obsidian",
+      facts: [
+        ["Notes", count(records.obsidian?.notes)],
+        ["Tags", count(records.obsidian?.tags)],
+        ["Latest note", latestTitle(records.obsidian?.notes, "modified_at")],
+      ],
+    },
+    {
+      label: "Sonos",
+      facts: [
+        ["Speakers", count(records.sonos?.speakers)],
+        ["Queue items", count(records.sonos?.queue_items)],
+        ["Favorites", count(records.sonos?.favorites)],
+        ["Favorite tracks", count(records.sonos?.favorite_tracks)],
+      ],
+    },
+    {
+      label: "Ticketmaster",
+      facts: [
+        ["Orders", count(records.ticketmaster?.orders)],
+        ["Spend", money(sum((records.ticketmaster?.orders || []).map((row) => Number(row.total_price || 0))))],
+        ["Latest purchase", latestTitle(records.ticketmaster?.orders, "purchased_at", "confirmation_code")],
+      ],
+    },
+    {
+      label: "Zillow",
+      facts: [
+        ["Saved properties", count(records.zillow?.saved_properties)],
+        ["Scheduled tours", count(records.zillow?.scheduled_tours)],
+        ["Latest tour", latestTitle(records.zillow?.scheduled_tours, "tour_date", "status")],
+      ],
+    },
+    {
+      label: "Logistics",
+      facts: [
+        ["Shipments", count(records["logistics-tracking"]?.shipments)],
+        ["Tracking events", count(records["logistics-tracking"]?.tracking_events)],
+        ["Latest status", latestTitle(records["logistics-tracking"]?.tracking_events, "timestamp", "status")],
+      ],
+    },
+  ].filter((section) => section.facts.some(([, value]) => value && value !== "0" && value !== "$0.00"));
+}
+
+function render(model) {
+  setText("metric-personas", formatNumber(model.totals.personas));
+  setText("metric-records", formatNumber(model.totals.mapped));
+  setText("metric-orders", formatNumber(model.totals.orders));
+  setText("metric-unmapped", formatNumber(model.totals.unmapped));
   renderPersonaNav(model.personas);
   renderPersonas(model.personas);
-  renderUnmapped(model);
-}
-
-function renderCategoryBars(model) {
-  const total = Object.values(model.categoryTotals).reduce((sum, value) => sum + value, 0) || 1;
-  document.getElementById("category-bars").innerHTML = Object.entries(CATEGORY_LABELS).map(([key, label]) => {
-    const value = model.categoryTotals[key] || 0;
-    return renderBar(label, value, value / total);
-  }).join("");
-}
-
-function renderCoverageBars(personas) {
-  const max = Math.max(...personas.map((p) => p.linkedServices), 1);
-  document.getElementById("coverage-bars").innerHTML = personas
-    .slice()
-    .sort((a, b) => b.linkedServices - a.linkedServices || a.name.localeCompare(b.name))
-    .map((persona) => renderBar(persona.name, persona.linkedServices, persona.linkedServices / max, `${persona.linkedServices}/19 services`))
-    .join("");
-}
-
-function renderBar(label, value, ratio, valueLabel) {
-  const width = Math.max(2, Math.round(ratio * 100));
-  return `
-    <div class="bar-row">
-      <div class="bar-meta"><span>${escapeHtml(label)}</span><strong>${escapeHtml(valueLabel || value.toLocaleString())}</strong></div>
-      <div class="bar-track"><span style="width:${width}%"></span></div>
-    </div>
-  `;
+  renderAudit(model);
 }
 
 function renderPersonaNav(personas) {
   document.getElementById("persona-nav").innerHTML = personas.map((persona) => `
-    <a href="#${escapeHtml(persona.id)}">
-      <span>${escapeHtml(getInitials(persona.name, persona.id))}</span>
-      <strong>${escapeHtml(persona.name)}</strong>
+    <a href="#${persona.id}">
+      <span>${escapeHtml(persona.name)}</span>
+      <small>${persona.id} · ${persona.sources.length}/${Object.keys(SERVICES).length} services</small>
     </a>
   `).join("");
 }
 
 function renderPersonas(personas) {
-  document.getElementById("personas-root").innerHTML = personas.map((persona) => {
-    const maxCategory = Math.max(...Object.values(persona.categoryCounts), 1);
-    const serviceCounts = persona.serviceCounts;
-    return `
-      <article class="persona-card" id="${escapeHtml(persona.id)}">
-        <header class="persona-header">
-          <div class="persona-ident">
-            <div class="persona-initials">${escapeHtml(getInitials(persona.name, persona.id))}</div>
-            <div>
-              <h3>${escapeHtml(persona.name)}</h3>
-              <p>${escapeHtml(persona.location || "No source location")}</p>
-            </div>
-          </div>
-          <div class="persona-summary">
-            <strong>${persona.ordersCount.toLocaleString()} orders</strong>
-            <span>${persona.healthSources.toLocaleString()} health sources · ${persona.notesCount.toLocaleString()} notes</span>
-          </div>
-        </header>
+  document.getElementById("personas-root").innerHTML = personas.map(renderPersona).join("");
+}
 
-        <div class="persona-body">
-          <div class="facts">
-            <span>${escapeHtml(persona.id)}</span>
-            ${persona.email ? `<span>${escapeHtml(persona.email)}</span>` : ""}
-            <span>${persona.linkedServices}/19 linked services</span>
-            <span>${persona.recordsCount.toLocaleString()} mapped records</span>
-            <span>$${Math.round(persona.totalSpend).toLocaleString()} shopping spend</span>
-          </div>
-
-          ${persona.interests ? `<p class="interests"><strong>Profile notes:</strong> ${escapeHtml(persona.interests)}</p>` : ""}
-
-          <div class="mini-grid">
-            ${Object.entries(CATEGORY_LABELS).map(([key, label]) => `
-              <div class="mini-stat">
-                <div class="mini-stat-top"><span>${label}</span><strong>${persona.categoryCounts[key].toLocaleString()}</strong></div>
-                <div class="bar-track small"><span style="width:${Math.max(2, Math.round((persona.categoryCounts[key] / maxCategory) * 100))}%"></span></div>
-              </div>
-            `).join("")}
-          </div>
-
-          <div class="service-chips">
-            ${serviceCounts.map(({ serviceKey, count }) => `
-              <span>${escapeHtml(SERVICES[serviceKey].label)} <strong>${count.toLocaleString()}</strong></span>
-            `).join("")}
-          </div>
+function renderPersona(persona) {
+  return `
+    <article class="persona-card" id="${persona.id}">
+      <header class="persona-header">
+        <div class="avatar">${escapeHtml(initials(persona.name))}</div>
+        <div>
+          <h2>${escapeHtml(persona.name)}</h2>
+          <p>${escapeHtml([persona.id, persona.email, persona.location].filter(Boolean).join(" · "))}</p>
         </div>
-      </article>
-    `;
-  }).join("");
+      </header>
+
+      <div class="quick-stats">
+        ${stat("Mapped records", formatNumber(persona.totalRecords))}
+        ${stat("Services", `${persona.sources.length}/${Object.keys(SERVICES).length}`)}
+        ${stat("Orders", formatNumber(persona.summary.orderCount))}
+        ${stat("Spend", money(persona.summary.spend))}
+        ${stat("Health records", formatNumber(persona.summary.healthRecords))}
+        ${stat("Notes", formatNumber(persona.summary.notes))}
+      </div>
+
+      <section class="persona-block">
+        <h3>Data Coverage</h3>
+        <div class="dataset-table">${persona.sections.datasets.map(renderDatasetRow).join("")}</div>
+      </section>
+
+      <section class="persona-block">
+        <h3>Health and Activity</h3>
+        <div class="section-grid">${persona.sections.health.map(renderMetricPanel).join("") || emptyPanel("No health records")}</div>
+      </section>
+
+      <section class="persona-block">
+        <h3>Purchases</h3>
+        <div class="section-grid">${persona.sections.shopping.map(renderShoppingPanel).join("") || emptyPanel("No purchases")}</div>
+      </section>
+
+      <section class="persona-block">
+        <h3>Lifestyle and Reference Apps</h3>
+        <div class="section-grid">${persona.sections.lifestyle.map(renderFactPanel).join("") || emptyPanel("No lifestyle records")}</div>
+      </section>
+    </article>
+  `;
 }
 
-function renderUnmapped(model) {
-  const root = document.getElementById("unmapped-root");
-  const unmappedHtml = renderDatasetPanel("Unmapped Persona Records", model.unmapped, "These records had no valid persona_id/user_id and could not be joined from a persona-owned record.");
-  const sharedHtml = renderDatasetPanel("Shared Reference Data", model.shared, "Catalogs, events, properties, foods, and other reference rows are intentionally not counted as persona records.");
-  root.innerHTML = unmappedHtml + sharedHtml;
+function renderDatasetRow(row) {
+  return `
+    <div class="dataset-row">
+      <strong>${escapeHtml(row.service)}</strong>
+      <span>${row.datasets.map(([name, value]) => `${escapeHtml(name)} ${formatNumber(value)}`).join(" · ")}</span>
+    </div>
+  `;
 }
 
-function renderDatasetPanel(title, grouped, note) {
-  const serviceKeys = Object.keys(grouped).sort((a, b) => SERVICES[a].label.localeCompare(SERVICES[b].label));
-  const body = serviceKeys.length
-    ? serviceKeys.map((serviceKey) => {
-        const rows = Object.entries(grouped[serviceKey]).sort(([a], [b]) => a.localeCompare(b));
-        const total = rows.reduce((sum, [, count]) => sum + count, 0);
-        return `
-          <div class="dataset-row">
-            <strong>${escapeHtml(SERVICES[serviceKey].label)}</strong>
-            <span>${total.toLocaleString()} rows · ${rows.map(([key, count]) => `${escapeHtml(key)} ${count.toLocaleString()}`).join(", ")}</span>
-          </div>
-        `;
-      }).join("")
-    : `<div class="empty">No records in this group.</div>`;
-
-  return `<article class="panel"><h2>${escapeHtml(title)}</h2><p>${escapeHtml(note)}</p><div class="dataset-list">${body}</div></article>`;
+function renderMetricPanel(section) {
+  return `
+    <div class="mini-panel">
+      <h4>${escapeHtml(section.label)}</h4>
+      <p>${formatNumber(section.count)} mapped records</p>
+      <dl>${section.facts.map((fact) => `<div><dt>${escapeHtml(fact.name)}</dt><dd>${escapeHtml(String(fact.value))}</dd></div>`).join("")}</dl>
+    </div>
+  `;
 }
 
-function addDatasetCount(target, serviceKey, datasetKey, amount) {
+function renderShoppingPanel(section) {
+  return `
+    <div class="mini-panel">
+      <h4>${escapeHtml(section.label)}</h4>
+      <p>${formatNumber(section.orders)} orders · ${formatNumber(section.items)} items · ${money(section.spend)}</p>
+      <ul class="compact-list">${section.recent.map((row) => `
+        <li><span>${escapeHtml(row.date)}</span><strong>${escapeHtml(row.total)}</strong><em>${escapeHtml(row.status)}</em></li>
+      `).join("")}</ul>
+    </div>
+  `;
+}
+
+function renderFactPanel(section) {
+  return `
+    <div class="mini-panel">
+      <h4>${escapeHtml(section.label)}</h4>
+      <dl>${section.facts.map(([name, value]) => `<div><dt>${escapeHtml(name)}</dt><dd>${escapeHtml(String(value))}</dd></div>`).join("")}</dl>
+    </div>
+  `;
+}
+
+function renderAudit(model) {
+  const audit = document.getElementById("audit-root");
+  audit.innerHTML = `
+    <article class="audit-card">
+      <h3>Mapping Rules</h3>
+      <p>Rows map to a persona only through direct <code>user_id</code>/<code>persona_id</code> values or service-local foreign keys inherited from directly-owned rows.</p>
+    </article>
+    <article class="audit-card">
+      <h3>Unmapped Persona Records</h3>
+      ${renderCountGroups(model.unmapped) || "<p class=\"empty\">None found.</p>"}
+    </article>
+    <article class="audit-card">
+      <h3>Shared Catalog Data</h3>
+      ${renderCountGroups(model.shared) || "<p class=\"empty\">None found.</p>"}
+    </article>
+  `;
+}
+
+function renderCountGroups(groups) {
+  return Object.entries(groups).map(([serviceKey, datasets]) => `
+    <div class="audit-row">
+      <strong>${escapeHtml(SERVICES[serviceKey].label)}</strong>
+      <span>${Object.entries(datasets).map(([key, value]) => `${escapeHtml(key)} ${formatNumber(value)}`).join(" · ")}</span>
+    </div>
+  `).join("");
+}
+
+function datasetRows(datasetCounts) {
+  return Object.entries(datasetCounts)
+    .sort(([a], [b]) => SERVICES[a].label.localeCompare(SERVICES[b].label))
+    .map(([serviceKey, datasets]) => ({
+      service: SERVICES[serviceKey].label,
+      datasets: Object.entries(datasets).sort(([a], [b]) => a.localeCompare(b)),
+    }));
+}
+
+function metricValue(rows, field, mode) {
+  if (!rows?.length) return "0";
+  if (mode === "count") return formatNumber(rows.length);
+  if (mode === "latest") return formatValue(latestRow(rows)?.[field]);
+  const values = rows.map((row) => Number(row[field])).filter(Number.isFinite);
+  if (!values.length) return "0";
+  if (mode === "sum") return formatNumber(sum(values));
+  if (mode === "sumMl") return `${formatNumber(Math.round(sum(values) / 1000))} L`;
+  if (mode === "sumDistanceM") return `${formatNumber(Math.round(sum(values) / 1000))} km`;
+  if (mode === "avg") return round(sum(values) / values.length);
+  return formatNumber(values.length);
+}
+
+function recentRows(rows, dateSelector, limit) {
+  return [...(rows || [])]
+    .sort((a, b) => String(dateSelector(b) || "").localeCompare(String(dateSelector(a) || "")))
+    .slice(0, limit);
+}
+
+function latestRow(rows) {
+  return recentRows(rows, (row) => row.date || row.timestamp || row.created_at || row.start_time || row.modified_at, 1)[0];
+}
+
+function latestTitle(rows, dateKey, titleKey = "title") {
+  const row = recentRows(rows || [], (item) => item[dateKey], 1)[0];
+  return row ? formatValue(row[titleKey] || row[dateKey]) : "0";
+}
+
+function arrayDatasets(serviceData) {
+  return Object.entries(serviceData)
+    .filter(([, value]) => Array.isArray(value))
+    .map(([key, rows]) => [key, rows.filter((row) => row && typeof row === "object" && !Array.isArray(row))]);
+}
+
+function directPersonaId(row) {
+  const id = row.user_id || row.persona_id;
+  return PERSONA_ID.test(String(id || "")) ? String(id) : "";
+}
+
+function addDatasetCount(target, serviceKey, datasetKey, countValue) {
   if (!target[serviceKey]) target[serviceKey] = {};
-  target[serviceKey][datasetKey] = (target[serviceKey][datasetKey] || 0) + amount;
+  target[serviceKey][datasetKey] = (target[serviceKey][datasetKey] || 0) + countValue;
 }
 
-function getIdentifierPairs(datasetKey, record) {
-  const pairs = [];
-  Object.entries(record).forEach(([key, value]) => {
-    if (!isIdentifierValue(value)) return;
-    const lower = key.toLowerCase();
-    if (lower === "id") {
-      pairs.push([`${singularize(datasetKey)}_id`, value]);
-    } else if (lower.endsWith("_id") || lower === "tracking_number" || lower === "asin") {
-      pairs.push([lower, value]);
-    }
-  });
-  return pairs;
+function setOwner(map, key, owner) {
+  if (!map.has(key)) map.set(key, new Set());
+  map.get(key).add(owner);
 }
 
-function getPersonaId(record) {
-  const candidate = firstPresent(record.user_id, record.persona_id);
-  return typeof candidate === "string" && PERSONA_ID_PATTERN.test(candidate) ? candidate : "";
+function countServiceRecords(serviceRecords) {
+  return sum(Object.values(serviceRecords || {}).map((rows) => rows.length));
 }
 
-function getOrderDate(order) {
-  return firstPresent(order.created_at, order.placed_at, order.order_date, order.purchased_at, order.purchase_date, order.delivery_date);
+function count(rows) {
+  return formatNumber((rows || []).length);
 }
 
-function getOrderTotal(order) {
-  return Number(firstPresent(order.total, order.total_amount, order.total_price, order.subtotal, 0)) || 0;
+function sum(values) {
+  return values.reduce((total, value) => total + (Number(value) || 0), 0);
 }
 
-function extractInterests(content) {
-  const match = String(content || "").match(/## Interests\s+([\s\S]*?)(?:\n---|\n##|$)/);
-  return match ? match[1].replace(/\s+/g, " ").trim() : "";
+function sumNestedCounts(groups) {
+  return sum(Object.values(groups).flatMap((datasets) => Object.values(datasets)));
 }
 
-function singularize(word) {
-  if (word.endsWith("ies")) return `${word.slice(0, -3)}y`;
-  if (word.endsWith("ses")) return word.slice(0, -2);
-  if (word.endsWith("s")) return word.slice(0, -1);
-  return word;
+function stat(label, value) {
+  return `<div><strong>${escapeHtml(String(value))}</strong><span>${escapeHtml(label)}</span></div>`;
 }
 
-function normalizeName(name) {
-  return String(name).replaceAll("_", " ").replace(/\s+/g, " ").trim()
-    .split(" ").map((part) => part ? part[0].toUpperCase() + part.slice(1) : part).join(" ");
+function emptyPanel(text) {
+  return `<div class="mini-panel"><p>${escapeHtml(text)}</p></div>`;
 }
 
-function getInitials(name, fallbackId) {
-  const clean = String(name || "").trim();
-  if (!clean) return String(fallbackId || "??").slice(0, 2).toUpperCase();
-  return clean.split(/\s+/).slice(0, 2).map((part) => part[0]?.toUpperCase() || "").join("");
+function initials(name) {
+  return String(name).split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
 }
 
-function joinLocation(city, stateOrRegion) {
-  if (city && stateOrRegion) return `${city}, ${stateOrRegion}`;
-  return city || stateOrRegion || "";
+function joinName(first, last) {
+  return [first, last].filter(Boolean).join(" ");
 }
 
-function firstPresent(...values) {
-  return values.find((value) => value !== undefined && value !== null && value !== "") || "";
+function humanize(id) {
+  return id.replace("_", " ");
 }
 
-function isIdentifierValue(value) {
-  return typeof value === "string" || typeof value === "number";
+function money(value) {
+  return Number(value || 0).toLocaleString("en-US", { style: "currency", currency: "USD" });
 }
 
-function isObjectRecord(value) {
-  return value && typeof value === "object" && !Array.isArray(value);
+function formatNumber(value) {
+  return Number(value || 0).toLocaleString("en-US");
+}
+
+function formatValue(value) {
+  if (value === null || value === undefined || value === "") return "0";
+  return typeof value === "number" ? round(value) : String(value);
+}
+
+function round(value) {
+  return Number(value).toLocaleString("en-US", { maximumFractionDigits: 1 });
+}
+
+function shortDate(value) {
+  return value ? String(value).slice(0, 10) : "";
 }
 
 function setText(id, value) {
@@ -453,5 +632,5 @@ function escapeHtml(value) {
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
+    .replaceAll("'", "&#039;");
 }
