@@ -23,7 +23,6 @@ const SERVICES = {
 };
 
 const PERSONA_ID_PATTERN = /^persona_\d+$/;
-const RECORD_CACHE = {};
 
 document.addEventListener("DOMContentLoaded", () => {
   initialize().catch((error) => {
@@ -35,11 +34,10 @@ document.addEventListener("DOMContentLoaded", () => {
 async function initialize() {
   const loadedData = await loadAllData();
   const personas = buildPersonas(loadedData);
-  const linked = buildPersonaLinks(loadedData, personas.map((p) => p.id));
-  renderSummary(personas, linked);
-  renderPersonas(personas, linked);
-  renderUnmapped(linked.unmapped);
-  wireJsonLoaders(personas, linked);
+  const distribution = buildDistribution(loadedData, personas);
+  renderSummary(personas, distribution);
+  renderPersonas(distribution.personas);
+  renderUnmappedSummary(distribution.unmapped);
 }
 
 async function loadAllData() {
@@ -73,7 +71,7 @@ function buildPersonas(allData) {
         const current = personaMap.get(id);
         const nameCandidate = firstPresent(record.name, record.full_name, record.username);
         const emailCandidate = firstPresent(record.email);
-        if (nameCandidate && current.name === id) current.name = nameCandidate;
+        if (nameCandidate && current.name === id) current.name = normalizeName(nameCandidate);
         if (emailCandidate && !current.email) current.email = emailCandidate;
       }
     }
@@ -82,15 +80,51 @@ function buildPersonas(allData) {
   return Array.from(personaMap.values()).sort((a, b) => a.name.localeCompare(b.name));
 }
 
-function buildPersonaLinks(allData, personaIds) {
-  const byPersona = {};
-  const unmapped = {};
-  let mappedRecordCount = 0;
-  let unmappedRecordCount = 0;
+function buildDistribution(allData, personas) {
+  const shoppingServices = Object.keys(SERVICES).filter((k) => SERVICES[k].category === "shopping");
+  const healthServices = Object.keys(SERVICES).filter((k) => SERVICES[k].category === "health");
+  const allPersonaIds = new Set(personas.map((p) => p.id));
 
-  for (const personaId of personaIds) {
-    byPersona[personaId] = {};
+  const rowsByPersona = {};
+  const unmapped = {};
+  let mappedRecords = 0;
+  let unmappedRecords = 0;
+
+  personas.forEach((persona) => {
+    rowsByPersona[persona.id] = {
+      ...persona,
+      location: "",
+      ordersCount: 0,
+      healthSources: 0,
+      notesCount: 0,
+      linkedServices: 0,
+      linkedRecords: 0,
+    };
+  });
+
+  for (const serviceData of Object.values(allData)) {
+    for (const userArrayKey of ["users", "user_profiles", "athletes"]) {
+      const records = serviceData[userArrayKey];
+      if (!Array.isArray(records)) continue;
+      records.forEach((record) => {
+        if (!isObjectRecord(record)) return;
+        const personaId = getDirectPersonaId(record);
+        if (!personaId || !rowsByPersona[personaId]) return;
+        const current = rowsByPersona[personaId];
+        const nameCandidate = firstPresent(record.name, record.full_name, record.username);
+        const emailCandidate = firstPresent(record.email);
+        const locationCandidate = joinLocation(record.city, firstPresent(record.state, record.region));
+        if (nameCandidate && current.name === current.id) current.name = normalizeName(nameCandidate);
+        if (emailCandidate && !current.email) current.email = emailCandidate;
+        if (locationCandidate && !current.location) current.location = locationCandidate;
+      });
+    }
   }
+
+  const perPersonaServiceCoverage = {};
+  personas.forEach((p) => {
+    perPersonaServiceCoverage[p.id] = new Set();
+  });
 
   for (const [serviceKey, serviceData] of Object.entries(allData)) {
     const arrays = Object.entries(serviceData)
@@ -150,26 +184,55 @@ function buildPersonaLinks(allData, personaIds) {
     for (const [datasetKey, rows] of arrays) {
       const personaSets = personaSetsByDataset[datasetKey];
       rows.forEach((row, idx) => {
-        const linkedPersonas = personaSets[idx];
-        if (!linkedPersonas.size) {
+        const linkedPersonas = Array.from(personaSets[idx]).filter((pid) => allPersonaIds.has(pid));
+        if (!linkedPersonas.length) {
           if (!unmapped[serviceKey]) unmapped[serviceKey] = {};
           if (!unmapped[serviceKey][datasetKey]) unmapped[serviceKey][datasetKey] = [];
           unmapped[serviceKey][datasetKey].push(row);
-          unmappedRecordCount += 1;
+          unmappedRecords += 1;
           return;
         }
 
         for (const personaId of linkedPersonas) {
-          if (!byPersona[personaId][serviceKey]) byPersona[personaId][serviceKey] = {};
-          if (!byPersona[personaId][serviceKey][datasetKey]) byPersona[personaId][serviceKey][datasetKey] = [];
-          byPersona[personaId][serviceKey][datasetKey].push(row);
+          const current = rowsByPersona[personaId];
+          if (!current) continue;
+          current.linkedRecords += 1;
+          perPersonaServiceCoverage[personaId].add(serviceKey);
+          if (datasetKey === "notes" && serviceKey === "obsidian") {
+            current.notesCount += 1;
+          }
+          if (datasetKey === "orders" && shoppingServices.includes(serviceKey)) {
+            current.ordersCount += 1;
+          }
         }
-        mappedRecordCount += 1;
+        mappedRecords += 1;
       });
     }
   }
 
-  return { byPersona, unmapped, mappedRecordCount, unmappedRecordCount };
+  personas.forEach((persona) => {
+    const row = rowsByPersona[persona.id];
+    row.healthSources = healthServices.reduce((count, serviceKey) => (
+      perPersonaServiceCoverage[persona.id].has(serviceKey) ? count + 1 : count
+    ), 0);
+    row.linkedServices = perPersonaServiceCoverage[persona.id].size;
+  });
+
+  const totalOrders = shoppingServices.reduce((sum, serviceKey) => {
+    return sum + ((allData[serviceKey]?.orders || []).length);
+  }, 0);
+
+  const personasOut = Object.values(rowsByPersona)
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  return {
+    personas: personasOut,
+    totalOrders,
+    stores: shoppingServices.length,
+    mappedRecords,
+    unmappedRecords,
+    unmapped,
+  };
 }
 
 function getIdentifierPairs(datasetKey, record) {
@@ -196,82 +259,56 @@ function getIdentifierPairs(datasetKey, record) {
   return pairs;
 }
 
-function renderSummary(personas, linked) {
+function renderSummary(personas, distribution) {
   document.getElementById("metric-personas").textContent = personas.length.toLocaleString();
-  document.getElementById("metric-services").textContent = Object.keys(SERVICES).length.toLocaleString();
-  document.getElementById("metric-mapped").textContent = linked.mappedRecordCount.toLocaleString();
-  document.getElementById("metric-unmapped").textContent = linked.unmappedRecordCount.toLocaleString();
+  document.getElementById("metric-services").textContent = distribution.totalOrders.toLocaleString();
+  document.getElementById("metric-mapped").textContent = distribution.stores.toLocaleString();
+  document.getElementById("metric-unmapped").textContent = distribution.unmappedRecords.toLocaleString();
+
+  const labels = document.querySelectorAll(".metric-label");
+  if (labels.length >= 4) {
+    labels[1].textContent = "Total Orders";
+    labels[2].textContent = "Stores";
+    labels[3].textContent = "Unmapped Records";
+  }
 }
 
-function renderPersonas(personas, linked) {
+function renderPersonas(personas) {
   const root = document.getElementById("personas-root");
   root.innerHTML = "";
 
   personas.forEach((persona) => {
-    const serviceData = linked.byPersona[persona.id] || {};
-    const serviceKeys = Object.keys(serviceData).sort((a, b) => SERVICES[a].label.localeCompare(SERVICES[b].label));
-
-    let personaTotal = 0;
-    serviceKeys.forEach((serviceKey) => {
-      const datasets = serviceData[serviceKey];
-      personaTotal += Object.values(datasets).reduce((sum, rows) => sum + rows.length, 0);
-    });
+    const initials = getInitials(persona.name, persona.id);
 
     const card = document.createElement("article");
     card.className = "persona-card";
     card.innerHTML = `
       <header class="persona-header">
-        <div>
-          <h3>${escapeHtml(persona.name)}</h3>
-          <div class="persona-meta">${escapeHtml(persona.id)}${persona.email ? ` · ${escapeHtml(persona.email)}` : ""}</div>
+        <div class="persona-ident">
+          <div class="persona-initials">${escapeHtml(initials)}</div>
+          <div>
+            <h3>${escapeHtml(persona.name)}</h3>
+            <div class="persona-meta">${escapeHtml(persona.location || "Location not available")}</div>
+          </div>
         </div>
         <div class="persona-stats">
-          <span>${serviceKeys.length} services</span>
-          <span>${personaTotal.toLocaleString()} records</span>
+          <span>${persona.ordersCount.toLocaleString()} orders</span>
+          <span>${persona.healthSources.toLocaleString()} health sources</span>
+          <span>${persona.notesCount.toLocaleString()} notes</span>
         </div>
       </header>
-      <div class="service-list" id="persona-${escapeHtml(persona.id)}"></div>
+      <div class="persona-meta-row">
+        <span>${escapeHtml(persona.id)}</span>
+        ${persona.email ? `<span>${escapeHtml(persona.email)}</span>` : ""}
+        <span>${persona.linkedServices.toLocaleString()} linked services</span>
+        <span>${persona.linkedRecords.toLocaleString()} linked records</span>
+      </div>
     `;
     root.appendChild(card);
-
-    const serviceList = card.querySelector(".service-list");
-    if (!serviceKeys.length) {
-      serviceList.innerHTML = `<div class="empty">No linked records.</div>`;
-      return;
-    }
-
-    serviceKeys.forEach((serviceKey) => {
-      const datasets = serviceData[serviceKey];
-      const datasetRows = Object.entries(datasets).sort(([a], [b]) => a.localeCompare(b));
-      const serviceTotal = datasetRows.reduce((sum, [, rows]) => sum + rows.length, 0);
-      const serviceSection = document.createElement("section");
-      serviceSection.className = "service-block";
-      serviceSection.innerHTML = `
-        <div class="service-heading">
-          <strong>${escapeHtml(SERVICES[serviceKey].label)}</strong>
-          <span>${escapeHtml(SERVICES[serviceKey].category)} · ${serviceTotal.toLocaleString()} records</span>
-        </div>
-      `;
-
-      datasetRows.forEach(([datasetKey, rows]) => {
-        const detailKey = `persona|${persona.id}|${serviceKey}|${datasetKey}`;
-        RECORD_CACHE[detailKey] = rows;
-        const details = document.createElement("details");
-        details.className = "dataset-details";
-        details.dataset.cacheKey = detailKey;
-        details.innerHTML = `
-          <summary>${escapeHtml(datasetKey)} (${rows.length.toLocaleString()})</summary>
-          <pre class="json-block">Open to load records...</pre>
-        `;
-        serviceSection.appendChild(details);
-      });
-
-      serviceList.appendChild(serviceSection);
-    });
   });
 }
 
-function renderUnmapped(unmapped) {
+function renderUnmappedSummary(unmapped) {
   const root = document.getElementById("unmapped-root");
   root.innerHTML = "";
 
@@ -281,46 +318,23 @@ function renderUnmapped(unmapped) {
     return;
   }
 
+  const list = document.createElement("div");
+  list.className = "unmapped-summary-list";
+
   serviceKeys.forEach((serviceKey) => {
     const datasets = unmapped[serviceKey];
     const datasetRows = Object.entries(datasets).sort(([a], [b]) => a.localeCompare(b));
-    const section = document.createElement("section");
-    section.className = "service-block";
-    section.innerHTML = `
-      <div class="service-heading">
-        <strong>${escapeHtml(SERVICES[serviceKey].label)}</strong>
-        <span>${escapeHtml(SERVICES[serviceKey].category)} · strict-unmapped</span>
-      </div>
+    const total = datasetRows.reduce((sum, [, rows]) => sum + rows.length, 0);
+    const item = document.createElement("div");
+    item.className = "unmapped-summary-item";
+    item.innerHTML = `
+      <strong>${escapeHtml(SERVICES[serviceKey].label)}</strong>
+      <span>${total.toLocaleString()} records across ${datasetRows.length.toLocaleString()} datasets</span>
     `;
-
-    datasetRows.forEach(([datasetKey, rows]) => {
-      const detailKey = `unmapped|${serviceKey}|${datasetKey}`;
-      RECORD_CACHE[detailKey] = rows;
-      const details = document.createElement("details");
-      details.className = "dataset-details";
-      details.dataset.cacheKey = detailKey;
-      details.innerHTML = `
-        <summary>${escapeHtml(datasetKey)} (${rows.length.toLocaleString()})</summary>
-        <pre class="json-block">Open to load records...</pre>
-      `;
-      section.appendChild(details);
-    });
-
-    root.appendChild(section);
+    list.appendChild(item);
   });
-}
 
-function wireJsonLoaders(personas, linked) {
-  document.querySelectorAll("details.dataset-details").forEach((details) => {
-    details.addEventListener("toggle", () => {
-      if (!details.open || details.dataset.loaded === "true") return;
-      const cacheKey = details.dataset.cacheKey;
-      const rows = RECORD_CACHE[cacheKey] || [];
-      const pre = details.querySelector(".json-block");
-      pre.textContent = JSON.stringify(rows, null, 2);
-      details.dataset.loaded = "true";
-    });
-  });
+  root.appendChild(list);
 }
 
 function getDirectPersonaId(record) {
@@ -333,6 +347,29 @@ function singularize(word) {
   if (word.endsWith("ses")) return word.slice(0, -2);
   if (word.endsWith("s")) return word.slice(0, -1);
   return word;
+}
+
+function normalizeName(name) {
+  return String(name)
+    .replaceAll("_", " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .split(" ")
+    .map((part) => part ? (part[0].toUpperCase() + part.slice(1)) : part)
+    .join(" ");
+}
+
+function getInitials(name, fallbackId) {
+  const clean = String(name || "").trim();
+  if (!clean) return String(fallbackId || "??").slice(0, 2).toUpperCase();
+  const parts = clean.split(/\s+/).slice(0, 2);
+  return parts.map((p) => p[0]?.toUpperCase() || "").join("");
+}
+
+function joinLocation(city, stateOrRegion) {
+  if (!city && !stateOrRegion) return "";
+  if (city && stateOrRegion) return `${city}, ${stateOrRegion}`;
+  return city || stateOrRegion || "";
 }
 
 function isIdentifierValue(value) {

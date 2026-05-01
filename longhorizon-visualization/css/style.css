@@ -95,6 +95,26 @@ h2 {
   padding-bottom: 10px;
 }
 
+.persona-ident {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.persona-initials {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: #08242c;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
 .persona-header h3 {
   margin: 0;
   font-size: 1rem;
@@ -115,50 +135,21 @@ h2 {
   text-align: right;
 }
 
-.service-list {
+.persona-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
   margin-top: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
 }
 
-.service-heading {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 12px;
-  margin-bottom: 6px;
-}
-
-.service-heading span {
-  color: var(--text-muted);
-  font-size: 0.8rem;
-}
-
-.dataset-details {
-  margin-top: 8px;
+.persona-meta-row span {
+  display: inline-block;
+  font-size: 0.78rem;
   border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
+  border-radius: 999px;
+  padding: 3px 8px;
   background: var(--surface-2);
-}
-
-.dataset-details summary {
-  cursor: pointer;
-  padding: 8px 10px;
-  font-size: 0.9rem;
-}
-
-.json-block {
-  margin: 0;
-  padding: 10px;
-  max-height: 340px;
-  overflow: auto;
-  border-top: 1px solid var(--border);
-  background: #0d1628;
-  color: #dbe7ff;
-  font-size: 0.76rem;
-  line-height: 1.4;
+  color: var(--text-muted);
 }
 
 .empty,
@@ -170,6 +161,28 @@ h2 {
   background: var(--surface-2);
 }
 
+.unmapped-summary-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.unmapped-summary-item {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  background: var(--surface);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.unmapped-summary-item span {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
 @media (max-width: 760px) {
   .persona-header {
     flex-direction: column;
@@ -179,7 +192,11 @@ h2 {
     text-align: left;
   }
 
-  .service-heading {
+  .persona-ident {
+    align-items: center;
+  }
+
+  .unmapped-summary-item {
     flex-direction: column;
     align-items: flex-start;
     gap: 2px;
