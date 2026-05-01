@@ -106,7 +106,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font); min-
   overflow-wrap: anywhere;
   white-space: normal;
 }
-.persona-stats { display: flex; gap: 7px; flex-wrap: wrap; }
+.persona-card > .persona-stats { display: none; }
 .ps { font-size: 11px; color: var(--text2); background: var(--surface2); border: 1px solid var(--border2); border-radius: 4px; padding: 2px 7px; }
 
 /* ── DETAIL VIEW ── */

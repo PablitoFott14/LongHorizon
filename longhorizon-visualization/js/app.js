@@ -162,6 +162,7 @@ function hideSplash() {
 
 /* ════ LIST VIEW ════ */
 function renderList() {
+  const totalOrders = PERSONAS.reduce((s,p) => s + orderSummary(p.id).count, 0);
   const cards = PERSONAS.map(p => {
     const profile = personaProfile(p.id);
     const details = [
@@ -187,6 +188,7 @@ function renderList() {
     '<p>11 personas across 19 integrated services — click any card to explore</p></div>' +
     '<div class="stats-row">' +
       '<span class="stat-pill"><strong>11</strong> Personas</span>' +
+      '<span class="stat-pill"><strong>'+totalOrders.toLocaleString()+'</strong> Total Orders</span>' +
       '<span class="stat-pill"><strong>19</strong> Services</span>' +
     '</div>' +
     '<div class="persona-grid">'+cards+'</div>'
