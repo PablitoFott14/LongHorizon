@@ -1043,6 +1043,10 @@ function durationMin(start, end) {
   const ms = new Date(end) - new Date(start);
   return Number.isFinite(ms) && ms > 0 ? Math.round(ms/60000)+' min' : '—';
 }
+function latestValue(rows, field) {
+  const vals = (rows||[]).map(r=>r?.[field]).filter(Boolean).sort();
+  return vals.length ? vals[vals.length-1] : null;
+}
 function chartTip(title, xLabel, x, yLabel, y, detail) {
   return title + '\n' +
     xLabel + ': ' + x + '\n' +
@@ -1150,6 +1154,10 @@ function buildModalContent(pid, key) {
     ).join('') +
   '</div>' : '';
 
+  if (isHealthService(key)) {
+    return summaryBar + healthContext(pid, key) + modalVisuals(pid, key);
+  }
+
   let detail = '';
   switch(key) {
     case 'garmin':        detail = modalGarmin(pid);        break;
@@ -1171,6 +1179,115 @@ function buildModalContent(pid, key) {
     default:              detail = empty();
   }
   return summaryBar + modalVisuals(pid, key) + detail;
+}
+
+function isHealthService(key) {
+  return ['garmin','whoop','apple-health','fitbit','eight-sleep','strava','myfitnesspal','renpho'].includes(key);
+}
+
+function healthContext(pid, key) {
+  switch (key) {
+    case 'garmin': {
+      const u = (D.garmin?.users||[]).find(x=>x.user_id===pid);
+      const devices = (D.garmin?.devices||[]).filter(x=>x.user_id===pid);
+      return fields([
+        ['Name', u?.name], ['Email', u?.email], ['Phone', u?.phone], ['Address', u?.address],
+        ['Devices', devices.length || null],
+        ['Last Sync', latestValue(devices, 'last_sync')],
+      ]);
+    }
+    case 'whoop': {
+      const u = (D.whoop?.user_profiles||[]).find(x=>x.persona_id===pid);
+      return fields([
+        ['Name', [u?.first_name,u?.last_name].filter(Boolean).join(' ') || null],
+        ['Email', u?.email],
+        ['Height', u?.height_meter!=null ? u.height_meter+' m' : null],
+        ['Weight', u?.weight_kg!=null ? u.weight_kg+' kg' : null],
+        ['Max HR', u?.max_heart_rate],
+      ]);
+    }
+    case 'apple-health': {
+      const u = (D['apple-health']?.user_profiles||[]).find(x=>x.user_id===pid);
+      return fields([
+        ['Email', u?.email],
+        ['Height', u?.height_cm!=null ? u.height_cm+' cm' : null],
+        ['Weight', u?.weight_kg!=null ? u.weight_kg+' kg' : null],
+        ['Date of Birth', u?.date_of_birth],
+        ['Sex', u?.sex],
+      ]);
+    }
+    case 'fitbit': {
+      const u = (D.fitbit?.user_profiles||[]).find(x=>x.user_id===pid);
+      const devices = (D.fitbit?.devices||[]).filter(x=>x.user_id===pid);
+      const life = (D.fitbit?.lifetime_stats||[]).find(x=>x.user_id===pid);
+      return fields([
+        ['Display Name', u?.display_name], ['Full Name', u?.full_name],
+        ['Email', u?.email], ['Gender', u?.gender], ['DOB', u?.date_of_birth],
+        ['Height', u?.height!=null ? u.height+' '+(u.height_unit||'cm') : null],
+        ['Weight', u?.weight!=null ? u.weight+' '+(u.weight_unit||'kg') : null],
+        ['Member Since', u?.member_since],
+        ['Devices', devices.length || null],
+        ['Lifetime Steps', life?.total_steps!=null ? fmt(life.total_steps) : null],
+      ]);
+    }
+    case 'eight-sleep': {
+      const u = (D['eight-sleep']?.users||[]).find(x=>x.persona_id===pid);
+      const d = (D['eight-sleep']?.devices||[]).find(x=>x.persona_id===pid);
+      return fields([
+        ['Email', u?.email],
+        ['Timezone', u?.timezone],
+        ['Temp Unit', u?.temperature_unit?.toUpperCase()],
+        ['Bed Side', u?.bed_side],
+        ['Pod Model', d?.model],
+        ['Firmware', d?.firmware_version],
+        ['Online', d?.is_online!=null ? String(d.is_online) : null],
+        ['Water Level', d?.water_level_pct!=null ? d.water_level_pct+'%' : null],
+        ['Last Seen', d?.last_seen],
+      ]);
+    }
+    case 'strava': {
+      const a = (D.strava?.athletes||[]).find(x=>x.user_id===pid);
+      return fields([
+        ['Name', [a?.firstname,a?.lastname].filter(Boolean).join(' ') || null],
+        ['Email', a?.email],
+        ['Location', [a?.city,a?.state,a?.country].filter(Boolean).join(', ') || null],
+        ['Premium', a?.premium!=null ? (a.premium ? 'Yes' : 'No') : null],
+        ['FTP', a?.ftp!=null ? a.ftp+' W' : null],
+        ['Weight', a?.weight!=null ? a.weight+' kg' : null],
+      ]);
+    }
+    case 'myfitnesspal': {
+      const u = (D.myfitnesspal?.user_profiles||[]).find(x=>x.persona_id===pid);
+      return fields([
+        ['Name', [u?.first_name,u?.last_name].filter(Boolean).join(' ') || null],
+        ['Email', u?.email],
+        ['Height', u?.height_cm!=null ? u.height_cm+' cm' : null],
+        ['Weight', u?.weight_kg!=null ? u.weight_kg+' kg' : null],
+        ['Activity Level', u?.activity_level],
+        ['Goal', u?.goal],
+        ['Calorie Goal', u?.calorie_goal!=null ? u.calorie_goal+' kcal' : null],
+        ['Protein Goal', u?.protein_goal_g!=null ? u.protein_goal_g+' g' : null],
+        ['Water Goal', u?.water_goal_ml!=null ? u.water_goal_ml+' ml' : null],
+      ]);
+    }
+    case 'renpho': {
+      const u = (D.renpho?.user_profiles||[]).find(x=>x.persona_id===pid);
+      const scales = (D.renpho?.scales||[]).filter(x=>x.persona_id===pid);
+      return fields([
+        ['Nickname', u?.nickname],
+        ['Email', u?.email],
+        ['Birthday', u?.birthday],
+        ['Height', u?.height],
+        ['Gender', u?.gender],
+        ['Goal Weight', u?.goal_weight],
+        ['Unit System', u?.unit_system],
+        ['Scales', scales.length || null],
+        ['Last Scale Sync', latestValue(scales, 'last_sync')],
+      ]);
+    }
+    default:
+      return '';
+  }
 }
 
 /* ════ MODAL DATA BUILDERS ════ */
